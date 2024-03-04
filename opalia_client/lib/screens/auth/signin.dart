@@ -20,7 +20,7 @@ class _SigninScreenState extends State<SigninScreen> {
           child: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                stops: [
+                stops: const [
                   0.3,
                   0.5,
                 ],

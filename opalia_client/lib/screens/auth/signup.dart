@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/page/HomeScreen.dart';
+import 'package:opalia_client/screens/pages/HomeScreen.dart';
 import 'package:opalia_client/widegts/TextForm.dart';
 
 class SignupScreen extends StatefulWidget {
