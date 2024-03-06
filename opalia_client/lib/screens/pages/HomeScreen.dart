@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:opalia_client/screens/pages/DetailScreen.dart';
+import 'package:opalia_client/screens/pages/ProductScreen.dart';
+import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
+
+import '../../models/categories.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,6 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    ApiService.getAllCategory();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,35 +81,65 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // number of items in each row
-                  mainAxisSpacing: 8.0, // spacing between rows
-                  crossAxisSpacing: 8.0, // spacing between columns
-                ),
-                padding: EdgeInsets.all(8.0), // padding around the grid
-                itemCount: 5, // total number of items
-                itemBuilder: (context, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(width: 2, color: Colors.red),
-                        color: Colors.white), // color of grid items
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.abc,
-                            size: 80,
-                          ),
-                          Text(
-                            'hello',
-                            style: TextStyle(fontSize: 15, color: Colors.red),
-                          ),
-                        ],
+              child: FutureBuilder<List<Categorie>?>(
+                future: ApiService.getAllCategory(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Categorie>?> model) {
+                  if (model.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (model.hasError) {
+                    return Text('Error: ${model.error}');
+                  } else {
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3, // number of items in each row
+                        mainAxisSpacing: 8.0, // spacing between rows
+                        crossAxisSpacing: 8.0, // spacing between columns
                       ),
-                    ),
-                  );
+                      padding:
+                          const EdgeInsets.all(8.0), // padding around the grid
+                      itemCount: model.data!.length, // total number of items
+                      itemBuilder: (context, index) {
+                        final categorie = model.data![index];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(ProductScreen());
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(width: 2, color: Colors.red),
+                                color: Colors.white), // color of grid items
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Image.network(
+                                  //   // categorie.categorieImage!,
+                                  //   // height: 50,
+                                  //   // width: 50,
+                                  //   (categorie.categorieImage == null ||
+                                  //           categorie.categorieImage == "")
+                                  //       ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
+                                  //       : categorie.categorieImage!,
+                                  //   height: 100,
+                                  //   width: 100,
+                                  //   fit: BoxFit.scaleDown,
+                                  // ),
+                                  Text(
+                                    categorie.categorienom!,
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),

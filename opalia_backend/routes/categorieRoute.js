@@ -1,11 +1,24 @@
 const express = require("express");
 const app = express.Router();
 const Categorie = require("../models/categories.model");
-//get
+const multer = require("multer");
+
+// Set up storage for uploaded files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/categories/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+// Create the multer instance
+const upload = multer({ storage: storage });
 app.get("/", async (req, res) => {
   try {
     const categories = await Categorie.find();
-    res.json(categories);
+    res.status(200).json({ data: categories });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -15,10 +28,13 @@ app.get("/:id", getCategorie, (req, res) => {
   res.send(res.categorie);
 });
 //post
-app.post("/", async (req, res) => {
+app.post("/", upload.single("categorieImage"), async (req, res) => {
+  const url = req.protocol + "://" + req.get("host");
+
+  const path = req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
   const categories = new Categorie({
     categorienom: req.body.categorienom,
-    categorieImage: req.body.categorieImage,
+    categorieImage: path != "" ? url + "/" + path : "",
   });
   try {
     const newCategories = await categories.save();
