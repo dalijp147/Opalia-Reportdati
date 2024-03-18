@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/pages/DetailScreen.dart';
-import 'package:opalia_client/screens/pages/ProductScreen.dart';
+
 import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
 
 import '../../models/categories.dart';
+import '../../widegts/Categorie/CategorieItem.dart';
+import 'medicament/ProductCategorie.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,12 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {},
-              icon: Icon(
+              icon: const Icon(
                 Icons.person,
                 color: Colors.red,
               ))
         ],
-        title: Text(
+        title: const Text(
           'OPALIA RECORDATI',
           style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
         ),
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(
+          const Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Padding(
+          const Padding(
             padding: const EdgeInsets.only(left: 15.0),
             child: Align(
                 alignment: Alignment.topLeft,
@@ -103,40 +104,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final categorie = model.data![index];
                         return GestureDetector(
-                          onTap: () {
-                            Get.to(ProductScreen());
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(width: 2, color: Colors.red),
-                                color: Colors.white), // color of grid items
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Image.network(
-                                  //   // categorie.categorieImage!,
-                                  //   // height: 50,
-                                  //   // width: 50,
-                                  //   (categorie.categorieImage == null ||
-                                  //           categorie.categorieImage == "")
-                                  //       ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                                  //       : categorie.categorieImage!,
-                                  //   height: 100,
-                                  //   width: 100,
-                                  //   fit: BoxFit.scaleDown,
-                                  // ),
-                                  Text(
-                                    categorie.categorienom!,
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.red),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
+                            onTap: () {
+                              Get.to(
+                                  ProductCategorieScreen(name: categorie.id!));
+                            },
+                            child: CategorieItem(
+                              model: categorie,
+                            ));
                       },
                     );
                   }

@@ -17,7 +17,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.get("/", async (req, res) => {
   try {
-    const categories = await Categorie.find();
+    const categories = await Categorie.find().populate("productList");
+    res.status(200).json({ data: categories });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+app.get("/:productname", async (req, res) => {
+  try {
+    const categories = await Categorie.find({
+      categorienom: req.params.productname,
+    }).populate("productList");
     res.status(200).json({ data: categories });
   } catch (err) {
     res.status(400).json({ message: err.message });

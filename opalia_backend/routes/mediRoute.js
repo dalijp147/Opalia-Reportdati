@@ -3,7 +3,7 @@ const app = express.Router();
 const Medicament = require("../models/Medi.model");
 const Categorie = require("../models/categories.model");
 const multer = require("multer");
-
+var ObjectId = require("mongodb").ObjectId;
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -19,17 +19,20 @@ const upload = multer({ storage: storage });
 app.get("/", async (req, res) => {
   try {
     const medicaments = await Medicament.find().populate("categorie");
-    res.status(200).json({ data: medicaments });
+    res.json(medicaments);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
-app.get("/bycategory", async (req, res) => {
+app.get("/:categorie", async (req, res) => {
+  const categorie = req.params.categorie;
+
   try {
-    const getallMedicament = await Medicament.find(req.query).populate(
-      "categorie"
-    );
-    res.json(getallMedicament);
+    const getallMedicament = await Medicament.find({
+      categorie,
+    }).populate("categorie");
+
+    res.status(200).json({ data: getallMedicament });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/auth/signup.dart';
+import 'package:opalia_client/widegts/BottomNav.dart';
 
 import '../../widegts/TextForm.dart';
 
@@ -68,7 +69,7 @@ class _SigninScreenState extends State<SigninScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Get.to(SignupScreen());
+                  Get.to(BottomNav());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -88,10 +89,15 @@ class _SigninScreenState extends State<SigninScreen> {
               SizedBox(
                 height: 20,
               ),
-              Text(
-                'Créer  un nouveau compte ',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: () {
+                  Get.to(SignupScreen());
+                },
+                child: Text(
+                  'Créer un nouveau compte ',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           )),

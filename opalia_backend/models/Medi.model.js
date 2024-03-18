@@ -15,9 +15,8 @@ const mediSchema = mongoose.Schema({
     require: true,
   },
   categorie: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "categorie",
-    
   },
 });
-module.exports = mongoose.model("medicament", mediSchema);
+module.exports = mongoose.model("Medicament", mediSchema);

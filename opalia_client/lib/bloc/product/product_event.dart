@@ -4,3 +4,7 @@ part of 'product_bloc.dart';
 sealed class ProductEvent {}
 
 class MedicamentInitialFetchEvent extends ProductEvent {}
+
+class CategorieMedicamentInitialFetchEvent extends ProductEvent {
+  CategorieMedicamentInitialFetchEvent(String name);
+}

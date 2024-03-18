@@ -1,25 +1,20 @@
 const mongoose = require("mongoose");
 
-const categorieSchema = mongoose.Schema(
-  {
-    categorienom: {
-      type: String,
-      require: true,
-      unique: true,
-    },
-    categorieImage: {
-      type: String,
-      require: true,
-    },
+const categorieSchema = mongoose.Schema({
+  categorienom: {
+    type: String,
+    require: true,
+    unique: true,
   },
-  {
-    toJSON: {
-      trasform: function (doc, ret) {
-        ret.categorieid = ret._id.toString();
-        delete ret._id;
-        delete ret._v;
-      },
+  categorieImage: {
+    type: String,
+    require: true,
+  },
+  productList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Medicament",
     },
-  }
-);
+  ],
+});
 module.exports = mongoose.model("categorie", categorieSchema);
