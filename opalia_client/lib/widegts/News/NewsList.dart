@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:opalia_client/bloc/news/bloc/news_bloc.dart';
 import 'package:opalia_client/screens/pages/news/DetailScreenNews.dart';
 import 'package:opalia_client/widegts/News/NewsItem.dart';
@@ -50,7 +51,15 @@ class _NewsListState extends State<NewsList> {
                   },
                 ));
           default:
-            return const SizedBox();
+            return Column(
+              children: [
+                SizedBox(
+                  height: 150,
+                ),
+                Lottie.asset('assets/animation/heartrate.json',
+                    height: 210, width: 210)
+              ],
+            );
         }
       },
     );

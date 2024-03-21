@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
@@ -16,6 +17,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String query = '';
+  List<Categorie> data = [];
+  List<Categorie> searchResults = [];
+  //  void onQueryChanged(String newQuery) {
+  //    setState(() {
+  //      searchResults = data.where((item) => item.contains(query)).toList();
+  //  });
+  // }
+
   @override
   void initState() {
     ApiService.getAllCategory();
@@ -53,10 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Center(
+          Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                // onChanged: onQueryChanged,
                 decoration: InputDecoration(
                   constraints: BoxConstraints(maxWidth: 350),
                   labelText: 'Search',
@@ -87,7 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Categorie>?> model) {
                   if (model.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Lottie.asset('assets/animation/heartrate.json',
+                          height: 210, width: 210),
+                    );
                   } else if (model.hasError) {
                     return Text('Error: ${model.error}');
                   } else {
@@ -104,13 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final categorie = model.data![index];
                         return GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                  ProductCategorieScreen(name: categorie.id!));
-                            },
-                            child: CategorieItem(
-                              model: categorie,
-                            ));
+                          onTap: () {
+                            Get.to(ProductCategorieScreen(name: categorie.id!));
+                          },
+                          child: CategorieItem(
+                            model: categorie,
+                          ),
+                        );
                       },
                     );
                   }

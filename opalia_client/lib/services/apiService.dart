@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:opalia_client/models/categories.dart';
 import 'package:opalia_client/models/mediacment.dart';
 import '../config/config.dart';
+import '../models/reminder.dart';
 
 final apiService = Provider((ref) => ApiService());
 
@@ -38,6 +39,23 @@ class ApiService {
       return mediFromJson(dataprod["data"]);
     } else {
       throw Exception('Failed to load data');
+    }
+  }
+
+  @override
+  static Future<Reminder> fetchDetails(
+      String remindertitre, num nombrederappelparjour) async {
+    var url = Uri.http(Config.apiUrl, Config.reminderAPI + "newReminder");
+    final response = await http.post(Uri.parse("$url"), body: {
+      "remindertitre": remindertitre,
+      "nombrederappelparjour": nombrederappelparjour
+    });
+
+    if (response.statusCode == 201) {
+      var dataprod = jsonDecode(response.body);
+      return Reminder.fromJson(dataprod);
+    } else {
+      throw Exception('Failed to load API data');
     }
   }
 }

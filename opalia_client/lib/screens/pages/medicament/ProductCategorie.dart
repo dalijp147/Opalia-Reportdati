@@ -89,34 +89,6 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
             }
           },
         ),
-        ////BlocConsumer<ProductBloc, ProductState>(
-        //   bloc: productBloc,
-        //   listenWhen: (previous, current) => current is ProductActionState,
-        //   buildWhen: (previous, current) => current is! ProductActionState,
-        //   listener: (context, state) {},
-        //   builder: (context, state) {
-        //     switch (state.runtimeType) {
-        //       case CategorieProductFetchSucess:
-        //         final sucessState = state as CategorieProductFetchSucess;
-        //         return Container(
-        //           padding: EdgeInsets.all(8.0),
-        //           child: ListView.builder(
-        //             itemCount: sucessState.medi.length,
-        //             itemBuilder: (context, index) {
-        //               return Container(
-        //                 child: Column(
-        //                   children: [
-        //                     Text(sucessState.medi[index].mediname!),
-        //                   ],
-        //                 ),
-        //               );
-        //             },
-        //           ),
-        //         );
-        //       default:
-        //         return const SizedBox();
-        //     }
-        //   },
       ),
     );
   }

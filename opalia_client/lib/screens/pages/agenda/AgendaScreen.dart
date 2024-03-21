@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:opalia_client/models/mediacment.dart';
+import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:iconsax/iconsax.dart';
+
+import '../../../bloc/reminder/reminder_bloc.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -18,6 +25,14 @@ class _AgendaScreenState extends State<AgendaScreen> {
     'Juin',
     'Juillet'
   ];
+  final ReminderBloc reminderBloc = ReminderBloc();
+
+  @override
+  void initState() {
+    reminderBloc.add(ReminderInitialFetchEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,20 +106,26 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_month_outlined),
-                    Text(
-                      'Todays Reminder',
+                    Icon(
+                      Iconsax.calendar_1,
+                      color: Colors.red,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      'All Reminders',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
                           fontSize: 25),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 40,
                     ),
                     ElevatedButton(
                       onPressed: () {},
-                      child: Text(
+                      child: const Text(
                         'Reminder',
                         style: TextStyle(color: Colors.red),
                       ),
@@ -114,7 +135,50 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
+              BlocConsumer<ReminderBloc, ReminderState>(
+                bloc: reminderBloc,
+                listenWhen: (previous, current) =>
+                    current is ReminderActionState,
+                buildWhen: (previous, current) =>
+                    current is! ReminderActionState,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  switch (state.runtimeType) {
+                    case ReminderFetchLoadingState:
+                      return Lottie.asset('assets/animation/heartrate.json',
+                          height: 210, width: 210);
+
+                    case ReminderFetchSucess:
+                      final sucessState = state as ReminderFetchSucess;
+                      return Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: sucessState.reminder.length,
+                          itemBuilder: (context, index) {
+                            final reminder = sucessState.reminder![index];
+                            return GestureDetector(
+                                onTap: () {
+                                  // Get.to(DetailProduct(
+                                  //   medi: medicament,
+                                  // ));
+                                },
+                                child: AgendaItem(
+                                  reminder: reminder,
+                                ));
+                          },
+                        ),
+                      );
+                    default:
+                      return Lottie.asset('assets/animation/heartrate.json',
+                          height: 210, width: 210);
+                  }
+                },
+              ),
             ],
           ),
         ),

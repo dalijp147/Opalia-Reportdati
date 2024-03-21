@@ -12,6 +12,7 @@ app.get("/", async (req, res) => {
 });
 app.post("/new", async (req, res) => {
   const news = new News({
+    newsAuthor: req.body.newsAuthor,
     newsTitle: req.body.newsTitle,
     newsDetail: req.body.newsDetail,
     newsImage: req.body.newsImage,

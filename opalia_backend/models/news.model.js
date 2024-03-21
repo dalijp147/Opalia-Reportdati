@@ -6,6 +6,9 @@ const newsSchema = moogoose.Schema({
     require: true,
     unique: true,
   },
+  newsAuthor: {
+    type: String,
+  },
   newsDetail: {
     type: String,
     require: true,
