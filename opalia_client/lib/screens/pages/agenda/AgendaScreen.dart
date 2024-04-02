@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/mediacment.dart';
+import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../../bloc/reminder/reminder_bloc.dart';
+import '../../../widegts/test/formScrenn.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -49,7 +55,15 @@ class _AgendaScreenState extends State<AgendaScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                await pref.clear();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SigninScreen()),
+                  (Route<dynamic> route) => false,
+                );
+              },
               icon: const Icon(
                 Icons.person,
                 color: Colors.red,
@@ -124,7 +138,18 @@ class _AgendaScreenState extends State<AgendaScreen> {
                       width: 40,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: Colors.white,
+                              scrollable: true,
+                              content: HomePage(),
+                            );
+                          },
+                        );
+                      },
                       child: const Text(
                         'Reminder',
                         style: TextStyle(color: Colors.red),
@@ -161,7 +186,17 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           itemCount: sucessState.reminder.length,
                           itemBuilder: (context, index) {
                             final reminder = sucessState.reminder![index];
-                            return GestureDetector(
+                            return Dismissible(
+                              key: Key(reminder.toString()),
+                              onDismissed: (direction) async {
+                                // Remove the item from the data source.
+                                await ApiService.deleteReminder(
+                                    reminder.reminderId);
+                                // Then show a snackbar.
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(' dismissed')));
+                              },
+                              child: GestureDetector(
                                 onTap: () {
                                   // Get.to(DetailProduct(
                                   //   medi: medicament,
@@ -169,7 +204,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                 },
                                 child: AgendaItem(
                                   reminder: reminder,
-                                ));
+                                ),
+                              ),
+                            );
                           },
                         ),
                       );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:opalia_client/screens/pages/quiz/ListQuiz.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -35,7 +37,39 @@ class _QuizScreenState extends State<QuizScreen> {
           style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Column(children: []),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 50,
+          ),
+          const Center(
+            child: const Text(
+              'Quiz',
+              style: const TextStyle(
+                  fontSize: 35, fontWeight: FontWeight.bold, color: Colors.red),
+            ),
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          Image.asset(
+            'assets/images/quizimage.jpg',
+            scale: 1.0,
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                Get.to(ListQuizScreen());
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: Text(
+                'Lets get Started',
+                style: TextStyle(color: Colors.white),
+              ))
+        ],
+      ),
     );
   }
 }

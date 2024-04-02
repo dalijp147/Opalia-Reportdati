@@ -14,17 +14,7 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
   late Reminder dataR;
   ReminderBloc() : super(ReminderInitial()) {
     on<ReminderInitialFetchEvent>(reminderInitialFetchEvent);
-
-    on<ReminderEvent>((event, emit) async {
-      if (event is ReminderAddEvent) {
-        emit(ReminderFetchLoadingState());
-        await Future.delayed(const Duration(seconds: 3), () async {
-          dataR = await ApiService.fetchDetails(
-              event.remindertitre, event.nombrederappelparjour);
-          emit(ReminderLoaded(dataR));
-        });
-      }
-    });
+    on<ReminderAddEvent>(reminderAddEvent);
     // on<ReminderEvent>
   }
   var client = http.Client();
@@ -46,7 +36,22 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
       emit(ReminderFetchSucess(reminder: reminder));
     } else {
       emit(ReminderFetchErrorState());
-      throw Exception('Failed to load data reminder');
+      throw Exception('Failed to load data quiz');
+    }
+  }
+
+  FutureOr<void> reminderAddEvent(
+      ReminderAddEvent event, Emitter<ReminderState> emit) async {
+    bool success = await ApiService.postReminder(
+        event.remindertitre, event.nombrederappelparjour, event.userID);
+    if (success) {
+      emit(
+        ReminderAddSuccessState(),
+      );
+    } else {
+      emit(
+        ReminderFetchErrorState(),
+      );
     }
   }
 }

@@ -16,8 +16,6 @@ class ReminderFetchSucess extends ReminderState {
   ReminderFetchSucess({required this.reminder});
 }
 
-class ReminderLoaded extends ReminderState {
-  final Reminder data;
+class ReminderAddSuccessState extends ReminderActionState {}
 
-  ReminderLoaded(this.data);
-}
+class ReminderAddErrorState extends ReminderActionState {}

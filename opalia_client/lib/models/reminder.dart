@@ -6,12 +6,14 @@ List<Reminder> reminderFromJson(dynamic str) =>
 
 class Reminder {
   late String? reminderId;
+  late String? userID;
   late String? remindertitre;
   late DateTime? datedebutReminder;
   late DateTime? datefinReminder;
-  late num? nombrederappelparjour;
+  late int? nombrederappelparjour;
   Reminder({
     this.reminderId,
+    this.userID,
     this.remindertitre,
     this.datedebutReminder,
     this.datefinReminder,
@@ -20,11 +22,12 @@ class Reminder {
 
   factory Reminder.fromMap(Map<String, dynamic> json) {
     return Reminder(
-      reminderId: json['_id'],
+      reminderId: json['_id'] ?? "",
+      userID: json['userId'],
       remindertitre: json['remindertitre'],
       datedebutReminder: DateTime.parse(json['datedebutReminder'].toString()),
       datefinReminder: DateTime.parse(json['datefinReminder'].toString()),
-      nombrederappelparjour: json['nombrederappelparjour'],
+      nombrederappelparjour: json['nombrederappelparjour'] ?? 0,
     );
   }
   Map<String, dynamic> toMap() {

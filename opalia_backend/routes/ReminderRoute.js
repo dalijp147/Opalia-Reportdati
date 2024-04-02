@@ -12,6 +12,7 @@ app.get("/", async (req, res) => {
 });
 app.post("/newReminder", async (req, res) => {
   const reminder = new Reminder({
+    userId: req.body.userId,
     remindertitre: req.body.remindertitre,
     datedebutReminder: req.body.datedebutReminder,
     datefinReminder: req.body.datefinReminder,
@@ -20,6 +21,16 @@ app.post("/newReminder", async (req, res) => {
   try {
     const newReminder = await reminder.save();
     res.status(200).json({ date: newReminder });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.get("/getbyuserid", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const remind = await Reminder.find({ userId });
+    res.status(200).json({ status: true, success: remind });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -37,6 +37,7 @@ class _ProductScreenState extends State<ProductScreen> {
               case ProductFetchSucess:
                 final sucessState = state as ProductFetchSucess;
                 return Container(
+                  height: 500,
                   padding: EdgeInsets.all(8.0),
                   child: GridView.builder(
                     gridDelegate:

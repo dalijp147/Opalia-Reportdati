@@ -7,7 +7,8 @@ class ReminderInitialFetchEvent extends ReminderEvent {}
 
 class ReminderAddEvent extends ReminderEvent {
   final String remindertitre;
-  final num nombrederappelparjour;
+  final String nombrederappelparjour;
+  final String userID;
 
-  ReminderAddEvent(this.remindertitre, this.nombrederappelparjour);
+  ReminderAddEvent(this.remindertitre, this.nombrederappelparjour, this.userID);
 }

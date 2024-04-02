@@ -8,7 +8,8 @@ import '../screens/pages/agenda/AgendaScreen.dart';
 import '../screens/pages/quiz/QuizScreen.dart';
 
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  final token;
+  const BottomNav({super.key, required this.token});
 
   @override
   State<BottomNav> createState() => _BottomNavState();

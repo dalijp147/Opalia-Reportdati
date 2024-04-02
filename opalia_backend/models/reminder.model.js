@@ -1,5 +1,4 @@
 const moogoose = require("mongoose");
-
 const reminderSchema = moogoose.Schema({
   remindertitre: {
     type: String,
@@ -17,5 +16,6 @@ const reminderSchema = moogoose.Schema({
     type: Number,
     require: true,
   },
+  userId: { type: moogoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 module.exports = moogoose.model("Reminder", reminderSchema);
