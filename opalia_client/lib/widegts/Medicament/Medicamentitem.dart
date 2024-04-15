@@ -25,12 +25,9 @@ class _MedicamentItemState extends State<MedicamentItem> {
               // categorie.categorieImage!,
               // height: 50,
               // width: 50,
-              (widget.model.mediImage == null || widget.model.mediImage == "")
-                  ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                  : widget.model.mediImage!,
-              height: 100,
+              widget.model.mediImage!.replaceFirst("file:///", "http://"),
+              height: 1000,
               width: 100,
-              fit: BoxFit.scaleDown,
             ),
             Text(
               widget.model.mediname!,

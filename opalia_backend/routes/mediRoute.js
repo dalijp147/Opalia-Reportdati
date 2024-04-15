@@ -2,20 +2,8 @@ const express = require("express");
 const app = express.Router();
 const Medicament = require("../models/Medi.model");
 const Categorie = require("../models/categories.model");
-const multer = require("multer");
-var ObjectId = require("mongodb").ObjectId;
-// Set up storage for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/Medicament/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+const upload = require("../middleware/upload");
 
-// Create the multer instance
-const upload = multer({ storage: storage });
 app.get("/", async (req, res) => {
   try {
     const medicaments = await Medicament.find().populate("categorie");
@@ -41,13 +29,19 @@ app.get("/:id", getProduct, (req, res) => {
   res.send(res.medicament);
 });
 app.post("/", upload.single("mediImage"), async (req, res) => {
-  const medicaments = new Medicament({
-    mediname: req.body.mediname,
-    medidesc: req.body.medidesc,
-    mediImage: req.file.filename,
-    categorie: req.body.categorie,
-  });
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const path = req.file.path.replace(/\\/g, "/");
+    const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+    const medicaments = new Medicament({
+      mediname: req.body.mediname,
+      medidesc: req.body.medidesc,
+      mediImage: imageUrl,
+      categorie: req.body.categorie,
+    });
     const newMedicaments = await medicaments.save();
     res.status(201).json(newMedicaments);
   } catch (err) {
@@ -55,7 +49,7 @@ app.post("/", upload.single("mediImage"), async (req, res) => {
   }
 });
 //update
-app.patch("/update/:id", getProduct, async (req, res) => {
+app.put("/update/:id", getProduct, async (req, res) => {
   if (req.body.mediname != null) {
     res.medicament.mediname = req.body.mediname;
   }

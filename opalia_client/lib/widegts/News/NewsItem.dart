@@ -29,9 +29,8 @@ class _NewsItemState extends State<NewsItem> {
           ),
         ),
         child: Row(children: [
-          Image.asset(
-            cacheHeight: 250,
-            'assets/images/sante.jfif',
+          Image.network(
+            widget.model.newsImage!,
             height: 400,
             width: 150,
           ),

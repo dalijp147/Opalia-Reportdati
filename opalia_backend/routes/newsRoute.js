@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express.Router();
 const News = require("../models/news.model");
-
+const upload = require("../middleware/upload");
 app.get("/", async (req, res) => {
   try {
     const allNews = await News.find();
@@ -10,15 +10,21 @@ app.get("/", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-app.post("/new", async (req, res) => {
-  const news = new News({
-    newsAuthor: req.body.newsAuthor,
-    newsTitle: req.body.newsTitle,
-    newsDetail: req.body.newsDetail,
-    newsImage: req.body.newsImage,
-    newsPublication: req.body.newsPublication,
-  });
+app.post("/new", upload.single("newsImage"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const path = req.file.path.replace(/\\/g, "/");
+    const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+    const news = new News({
+      newsAuthor: req.body.newsAuthor,
+      newsTitle: req.body.newsTitle,
+      newsDetail: req.body.newsDetail,
+      newsImage: imageUrl,
+      newsPublication: req.body.newsPublication,
+    });
     const newNews = await news.save();
     res.status(200).json({ date: newNews });
   } catch (err) {
@@ -28,17 +34,21 @@ app.post("/new", async (req, res) => {
 app.delete("/delete/:id", getNews, async (req, res) => {
   try {
     await res.news.deleteOne();
-    res.status(200).json({ message: "Delete medicament" });
+    res.status(200).json({ message: "Delete news" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
-app.patch("/update/:id", getNews, async (req, res) => {
+app.put("/update/:id", async (req, res) => {
   try {
-    const newNews = await News.updateOne();
+    const { id } = req.params;
+    const newNews = await News.findByIdAndUpdate(id, req.body);
+    if (!newNews) {
+      res.status(404).json({ message: `cannot find news with ID ${id}` });
+    }
     res.status(200).json({ newNews });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 //middleware

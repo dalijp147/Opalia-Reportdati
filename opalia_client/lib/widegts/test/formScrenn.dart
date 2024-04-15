@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   late FocusNode searchBtnFocus;
   late TextEditingController nameController;
   late TextEditingController jobController;
+  late TextEditingController dateController;
   late String userId = "";
   getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     searchBtnFocus = FocusNode();
     nameController = TextEditingController();
     jobController = TextEditingController();
+    dateController = TextEditingController();
   }
 
   @override
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> {
     searchBtnFocus.dispose();
     nameController.dispose();
     jobController.dispose();
+    dateController.dispose();
     super.dispose();
   }
 
@@ -75,14 +78,43 @@ class _HomePageState extends State<HomePage> {
             label: "numero de rappel",
             icons: const Icon(Icons.work, color: Colors.red),
           ),
+          TextField(
+            controller: dateController,
+            decoration: InputDecoration(
+              labelText: 'DATE',
+              filled: true,
+              prefixIcon: Icon(Icons.calendar_month),
+              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
+            readOnly: true,
+            onTap: () {
+              _selectedDate();
+            },
+          ),
           SearchButtonBuilder(
             focusNode: searchBtnFocus,
             name: nameController,
             job: jobController,
-            userID: userId.toString(),
+            userID: userId,
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _selectedDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (_picked != null) {
+      setState(() {
+        dateController.text = _picked.toString().split(" ")[0];
+      });
+    }
   }
 }

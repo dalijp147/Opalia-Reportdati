@@ -34,7 +34,13 @@ class _DetailNewsState extends State<DetailNews> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 image: DecorationImage(
-                    image: AssetImage("assets/images/sante.jfif"),
+                    image: NetworkImage(
+                      // categorie.categorieImage!,
+                      // height: 50,
+                      // width: 50,
+                      widget.news.newsImage!
+                          .replaceFirst("file:///", "http://"),
+                    ),
                     fit: BoxFit.fill),
               ),
             ),

@@ -1,20 +1,9 @@
 const express = require("express");
 const app = express.Router();
 const Categorie = require("../models/categories.model");
-const multer = require("multer");
 
-// Set up storage for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/categories/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+const upload = require("../middleware/upload");
 
-// Create the multer instance
-const upload = multer({ storage: storage });
 app.get("/", async (req, res) => {
   try {
     const categories = await Categorie.find().populate("productList");
@@ -39,14 +28,17 @@ app.get("/:id", getCategorie, (req, res) => {
 });
 //post
 app.post("/", upload.single("categorieImage"), async (req, res) => {
-  const url = req.protocol + "://" + req.get("host");
-
-  const path = req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-  const categories = new Categorie({
-    categorienom: req.body.categorienom,
-    categorieImage: path != "" ? url + "/" + path : "",
-  });
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const path = req.file.path.replace(/\\/g, "/");
+    const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+    const categories = new Categorie({
+      categorienom: req.body.categorienom,
+      categorieImage: imageUrl,
+    });
     const newCategories = await categories.save();
     res.status(201).json(newCategories);
   } catch (err) {

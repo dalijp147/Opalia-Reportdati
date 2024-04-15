@@ -21,18 +21,18 @@ class _CategorieItemState extends State<CategorieItem> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Image.network(
-            //   // categorie.categorieImage!,
-            //   // height: 50,
-            //   // width: 50,
-            //   (categorie.categorieImage == null ||
-            //           categorie.categorieImage == "")
-            //       ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-            //       : categorie.categorieImage!,
-            //   height: 100,
-            //   width: 100,
-            //   fit: BoxFit.scaleDown,
-            // ),
+            Image.network(
+              // categorie.categorieImage!,
+              // height: 50,
+              // width: 50,
+              (widget.model.categorieImage == null ||
+                      widget.model.categorieImage == "")
+                  ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
+                  : widget.model.categorieImage!,
+              height: 60,
+              width: 100,
+              fit: BoxFit.scaleDown,
+            ),
             Text(
               widget.model.categorienom!,
               style: TextStyle(fontSize: 15, color: Colors.red),

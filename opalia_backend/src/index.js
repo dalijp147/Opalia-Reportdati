@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(body_parser.json());
 
+app.use("/uploads", express.static("uploads"));
 //routes
 app.use("/catgorie", categorieRoute);
 app.use("/medicament", mediRoute);

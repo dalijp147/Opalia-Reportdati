@@ -17,8 +17,13 @@ class DetailProduct extends StatelessWidget {
             Container(
               decoration: BoxDecoration(color: Colors.red),
               width: double.infinity,
-              child: Image.asset(
-                'assets/images/opalia-preview.png',
+              child: Image.network(
+                // categorie.categorieImage!,
+                // height: 50,
+                // width: 50,
+                (medi.mediImage == null || medi.mediImage == "")
+                    ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
+                    : medi.mediImage!,
               ),
             ),
             buttonArrow(context),

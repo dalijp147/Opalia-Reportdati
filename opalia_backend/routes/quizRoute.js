@@ -26,26 +26,26 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/delete/:id", getQuiz, async (req, res) => {
   try {
-    await Quiz.findById(req.params.id).delete;
-    res.status(200).json({ message: "deleted succesfully" });
-  } catch (error) {
-    res.json({ error });
+    await res.quiz.deleteOne();
+    res.status(200).json({ message: "Delete Quiz" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
 //middleware
 async function getQuiz(req, res, next) {
   try {
-    news = await News.findById(req.params.id);
-    if (news == null) {
-      return res.status(404).json({ message: "cant find News" });
+    quiz = await Quiz.findById(req.params.id);
+    if (quiz == null) {
+      return res.status(404).json({ message: "cant find quiz" });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-  res.news = news;
+  res.quiz = quiz;
   next();
 }
 module.exports = app;
