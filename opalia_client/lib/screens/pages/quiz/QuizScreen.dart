@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/pages/quiz/ListQuiz.dart';
 
+import '../menu/MenuScreen.dart';
+import '../menu/SettingsScreen.dart';
+
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
 
@@ -27,7 +30,11 @@ class _QuizScreenState extends State<QuizScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+               Get.to(
+                  MenuScreen(),
+                );
+              },
               icon: const Icon(
                 Icons.person,
                 color: Colors.red,

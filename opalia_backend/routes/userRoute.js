@@ -12,6 +12,8 @@ app.get("/", async (req, res) => {
 });
 app.post("/registration", async (req, res) => {
   const user = new User({
+    familyname: req.body.familyname,
+    username: req.body.username,
     email: req.body.email,
     password: req.body.password,
   });
@@ -36,11 +38,16 @@ app.post("/login", async (req, res) => {
     if (isMatch === false) {
       throw new Error("Password Invalid");
     }
-    let tokenData = { _id: user._id, email: user.email };
+    let tokenData = {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      familyname: user.familyname,
+    };
     const token = await USerService.generateAccessToken(
       tokenData,
       "secretkey",
-      "24h"
+      "9999 years"
     );
     res.status(200).json({ status: true, token: token });
   } catch (err) {}

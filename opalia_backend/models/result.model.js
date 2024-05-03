@@ -1,14 +1,14 @@
 const moogoose = require("mongoose");
 
 const resultSchema = moogoose.Schema({
-  username: { type: String, default: "user" },
+  userid: { type: moogoose.Schema.Types.ObjectId, ref: "User" },
   result: {
-    type: Array,
-    default: [],
+    type: Number,
+    default: 0,
   },
   attempts: { type: Number, default: 0 },
   points: { type: Number, default: 0 },
-  achived: { type: String, default: "" },
+
   createdAt: { type: Date, default: Date.now },
 });
 module.exports = moogoose.model("Result", resultSchema);

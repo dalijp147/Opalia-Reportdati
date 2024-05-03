@@ -11,21 +11,37 @@ app.get("/", async (req, res) => {
   }
 });
 app.post("/newReminder", async (req, res) => {
-  const reminder = new Reminder({
-    userId: req.body.userId,
-    remindertitre: req.body.remindertitre,
-    datedebutReminder: req.body.datedebutReminder,
-    datefinReminder: req.body.datefinReminder,
-    nombrederappelparjour: req.body.nombrederappelparjour,
-  });
   try {
+    const reminder = new Reminder({
+      userId: req.body.userId,
+      remindertitre: req.body.remindertitre,
+      datedebutReminder: req.body.datedebutReminder,
+      datefinReminder: req.body.datefinReminder,
+      nombrederappelparjour: req.body.nombrederappelparjour,
+      color: req.body.color,
+      time: req.body.time,
+      description: req.body.description,
+    });
+
     const newReminder = await reminder.save();
     res.status(200).json({ date: newReminder });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+app.get("/:userId", async (req, res) => {
+  const userId = req.params.userId;
 
+  try {
+    const allReminder = await Reminder.find({
+      userId,
+    });
+
+    res.status(200).json(allReminder);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 app.get("/getbyuserid", async (req, res) => {
   try {
     const { userId } = req.body;

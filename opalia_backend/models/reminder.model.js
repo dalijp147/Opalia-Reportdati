@@ -1,4 +1,5 @@
 const moogoose = require("mongoose");
+
 const reminderSchema = moogoose.Schema({
   remindertitre: {
     type: String,
@@ -15,6 +16,17 @@ const reminderSchema = moogoose.Schema({
   nombrederappelparjour: {
     type: Number,
     require: true,
+  },
+  description: {
+    type: String,
+    default: "",
+  },
+  color: {
+    type: Number,
+  },
+  time: {
+    type: String,
+    default: Date.now(),
   },
   userId: { type: moogoose.Schema.Types.ObjectId, ref: "User", required: true },
 });

@@ -10,6 +10,15 @@ app.get("/", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+app.get("/:categorienews", async (req, res) => {
+  try {
+    const categorienews = req.params.categorienews;
+    const allNews = await News.find({ categorienews });
+    res.status(200).json(allNews);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 app.post("/new", upload.single("newsImage"), async (req, res) => {
   try {
     if (!req.file) {
@@ -24,6 +33,7 @@ app.post("/new", upload.single("newsImage"), async (req, res) => {
       newsDetail: req.body.newsDetail,
       newsImage: imageUrl,
       newsPublication: req.body.newsPublication,
+      categorienews: req.body.categorienews,
     });
     const newNews = await news.save();
     res.status(200).json({ date: newNews });

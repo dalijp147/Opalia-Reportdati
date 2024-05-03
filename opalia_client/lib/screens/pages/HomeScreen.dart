@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:opalia_client/screens/pages/menu/MenuScreen.dart';
+import 'package:opalia_client/screens/pages/menu/SettingsScreen.dart';
 
 import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
@@ -17,19 +19,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String query = '';
-  List<Categorie> data = [];
-  List<Categorie> searchResults = [];
-  //  void onQueryChanged(String newQuery) {
-  //    setState(() {
-  //      searchResults = data.where((item) => item.contains(query)).toList();
-  //  });
-  // }
+  List<Categorie>? allcategorie = [];
+  Future<void> _fetchCategorie() async {
+    try {
+      final categories = await ApiService.getAllCategory();
+      setState(() {
+        allcategorie = categories;
+      });
+    } catch (e) {
+      print('Failed to fetch categorie: $e');
+    }
+  }
 
+  List<Categorie>? found = [];
   @override
   void initState() {
-    ApiService.getAllCategory();
+    _fetchCategorie();
+
     super.initState();
+  }
+
+  void _runfilter(String enterdKeyword) {
+    List<Categorie>? results = [];
+    if (enterdKeyword.isEmpty) {
+      _fetchCategorie();
+    } else {
+      results = allcategorie!
+          .where((user) => user.categorienom!
+              .toLowerCase()
+              .contains(enterdKeyword.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      allcategorie = results;
+    });
   }
 
   @override
@@ -48,7 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(
+                  MenuScreen(),
+                );
+              },
               icon: const Icon(
                 Icons.person,
                 color: Colors.red,
@@ -67,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                // onChanged: onQueryChanged,
+                onChanged: (value) => _runfilter(value),
                 decoration: InputDecoration(
                   constraints: BoxConstraints(maxWidth: 350),
                   labelText: 'Search',
@@ -105,28 +132,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else if (model.hasError) {
                     return Text('Error: ${model.error}');
                   } else {
-                    return GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3, // number of items in each row
-                        mainAxisSpacing: 8.0, // spacing between rows
-                        crossAxisSpacing: 8.0, // spacing between columns
-                      ),
-                      padding:
-                          const EdgeInsets.all(8.0), // padding around the grid
-                      itemCount: model.data!.length, // total number of items
-                      itemBuilder: (context, index) {
-                        final categorie = model.data![index];
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(ProductCategorieScreen(name: categorie.id!));
-                          },
-                          child: CategorieItem(
-                            model: categorie,
-                          ),
-                        );
-                      },
-                    );
+                    return allcategorie!.isNotEmpty
+                        ? GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3, // number of items in each row
+                              mainAxisSpacing: 8.0, // spacing between rows
+                              crossAxisSpacing: 8.0, // spacing between columns
+                            ),
+                            padding: const EdgeInsets.all(
+                                8.0), // padding around the grid
+                            itemCount:
+                                allcategorie!.length, // total number of items
+                            itemBuilder: (context, index) {
+                              final categorie = allcategorie![index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Get.to(ProductCategorieScreen(
+                                      name: categorie.id!));
+                                },
+                                child: CategorieItem(
+                                  model: categorie,
+                                ),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: const Text(
+                              'pas de categorie trouvé  raffréchire pour retourné',
+                              style: TextStyle(fontSize: 15, color: Colors.red),
+                            ),
+                          );
                   }
                 },
               ),

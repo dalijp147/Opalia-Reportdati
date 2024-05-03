@@ -3,15 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:opalia_client/screens/auth/signin.dart';
 import 'package:get/get.dart';
+import 'package:opalia_client/services/sharedprefutils.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  print(prefs);
+  await PreferenceUtils.init();
+
   runApp(MyApp(
-    token: prefs.getString('token'),
+    token: PreferenceUtils.getString('token'),
   ));
 }
 
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 1, 1)),
         useMaterial3: true,
       ),
       home: (token != null && JwtDecoder.isExpired(token) == false)

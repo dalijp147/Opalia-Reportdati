@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/mediacment.dart';
 import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/screens/pages/agenda/FormReminderScreen.dart';
 import 'package:opalia_client/services/apiService.dart';
+import 'package:opalia_client/services/sharedprefutils.dart';
 import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'package:iconsax/iconsax.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
-import '../../../widegts/test/formScrenn.dart';
+import '../../../models/reminder.dart';
+import '../MedicalRepo/MedicalReportForm.dart';
+import '../menu/MenuScreen.dart';
+import '../menu/SettingsScreen.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -32,12 +38,31 @@ class _AgendaScreenState extends State<AgendaScreen> {
     'Juillet'
   ];
   final ReminderBloc reminderBloc = ReminderBloc();
+  DateTime? _selectedDate;
+  List<Reminder>? remind = [];
+  late List<Appointment?> appointments;
 
   @override
   void initState() {
-    reminderBloc.add(ReminderInitialFetchEvent());
+    reminderBloc.add(ReminderInitialFetchEvent(PreferenceUtils.getuserid()));
+
+    appointments = [];
+    _fetchEvents();
+
     super.initState();
   }
+
+      Future<void> _fetchEvents() async {
+        try {
+          final events =
+              await ApiService.getAllReminder(PreferenceUtils.getuserid());
+          setState(() {
+            remind = events!;
+          });
+        } catch (e) {
+          print('Failed to fetch events: $e');
+        }
+      }
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +80,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () async {
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                await pref.clear();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninScreen()),
-                  (Route<dynamic> route) => false,
-                );
+              onPressed: () {
+                Get.to(MenuScreen());
               },
               icon: const Icon(
                 Icons.person,
@@ -108,23 +127,34 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2010, 10, 16),
-                  lastDay: DateTime.utc(2030, 3, 14),
-                  focusedDay: DateTime.now(),
+              Container(
+                height: 490,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SfCalendar(
+                    view: CalendarView.month,
+                    monthViewSettings: MonthViewSettings(
+                        appointmentDisplayMode:
+                            MonthAppointmentDisplayMode.appointment),
+                    dataSource: _CalendarDataSource(remind),
+                    firstDayOfWeek: 1,
+                    allowedViews: const [
+                      CalendarView.day,
+                      CalendarView.timelineWeek,
+                      CalendarView.month,
+                    ],
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Iconsax.calendar_1,
                       color: Colors.red,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     const Text(
@@ -138,17 +168,19 @@ class _AgendaScreenState extends State<AgendaScreen> {
                       width: 40,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: Colors.white,
-                              scrollable: true,
-                              content: HomePage(),
-                            );
-                          },
-                        );
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+
+                        String? token = prefs.getString('token');
+
+                        Map<String, dynamic> jsonDecoddd =
+                            JwtDecoder.decode(token!);
+                        var userId = jsonDecoddd['_id'];
+                        print(userId);
+                        await ApiService.getDossierUserId(userId)
+                            ? Get.to(FormReminderScreen())
+                            : Get.to(MedicalReport());
                       },
                       child: const Text(
                         'Reminder',
@@ -161,65 +193,73 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   ],
                 ),
               ),
-              BlocConsumer<ReminderBloc, ReminderState>(
-                bloc: reminderBloc,
-                listenWhen: (previous, current) =>
-                    current is ReminderActionState,
-                buildWhen: (previous, current) =>
-                    current is! ReminderActionState,
-                listener: (context, state) {},
-                builder: (context, state) {
-                  switch (state.runtimeType) {
-                    case ReminderFetchLoadingState:
-                      return Lottie.asset('assets/animation/heartrate.json',
-                          height: 210, width: 210);
+                BlocConsumer<ReminderBloc, ReminderState>(
+                  bloc: reminderBloc,
+                  listenWhen: (previous, current) =>
+                      current is ReminderActionState,
+                  buildWhen: (previous, current) =>
+                      current is! ReminderActionState,
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    switch (state.runtimeType) {
+                      case ReminderFetchLoadingState:
+                        return Lottie.asset('assets/animation/heartrate.json',
+                            height: 210, width: 210);
 
-                    case ReminderFetchSucess:
-                      final sucessState = state as ReminderFetchSucess;
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: sucessState.reminder.length,
-                          itemBuilder: (context, index) {
-                            final reminder = sucessState.reminder![index];
-                            return Dismissible(
-                              key: Key(reminder.toString()),
-                              onDismissed: (direction) async {
-                                // Remove the item from the data source.
-                                await ApiService.deleteReminder(
-                                    reminder.reminderId);
-                                // Then show a snackbar.
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(' dismissed')));
-                              },
-                              child: GestureDetector(
-                                onTap: () {
-                                  // Get.to(DetailProduct(
-                                  //   medi: medicament,
-                                  // ));
+                      case ReminderFetchSucess:
+                        final sucessState = state as ReminderFetchSucess;
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: sucessState.reminder.length,
+                            itemBuilder: (context, index) {
+                              final reminder = sucessState.reminder![index];
+                              return Dismissible(
+                                key: Key(reminder.toString()),
+                                onDismissed: (direction) async {
+                                  // Remove the item from the data source.
+                                  await ApiService.deleteReminder(
+                                      reminder.reminderId);
+                                  // Then show a snackbar.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(' dismissed')));
                                 },
-                                child: AgendaItem(
-                                  reminder: reminder,
+                                child: GestureDetector(
+                                  child: AgendaItem(
+                                    reminder: reminder,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    default:
-                      return Lottie.asset('assets/animation/heartrate.json',
-                          height: 210, width: 210);
-                  }
-                },
-              ),
+                              );
+                            },
+                          ),
+                        );
+                      default:
+                        return Lottie.asset('assets/animation/heartrate.json',
+                            height: 210, width: 210);
+                    }
+                  },
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _CalendarDataSource extends CalendarDataSource {
+  _CalendarDataSource(List<Reminder>? events) {
+    appointments = events!.map((event) {
+      return Appointment(
+        startTime: event.datedebutReminder!,
+        endTime: event.datefinReminder!,
+        subject: event.remindertitre!,
+        color: Color(event.color!),
+      );
+    }).toList();
   }
 }

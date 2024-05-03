@@ -20,5 +20,8 @@ const newsSchema = moogoose.Schema({
     type: Date,
     default: Date.now,
   },
+  categorienews: {
+    type: String,
+  },
 });
 module.exports = moogoose.model("News", newsSchema);

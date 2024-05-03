@@ -5,14 +5,15 @@ class AnswerCard extends StatelessWidget {
   final bool isSelected;
   final int? correctAnswerIndex;
   final int? selectedAnswerIndex;
-  final int currentIndex;
-  const AnswerCard(
-      {super.key,
-      required this.question,
-      required this.isSelected,
-      this.correctAnswerIndex,
-      required this.selectedAnswerIndex,
-      required this.currentIndex});
+  final int? currentIndex;
+  const AnswerCard({
+    super.key,
+    required this.question,
+    required this.isSelected,
+    required this.correctAnswerIndex,
+    required this.selectedAnswerIndex,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,79 @@ class AnswerCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
         vertical: 10.0,
       ),
+      child: selectedAnswerIndex != null
+          ? Container(
+              height: 70,
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isCorrectAnswer
+                      ? Colors.green
+                      : isWrongAnswer
+                          ? Colors.red
+                          : Colors.white24,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      question,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  isCorrectAnswer
+                      ? buildCorrectIcon()
+                      : isWrongAnswer
+                          ? buildWrongIcon()
+                          : const SizedBox.shrink()
+                ],
+              ),
+            )
+          : Container(
+              height: 70,
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.white24,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      question,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }
+
+Widget buildCorrectIcon() => const CircleAvatar(
+      radius: 15,
+      backgroundColor: Colors.green,
+      child: Icon(
+        Icons.check,
+        color: Colors.white,
+      ),
+    );
+
+Widget buildWrongIcon() => const CircleAvatar(
+      radius: 15,
+      backgroundColor: Colors.red,
+      child: Icon(
+        Icons.close,
+        color: Colors.white,
+      ),
+    );

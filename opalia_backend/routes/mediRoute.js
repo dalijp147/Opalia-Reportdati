@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express.Router();
 const Medicament = require("../models/Medi.model");
-const Categorie = require("../models/categories.model");
 const upload = require("../middleware/upload");
 
 app.get("/", async (req, res) => {

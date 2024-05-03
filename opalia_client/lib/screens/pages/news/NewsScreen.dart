@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/bloc/news/bloc/news_bloc.dart';
+import 'package:opalia_client/models/news.dart';
 import 'package:opalia_client/screens/pages/news/DetailScreenNews.dart';
 import 'package:opalia_client/widegts/News/NewsList.dart';
 
+import '../../../services/apiService.dart';
 import '../../../widegts/News/NewsItem.dart';
+import '../menu/MenuScreen.dart';
+import '../menu/SettingsScreen.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -23,9 +27,11 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   List calender = [
-    'Sante',
+    'sante',
     'bien etre',
   ];
+
+  String selcted = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +48,11 @@ class _NewsScreenState extends State<NewsScreen> {
           centerTitle: true,
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(
+                    MenuScreen(),
+                  );
+                },
                 icon: const Icon(
                   Icons.person,
                   color: Colors.red,
@@ -69,24 +79,44 @@ class _NewsScreenState extends State<NewsScreen> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 2, left: 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(width: 1, color: Colors.red),
-                            color: Colors.white),
-                        height: 30,
-                        width: 80,
-                        child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selcted = calender[index].toString();
+                          });
+                        },
+                        onDoubleTap: () {
+                          setState(() {
+                            selcted = '';
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.red,
+                              ),
+                              color: selcted == calender[index].toString()
+                                  ? Colors.red
+                                  : Colors.white),
+                          height: 30,
+                          width: 80,
+                          child: Center(
                             child: Text(
-                          calender[index],
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
+                              calender[index],
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   },
                 ),
               ),
-              NewsList(),
+              NewsList(
+                news: selcted,
+              ),
             ],
           ),
         ));

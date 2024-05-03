@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:opalia_client/models/news.dart';
 import 'package:intl/intl.dart';
 
+import '../../bloc/news/bloc/news_bloc.dart';
+
 class NewsItem extends StatefulWidget {
   final News model;
 
@@ -13,6 +15,7 @@ class NewsItem extends StatefulWidget {
 
 class _NewsItemState extends State<NewsItem> {
   var formatter = new DateFormat('yyyy-MM-dd');
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,35 +31,37 @@ class _NewsItemState extends State<NewsItem> {
             color: Colors.grey,
           ),
         ),
-        child: Row(children: [
-          Image.network(
-            widget.model.newsImage!,
-            height: 400,
-            width: 150,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 45,
-              left: 10,
+        child: Row(
+          children: [
+            Image.network(
+              widget.model.newsImage!,
+              height: 400,
+              width: 150,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.model.newsTitle!,
-                ),
-                Text(
-                  widget.model.newsTitle!,
-                  softWrap: true,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                ),
-                Text(
-                  formatter.format(widget.model.newsPublication!),
-                )
-              ],
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 45,
+                left: 10,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.model.newsTitle!,
+                  ),
+                  Text(
+                    widget.model.newsTitle!,
+                    softWrap: true,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  ),
+                  Text(
+                    'poster le : ${formatter.format(widget.model.newsPublication!)}',
+                  )
+                ],
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

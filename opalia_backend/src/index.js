@@ -8,6 +8,7 @@ const ReminderRoute = require("../routes/ReminderRoute.js");
 const QuizRoute = require("../routes/quizRoute.js");
 const ResultRoute = require("../routes/resultRoute.js");
 const UserRoute = require("../routes/userRoute.js");
+const DossierRoute = require("../routes/DossierMediRoute.js");
 const dotenv = require("dotenv");
 const body_parser = require("body-parser");
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(body_parser.json());
 
 app.use("/uploads", express.static("uploads"));
 //routes
+app.use("/dossier", DossierRoute);
 app.use("/catgorie", categorieRoute);
 app.use("/medicament", mediRoute);
 app.use("/news", newsRoute);

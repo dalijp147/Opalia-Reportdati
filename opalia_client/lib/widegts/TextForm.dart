@@ -20,6 +20,7 @@ class TextForm extends StatelessWidget {
           // ignore: dead_code
           errorText: isNotValide ? "Enter Proper Info" : null,
           labelText: labelText,
+
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(

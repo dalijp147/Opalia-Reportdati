@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Question {
   late String? question;
-  late String? answer;
+  late int? answer;
   late List<String>? options;
 
   Question({
@@ -14,7 +14,7 @@ class Question {
   factory Question.fromMap(Map<String, dynamic> json) {
     return Question(
       question: json['questions'] ?? 'hello',
-      answer: json['answers'] ?? 'hello',
+      answer: json['answers'],
       options: List<String>.from(json['options'] ?? []),
     );
   }

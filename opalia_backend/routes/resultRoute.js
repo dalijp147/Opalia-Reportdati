@@ -11,9 +11,9 @@ app.get("/", async (req, res) => {
 });
 app.post("/", async (req, res) => {
   try {
-    const { username, result, attempts, achived, points } = req.body;
-    if (!result && !username) throw new Error("data  not provided");
-    Result.create({ username, result, attempts, achived, points });
+    const { userid, result, attempts, points } = req.body;
+    if (!result && !userid) throw new Error("data  not provided");
+    Result.create({ userid, result, attempts, points });
     res.json({ msg: "sucess" });
   } catch (error) {
     res.json({ error });

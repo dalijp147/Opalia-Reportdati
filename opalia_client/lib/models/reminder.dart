@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:ui';
 
 List<Reminder> reminderFromJson(dynamic str) =>
     List<Reminder>.from((str).map((x) => Reminder.fromMap(x)));
@@ -11,6 +12,9 @@ class Reminder {
   late DateTime? datedebutReminder;
   late DateTime? datefinReminder;
   late int? nombrederappelparjour;
+  late int? color;
+  late String? time;
+  late String? description;
   Reminder({
     this.reminderId,
     this.userID,
@@ -18,6 +22,9 @@ class Reminder {
     this.datedebutReminder,
     this.datefinReminder,
     this.nombrederappelparjour,
+    this.color,
+    this.time,
+    this.description,
   });
 
   factory Reminder.fromMap(Map<String, dynamic> json) {
@@ -28,6 +35,9 @@ class Reminder {
       datedebutReminder: DateTime.parse(json['datedebutReminder'].toString()),
       datefinReminder: DateTime.parse(json['datefinReminder'].toString()),
       nombrederappelparjour: json['nombrederappelparjour'] ?? 0,
+      color: json['color'] ?? 0,
+      time: json['time'] ?? "",
+      description: json['description'] ?? "",
     );
   }
   Map<String, dynamic> toMap() {
@@ -37,6 +47,9 @@ class Reminder {
       'datedebutReminder': datedebutReminder,
       'datefinReminder': datefinReminder,
       'nombrederappelparjour': nombrederappelparjour,
+      'color': color,
+      'time': time,
+      'description': description,
     };
   }
 

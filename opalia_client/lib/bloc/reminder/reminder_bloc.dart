@@ -11,7 +11,6 @@ part 'reminder_event.dart';
 part 'reminder_state.dart';
 
 class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
-  late Reminder dataR;
   ReminderBloc() : super(ReminderInitial()) {
     on<ReminderInitialFetchEvent>(reminderInitialFetchEvent);
     on<ReminderAddEvent>(reminderAddEvent);
@@ -21,29 +20,23 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
   FutureOr<void> reminderInitialFetchEvent(
       ReminderInitialFetchEvent event, Emitter<ReminderState> emit) async {
     emit(ReminderFetchLoadingState());
-    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
-    List<Reminder> reminder = [];
-    var url = Uri.http(Config.apiUrl, Config.reminderAPI);
-    var response = await client.get(url, headers: requestHandler);
-    if (response.statusCode == 200) {
-      List data = jsonDecode(response.body);
-
-      for (int i = 0; i < data.length; i++) {
-        Reminder remind = Reminder.fromMap(data[i] as Map<String, dynamic>);
-        reminder.add(remind);
-      }
-      print(data);
-      emit(ReminderFetchSucess(reminder: reminder));
-    } else {
-      emit(ReminderFetchErrorState());
-      throw Exception('Failed to load data quiz');
-    }
+    List<Reminder> reminder = await ApiService.fetchReminder(event.userID);
+    print('here');
+    print(event.userID);
+    emit(ReminderFetchSucess(reminder: reminder));
   }
 
   FutureOr<void> reminderAddEvent(
       ReminderAddEvent event, Emitter<ReminderState> emit) async {
     bool success = await ApiService.postReminder(
-        event.remindertitre, event.nombrederappelparjour, event.userID);
+        event.remindertitre,
+        event.nombrederappelparjour,
+        event.userID,
+        event.debutReminder,
+        event.finReminder,
+        event.color,
+        event.time,
+        event.description);
     if (success) {
       emit(
         ReminderAddSuccessState(),

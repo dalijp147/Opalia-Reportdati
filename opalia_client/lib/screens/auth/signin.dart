@@ -21,18 +21,39 @@ class _SigninScreenState extends State<SigninScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
+  late FocusNode passwordFocus;
+  bool _obscured = true;
+  late FocusNode emailFocus;
   @override
   void initState() {
-    // TODO: implement initState
+    passwordFocus = FocusNode();
+    emailFocus = FocusNode();
 
     super.initState();
     initSharedPref();
+  }
+
+  @override
+  void dispose() {
+    emailFocus.dispose();
+    passwordFocus.dispose();
+    super.dispose();
+  }
+
+  void _toggleObscured() {
+    setState(() {
+      _obscured = !_obscured;
+      if (passwordFocus.hasPrimaryFocus)
+        return; // If focus is on text field, dont unfocus
+      passwordFocus.canRequestFocus = false; // Prevents focus if tap on eye
+    });
   }
 
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
   }
 
+  bool isNotValide = false;
   void loginUser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var rgBody = {
@@ -55,6 +76,7 @@ class _SigninScreenState extends State<SigninScreen> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,75 +94,140 @@ class _SigninScreenState extends State<SigninScreen> {
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Form(
+              key: _formKey,
               child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/opalia-preview.png',
-                height: 200,
-                width: 200,
-              ),
-              Lottie.asset('assets/animation/opa.json',
-                  height: 210, width: 210),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Email',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              TextForm(labelText: 'Email', textcontroller: emailController),
-              SizedBox(
-                height: 20,
-              ),
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Password',
-                    style: TextStyle(color: Colors.red),
-                  )),
-              TextForm(
-                labelText: 'password',
-                textcontroller: passwordController,
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  loginUser();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: Text(
-                  'suivant',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'mot de passe oublier ? ',
-                style: TextStyle(color: Colors.grey),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.to(SignupScreen());
-                },
-                child: Text(
-                  'Créer un nouveau compte ',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          )),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/opalia-preview.png',
+                    height: 200,
+                    width: 200,
+                  ),
+                  Lottie.asset('assets/animation/opa.json',
+                      height: 210, width: 210),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Email',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextFormField(
+                    focusNode: emailFocus,
+                    controller: emailController,
+                    keyboardType: TextInputType.text,
+                    autofocus: false,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire email ";
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      // ignore: dead_code
+
+                      hintText: "email",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Password',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextFormField(
+                    focusNode: passwordFocus,
+                    obscureText: _obscured,
+                    controller: passwordController,
+                    keyboardType: TextInputType.visiblePassword,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire password ";
+                      } else {
+                        return null;
+                      }
+                    },
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: "password",
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                        child: GestureDetector(
+                          onTap: _toggleObscured,
+                          child: Icon(
+                            _obscured
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        loginUser();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      'login',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'mot de passe oublier ? ',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(SignupScreen());
+                    },
+                    child: Text(
+                      'Créer un nouveau compte ',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              )),
         ),
       )),
     );
