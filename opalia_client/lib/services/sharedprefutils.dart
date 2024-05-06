@@ -29,7 +29,7 @@ class PreferenceUtils {
     String? token = _prefsInstance!.getString('token');
     Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
     var userId = jsonDecoddd['username'];
-    print(userId);
+
     return userId;
   }
 
@@ -37,7 +37,7 @@ class PreferenceUtils {
     String? token = _prefsInstance!.getString('token');
     Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
     var userId = jsonDecoddd['familyname'];
-    print(userId);
+
     return userId;
   }
 

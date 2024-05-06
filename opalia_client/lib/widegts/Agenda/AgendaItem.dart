@@ -13,7 +13,7 @@ class AgendaItem extends StatefulWidget {
 }
 
 class _AgendaItemState extends State<AgendaItem> {
-  var dateFormat = new DateFormat('dd-MM-yyyy hh:mm');
+    var dateFormat = new DateFormat('dd-MM-yyyy hh:mm');
 
   @override
   Widget build(BuildContext context) {

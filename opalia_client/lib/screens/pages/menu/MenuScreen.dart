@@ -62,7 +62,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   Text(
-                    "Bouderbala",
+                    PreferenceUtils.getuserFamilyname(),
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
@@ -278,19 +278,27 @@ class _MenuScreenState extends State<MenuScreen> {
           SizedBox(
             height: 50,
           ),
-          Center(
+          Expanded(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
               child: ElevatedButton(
-                  onPressed: () async {
-                    SharedPreferences pref =
-                        await SharedPreferences.getInstance();
-                    await pref.clear();
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => SigninScreen()),
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  child: Text('deconecter')))
+                onPressed: () async {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  await pref.clear();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SigninScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text('deconecter'),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          )
         ],
       ),
     );

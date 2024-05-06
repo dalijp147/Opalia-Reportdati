@@ -38,47 +38,61 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          const SizedBox(width: 1000),
-          const Text(
-            'Your Score: ',
-            style: TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.w500,
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              stops: [1, 0.1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red.shade50, Colors.white],
             ),
           ),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                height: 250,
-                width: 250,
-                child: CircularProgressIndicator(
-                  strokeWidth: 10,
-                  value: widget.score / 9,
-                  color: Colors.green,
-                  backgroundColor: Colors.white,
-                ),
+        ),
+        title: Text('Score'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              'Your Score: ',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.w500,
               ),
-              Column(
-                children: [
-                  Text(
-                    widget.score.toString(),
-                    style: const TextStyle(fontSize: 80),
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 10,
+                    value: widget.score / 9,
+                    color: Colors.green,
+                    backgroundColor: Colors.white,
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '${(widget.score / ques.length * 100).round()}%',
-                    style: const TextStyle(fontSize: 25),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      widget.score.toString(),
+                      style: const TextStyle(fontSize: 80),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${(widget.score / ques.length * 100).round()}%',
+                      style: const TextStyle(fontSize: 25),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

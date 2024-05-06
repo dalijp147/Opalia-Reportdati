@@ -6,7 +6,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/mediacment.dart';
 import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/screens/pages/agenda/Detailagenda.dart';
 import 'package:opalia_client/screens/pages/agenda/FormReminderScreen.dart';
+import 'package:opalia_client/screens/pages/chatbot/GemniScreen.dart';
 import 'package:opalia_client/services/apiService.dart';
 import 'package:opalia_client/services/sharedprefutils.dart';
 import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
@@ -52,17 +54,17 @@ class _AgendaScreenState extends State<AgendaScreen> {
     super.initState();
   }
 
-      Future<void> _fetchEvents() async {
-        try {
-          final events =
-              await ApiService.getAllReminder(PreferenceUtils.getuserid());
-          setState(() {
-            remind = events!;
-          });
-        } catch (e) {
-          print('Failed to fetch events: $e');
-        }
-      }
+  Future<void> _fetchEvents() async {
+    try {
+      final events =
+          await ApiService.getAllReminder(PreferenceUtils.getuserid());
+      setState(() {
+        remind = events!;
+      });
+    } catch (e) {
+      print('Failed to fetch events: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,31 +102,28 @@ class _AgendaScreenState extends State<AgendaScreen> {
               const SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                height: 30,
-                width: double.infinity,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: calender.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 2, left: 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(width: 1, color: Colors.red),
-                            color: Colors.white),
-                        height: 30,
-                        width: 80,
-                        child: Center(
-                            child: Text(
-                          calender[index],
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                      ),
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Iconsax.calendar_1,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      'Calendrier',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 25),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                  ],
                 ),
               ),
               Container(
@@ -151,14 +150,14 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 child: Row(
                   children: [
                     const Icon(
-                      Iconsax.calendar_1,
+                      Iconsax.add,
                       color: Colors.red,
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     const Text(
-                      'All Reminders',
+                      'Tous les Rappels',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -183,7 +182,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                             : Get.to(MedicalReport());
                       },
                       child: const Text(
-                        'Reminder',
+                        'Rappel',
                         style: TextStyle(color: Colors.red),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -193,60 +192,74 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   ],
                 ),
               ),
-                BlocConsumer<ReminderBloc, ReminderState>(
-                  bloc: reminderBloc,
-                  listenWhen: (previous, current) =>
-                      current is ReminderActionState,
-                  buildWhen: (previous, current) =>
-                      current is! ReminderActionState,
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    switch (state.runtimeType) {
-                      case ReminderFetchLoadingState:
-                        return Lottie.asset('assets/animation/heartrate.json',
-                            height: 210, width: 210);
+              BlocConsumer<ReminderBloc, ReminderState>(
+                bloc: reminderBloc,
+                listenWhen: (previous, current) =>
+                    current is ReminderActionState,
+                buildWhen: (previous, current) =>
+                    current is! ReminderActionState,
+                listener: (context, state) {},
+                builder: (context, state) {
+                  switch (state.runtimeType) {
+                    case ReminderFetchLoadingState:
+                      return Lottie.asset('assets/animation/heartrate.json',
+                          height: 210, width: 210);
 
-                      case ReminderFetchSucess:
-                        final sucessState = state as ReminderFetchSucess;
-                        return Container(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: sucessState.reminder.length,
-                            itemBuilder: (context, index) {
-                              final reminder = sucessState.reminder![index];
-                              return Dismissible(
-                                key: Key(reminder.toString()),
-                                onDismissed: (direction) async {
-                                  // Remove the item from the data source.
-                                  await ApiService.deleteReminder(
-                                      reminder.reminderId);
-                                  // Then show a snackbar.
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(' dismissed')));
-                                },
-                                child: GestureDetector(
-                                  child: AgendaItem(
-                                    reminder: reminder,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      default:
-                        return Lottie.asset('assets/animation/heartrate.json',
-                            height: 210, width: 210);
-                    }
-                  },
-                ),
+                    case ReminderFetchSucess:
+                      final sucessState = state as ReminderFetchSucess;
+                      return Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: sucessState.reminder.length,
+                          itemBuilder: (context, index) {
+                            final reminder = sucessState.reminder![index];
+
+                            return reminder == null
+                                ? Center(
+                                    child:
+                                        Text('votre liste de rappel est vide'))
+                                : Dismissible(
+                                    key: Key(reminder.toString()),
+                                    onDismissed: (direction) async {
+                                      // Remove the item from the data source.
+                                      await ApiService.deleteReminder(
+                                          reminder.reminderId);
+                                      // Then show a snackbar.
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(' dismissed')));
+                                    },
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.to(DetailAgenda(
+                                          remind: reminder,
+                                        ));
+                                      },
+                                      child: AgendaItem(
+                                        reminder: reminder,
+                                      ),
+                                    ),
+                                  );
+                          },
+                        ),
+                      );
+                    default:
+                      return Lottie.asset('assets/animation/heartrate.json',
+                          height: 210, width: 210);
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        Get.to(ChatBot());
+      }),
     );
   }
 }
