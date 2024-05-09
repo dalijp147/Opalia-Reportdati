@@ -41,9 +41,19 @@ class _ChatBotState extends State<ChatBot> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              stops: [1, 0.1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red.shade50, Colors.white],
+            ),
+          ),
+        ),
         title: Text(
           'chatter avec votre assistant personel',
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(

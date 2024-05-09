@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
 import '../../../models/reminder.dart';
+import '../../../services/notif_service.dart';
 import '../MedicalRepo/MedicalReportForm.dart';
 import '../menu/MenuScreen.dart';
 import '../menu/SettingsScreen.dart';
@@ -121,7 +123,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           fontSize: 25),
                     ),
                     const SizedBox(
-                      width: 40,
+                      width: 40,    
                     ),
                   ],
                 ),
@@ -257,9 +259,14 @@ class _AgendaScreenState extends State<AgendaScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        Get.to(ChatBot());
-      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(ChatBot());
+        },
+        child: Icon(
+          Icons.chat,
+        ),
+      ),
     );
   }
 }

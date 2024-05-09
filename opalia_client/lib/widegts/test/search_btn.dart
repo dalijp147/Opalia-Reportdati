@@ -6,6 +6,7 @@ import 'package:opalia_client/bloc/reminder/reminder_bloc.dart';
 import 'package:opalia_client/services/apiService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/notif_service.dart';
 import '../../services/sharedprefutils.dart';
 import 'constant.dart';
 
@@ -64,7 +65,11 @@ class _SearchButtonBuilderState extends State<SearchButtonBuilder> {
               widget.desc.text,
             ),
           );
-
+          // await NotifiactionService.createScheduleNotification(
+          //   title: widget.name.text,
+          //   body: widget.desc.text,
+          //   // date: ,
+          // );
           Get.back();
           // await ApiService.postReminder();
         },

@@ -60,94 +60,107 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
+            SizedBox(
+              width: 20,
+            )
+          ],
+        ),
+        body: Column(
+          children: [
             TextField(
               onChanged: (value) => _runfilter(value),
               decoration: InputDecoration(
                 constraints: BoxConstraints(maxWidth: 300),
-                labelText: 'Search',
+                labelText: 'Recherche',
                 border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.red, width: 1)),
                 prefixIcon: Icon(Icons.search),
               ),
             ),
             SizedBox(
-              width: 20,
-            )
-          ],
-        ),
-        body: FutureBuilder<List<Medicament>>(
-          future: ApiService.getMedicamentBycategorie(widget.name),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Medicament>> model) {
-            if (model.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (model.hasError) {
-              return Text('Error: ${model.error}');
-            } else {
-              return allMedicament!.isNotEmpty
-                  ? Container(
-                      height: double.infinity,
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // number of items in each row
-                          mainAxisSpacing: 8.0, // spacing between rows
-                          crossAxisSpacing: 8.0,
-                          // spacing between columns
-                        ),
-                        padding: const EdgeInsets.all(
-                            8.0), // padding around the grid
-                        itemCount:
-                            allMedicament!.length, // total number of items
-                        itemBuilder: (context, index) {
-                          final categorie = allMedicament![index];
-                          return GestureDetector(
-                            onTap: () {
-                              Get.to(DetailProduct(medi: categorie));
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border:
-                                      Border.all(width: 2, color: Colors.red),
-                                  color: Colors.white), // color of grid items
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      // categorie.categorieImage!,
-                                      // height: 50,
-                                      // width: 50,
-                                      (categorie.mediImage == null ||
-                                              categorie.mediImage == "")
-                                          ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                                          : categorie.mediImage!,
-                                      height: 150,
-                                      width: 100,
-                                      fit: BoxFit.scaleDown,
-                                    ),
-                                    Text(
-                                      categorie.mediname!,
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.red),
-                                    ),
-                                  ],
-                                ),
+              height: 5,
+            ),
+            Expanded(
+              child: FutureBuilder<List<Medicament>>(
+                future: ApiService.getMedicamentBycategorie(widget.name),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Medicament>> model) {
+                  if (model.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (model.hasError) {
+                    return Text('Error: ${model.error}');
+                  } else {
+                    return allMedicament!.isNotEmpty
+                        ? Container(
+                            height: double.infinity,
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    2, // number of items in each row
+                                mainAxisSpacing: 8.0, // spacing between rows
+                                crossAxisSpacing: 8.0,
+                                // spacing between columns
                               ),
+                              padding: const EdgeInsets.all(
+                                  8.0), // padding around the grid
+                              itemCount: allMedicament!
+                                  .length, // total number of items
+                              itemBuilder: (context, index) {
+                                final categorie = allMedicament![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Get.to(DetailProduct(medi: categorie));
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                            width: 2, color: Colors.red),
+                                        color: Colors
+                                            .white), // color of grid items
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.network(
+                                            // categorie.categorieImage!,
+                                            // height: 50,
+                                            // width: 50,
+                                            (categorie.mediImage == null ||
+                                                    categorie.mediImage == "")
+                                                ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
+                                                : categorie.mediImage!,
+                                            height: 150,
+                                            width: 100,
+                                            fit: BoxFit.scaleDown,
+                                          ),
+                                          Text(
+                                            categorie.mediname!,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.red),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Center(
+                            child: const Text(
+                              'pas de resultats',
+                              style: TextStyle(fontSize: 15, color: Colors.red),
                             ),
                           );
-                        },
-                      ),
-                    )
-                  : Center(
-                      child: const Text(
-                        'pas de categorie trouvé  raffréchire pour retourné',
-                        style: TextStyle(fontSize: 15, color: Colors.red),
-                      ),
-                    );
-            }
-          },
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -12,6 +12,18 @@ class DetailProduct extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                stops: [1, 0.1],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.red.shade50, Colors.white],
+              ),
+            ),
+          ),
+        ),
         body: Stack(
           children: [
             Container(

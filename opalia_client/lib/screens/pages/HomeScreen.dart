@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/screens/pages/menu/MenuScreen.dart';
 import 'package:opalia_client/screens/pages/menu/SettingsScreen.dart';
@@ -9,6 +10,7 @@ import 'package:opalia_client/widegts/BottomNav.dart';
 
 import '../../models/categories.dart';
 import '../../widegts/Categorie/CategorieItem.dart';
+import 'chatbot/GemniScreen.dart';
 import 'medicament/ProductCategorie.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -97,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onChanged: (value) => _runfilter(value),
                 decoration: InputDecoration(
                   constraints: BoxConstraints(maxWidth: 350),
-                  labelText: 'Search',
+                  labelText: 'Recherche',
                   border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red, width: 1)),
                   prefixIcon: Icon(Icons.search),
@@ -169,6 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(ChatBot());
+        },
+        child: Icon(
+          Icons.chat,
+        ),
       ),
     );
   }

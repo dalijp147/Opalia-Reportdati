@@ -110,12 +110,12 @@ class _DetailAgendaState extends State<DetailAgenda> {
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                    widget.remind.time!,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
+                  // Text(
+                  //   widget.remind.time!,
+                  //   style: TextStyle(
+                  //     fontSize: 20,
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(

@@ -26,7 +26,7 @@ const reminderSchema = moogoose.Schema({
   },
   time: {
     type: String,
-    default: Date.now(),
+    default: Date.now,
   },
   userId: { type: moogoose.Schema.Types.ObjectId, ref: "User", required: true },
 });

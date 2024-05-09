@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:opalia_client/Utils.dart';
+import '../../../bloc/reminder/reminder_bloc.dart';
+import '../../../services/notif_service.dart';
+import '../../../services/sharedprefutils.dart';
 import '../../../widegts/test/constant.dart';
 import '../../../widegts/test/search_btn.dart';
 import '../../../widegts/test/textformfield.dart';
@@ -61,13 +66,13 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
     super.dispose();
   }
 
-  TimeOfDay _timeOfDay = TimeOfDay(hour: 8, minute: 30);
+  TimeOfDay _timeOfDay = TimeOfDay.now();
 
   Future<void> _showTimePicker() async {
     TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
+      initialEntryMode: TimePickerEntryMode.dial,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -75,17 +80,70 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
         );
       },
     );
-    if (timeOfDay != null) {
-      setState(() {
-        var replacingTime = timeOfDay!
-            .replacing(hour: timeOfDay!.hour, minute: timeOfDay!.minute);
 
-        String formattedTime = replacingTime.hour.toString() +
-            ":" +
-            replacingTime.minute.toString();
-        timeController.text = formattedTime;
-        print(formattedTime);
+    // setState(
+    //   () {
+    //     final DateTime deadlineDateTime = DateTime(
+    //       timeOfDay!.hour,
+    //       timeOfDay.minute,
+    //     );
+    //     _timeOfDay = timeOfDay;
+    //     timeController.text =
+    //         DateFormat('hh:mm').format(deadlineDateTime).toString();
+
+    //     print(timeController.text);
+    //   },
+    // );
+    // if (timeOfDay != null) {
+    //   setState(() {
+    //     final DateTime deadlineDateTime = DateTime(
+    //       timeOfDay.hour,
+    //       timeOfDay.minute,
+    //     );
+    //     DateTime date = DateTime.now();
+
+    //     timeController.text = Utils.toTime(date);
+
+    //     print(timeController.text);
+    //   });
+    // }
+
+    setState(() {
+      var replacingTime = timeOfDay!
+          .replacing(hour: timeOfDay!.hour, minute: timeOfDay!.minute);
+
+      String formattedTime =
+          replacingTime.hour.toString() + ":" + replacingTime.minute.toString();
+      timeController.text = formattedTime;
+      print(formattedTime);
+    });
+  }
+
+  Future<void> _selectedDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (_picked != null) {
+      setState(() {
+        dateController.text = DateFormat('yyyy-MM-dd').format(_picked);
       });
+    }
+  }
+
+  Future<void> _selectedDatefin() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (_picked != null) {
+      setState(
+        () {
+          dateFinController.text = DateFormat('yyyy-MM-dd').format(_picked);
+        },
+      );
     }
   }
 
@@ -94,6 +152,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   bool _validate = false;
   final _formKey = GlobalKey<FormState>();
   late final FocusNode focusNode;
+  final ReminderBloc reminderBloc = ReminderBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,10 +172,38 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
-              InputField(
-                focusNode: nameFocus,
-                textController: nameController,
-                label: "ecrire rappel",
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez saisire un titre du medicament ";
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: nameController,
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                      ),
+                      borderRadius: kBorderRadius,
+                    ),
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    hintText: "ecrire un titre",
+                    fillColor: Colors.transparent,
+                  ),
+                ),
               ),
               SizedBox(
                 height: 5,
@@ -128,10 +215,37 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
-              InputField(
-                focusNode: descriptionFocus,
-                textController: descriptionController,
-                label: "ecrire votre description",
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez saisire une description";
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: descriptionController,
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    hintText: "ecrire description",
+                    fillColor: Colors.transparent,
+                  ),
+                ),
               ),
               SizedBox(
                 height: 5,
@@ -143,10 +257,38 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
-              InputField(
-                focusNode: jobFocus,
-                textController: jobController,
-                label: "ecrire nombre de rappel",
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez saisire le nombre de rappel";
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: jobController,
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    hintText: "ecrire nombre de rappel",
+                    fillColor: Colors.transparent,
+                  ),
+                ),
               ),
               SizedBox(
                 height: 5,
@@ -161,18 +303,23 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez une date de debut";
+                    } else {
+                      return null;
+                    }
+                  },
                   focusNode: dateFocus,
                   controller: dateController,
-                  onFieldSubmitted: (value) {
-                    FocusScope.of(context).requestFocus(focusNode);
-                  },
                   decoration: InputDecoration(
                     errorText: _validate ? "erreur" : null,
                     enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                      ),
+                      borderRadius: kBorderRadius,
+                    ),
                     focusedBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
                           color: Colors.red,
@@ -198,7 +345,14 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez selectionner une date de fin";
+                    } else {
+                      return null;
+                    }
+                  },
                   focusNode: dateFinFocus,
                   controller: dateFinController,
                   decoration: InputDecoration(
@@ -239,7 +393,14 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez selectionner une heure";
+                    } else {
+                      return null;
+                    }
+                  },
                   focusNode: timeFocus,
                   controller: timeController,
                   decoration: InputDecoration(
@@ -259,8 +420,10 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     filled: true,
                     fillColor: Colors.transparent,
                     hintText: "choisire une heure",
-                    prefixIcon: const Icon(Icons.watch_later_outlined,
-                        color: Colors.red),
+                    prefixIcon: const Icon(
+                      Icons.watch_later_outlined,
+                      color: Colors.red,
+                    ),
                   ),
                   readOnly: true,
                   onTap: _showTimePicker,
@@ -281,50 +444,37 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     SizedBox(
                       height: 5,
                     ),
-                    // Row(
-                    //   children: [
-                    //     Wrap(
-                    //       children: List<Widget>.generate(3, (int index) {
-                    //         return Padding(
-                    //             padding: const EdgeInsets.only(right: 8.0),
-                    //             child: CircleAvatar(
-                    //               radius: 14,
-                    //               backgroundColor: colors,
-                    //             ));
-                    //       }),
-                    //     )
-                    //   ],
-                    // ),
                     Container(
                       height: 50,
                       child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: colors.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selceted = colors[index];
-                                });
-                                print(selceted);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: CircleAvatar(
-                                  radius: 14,
-                                  backgroundColor: Color(colors[index]),
-                                  child: selceted == colors[index]
-                                      ? Icon(
-                                          Icons.check,
-                                          color: Colors.white,
-                                          size: 16,
-                                        )
-                                      : Container(),
-                                ),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: colors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selceted = colors[index];
+                              });
+                              print(selceted);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: CircleAvatar(
+                                radius: 14,
+                                backgroundColor: Color(colors[index]),
+                                child: selceted == colors[index]
+                                    ? Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 16,
+                                      )
+                                    : Container(),
                               ),
-                            );
-                          }),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -332,48 +482,51 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               SizedBox(
                 height: 5,
               ),
-              SearchButtonBuilder(
-                desc: descriptionController,
-                datedebut: dateController,
-                datefin: dateFinController,
-                focusNode: searchBtnFocus,
-                name: nameController,
-                job: jobController,
-                color: selceted.toString(),
-                time: timeController,
+              Padding(
+                padding: EdgeInsets.all(5.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    onPrimary: Colors.red,
+                    primary: Colors.red,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: kBorderRadius,
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      print(PreferenceUtils.getuserid());
+                      reminderBloc.add(
+                        ReminderAddEvent(
+                          nameController.text,
+                          jobController.text,
+                          PreferenceUtils.getuserid(),
+                          dateController.text,
+                          dateFinController.text,
+                          selceted.toString(),
+                          timeController.text,
+                          descriptionController.text,
+                        ),
+                      );
+                      DateTime tempDate =
+                          new DateFormat("hh:mm").parse(timeController.text);
+                      await NotifiactionService.createScheduleNotification(
+                          title: nameController.text,
+                          body: descriptionController.text,
+                          date: tempDate);
+                      Get.back();
+                    }
+                  },
+                  child: Text(
+                    "Ajoute reminder",
+                    style: TextStyle(color: Colors.white, fontSize: kfontSize),
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _selectedDate() async {
-    DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (_picked != null) {
-      setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(_picked);
-      });
-    }
-  }
-
-  Future<void> _selectedDatefin() async {
-    DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (_picked != null) {
-      setState(
-        () {
-          dateFinController.text = DateFormat('yyyy-MM-dd').format(_picked);
-        },
-      );
-    }
   }
 }

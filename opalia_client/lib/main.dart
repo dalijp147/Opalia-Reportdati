@@ -6,9 +6,11 @@ import 'package:get/get.dart';
 import 'package:opalia_client/services/sharedprefutils.dart';
 import 'package:opalia_client/widegts/BottomNav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import './services/notif_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotifiactionService.initializeNotification();
   await PreferenceUtils.init();
 
   runApp(MyApp(
