@@ -49,20 +49,13 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
           ),
         ),
-        title: Text('Score'),
+        title: Text('Ton Score'),
         centerTitle: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text(
-              'Your Score: ',
-              style: TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
             Stack(
               alignment: Alignment.center,
               children: [
@@ -76,15 +69,31 @@ class _ResultScreenState extends State<ResultScreen> {
                     backgroundColor: Colors.white,
                   ),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      widget.score.toString(),
-                      style: const TextStyle(fontSize: 80),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
+                widget.score == 3
+                    ? Column(
+                        children: [
+                          Text(
+                            widget.score.toString(),
+                            style: const TextStyle(fontSize: 80),
+                          ),
+                          Text(
+                            'Félicitation',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Text(
+                            widget.score.toString(),
+                            style: const TextStyle(fontSize: 80),
+                          ),
+                          Text(
+                            'Bien',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      )
               ],
             ),
           ],

@@ -60,9 +60,13 @@ app.delete("/delete/:id", getReminder, async (req, res) => {
   }
 });
 app.patch("/update/:id", getReminder, async (req, res) => {
+  if (req.body.remindertitre != null) {
+    res.reminder.remindertitre = req.body.remindertitre;
+  }
+
   try {
-    const newreminder = await Reminder.updateOne();
-    res.status(200).json({ newreminder });
+    const updateReminder = await res.reminder.save();
+    res.json(updateReminder);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:opalia_client/screens/pages/agenda/updateScreen.dart';
 
 import '../../../models/reminder.dart';
 
@@ -142,7 +144,9 @@ class _DetailAgendaState extends State<DetailAgenda> {
                 child: Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(UpdateScreen(remind: widget.remind));
+                    },
                     child: Text('Modifier Reminder'),
                   ),
                 ),

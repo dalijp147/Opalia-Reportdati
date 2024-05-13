@@ -28,7 +28,7 @@ class AnswerCard extends StatelessWidget {
               height: 70,
               padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white10,
+                color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isCorrectAnswer
@@ -64,7 +64,7 @@ class AnswerCard extends StatelessWidget {
                 color: Colors.white10,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Colors.white24,
+                  color: Colors.grey.shade200,
                 ),
               ),
               child: Row(

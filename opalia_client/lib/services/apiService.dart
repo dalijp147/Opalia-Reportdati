@@ -132,7 +132,6 @@ class ApiService {
         Question ques = Question.fromMap(data[i] as Map<String, dynamic>);
         questions.add(ques);
       }
-      print(data);
       return questions;
     } else {
       print('eroor ');
@@ -153,9 +152,7 @@ class ApiService {
       "userId": u,
       "maladie": db,
     });
-    print(u);
     print(url);
-    print(response.body);
     if (response.statusCode == 200) {
       print("sucess adding dosiermedical");
       print(response.body);
@@ -176,10 +173,9 @@ class ApiService {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var dataprod = jsonDecode(response.body);
-      print(response.body);
       return (dataprod);
     } else {
-      throw Exception('Failed to load data users');
+      throw Exception('Failed to load data  users name');
     }
   }
 
@@ -196,7 +192,6 @@ class ApiService {
       var data = jsonDecode(response.body);
       if (data != null) {
         print('This user has a medical dossier.');
-        print(data);
         return true;
       } else {
         print('Error: Empty response body.');
@@ -255,6 +250,32 @@ class ApiService {
     } catch (e) {
       print('eroor fetch dossier');
       throw (e);
+    }
+  }
+
+  static Future<bool> updateReminder(
+      t, u, String db, String df, String time, String desc) async {
+    var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/update/' + u);
+    var response = await client.patch(
+      url,
+      body: {
+        "remindertitre": t,
+        "datedebutReminder": db,
+        "datefinReminder": df,
+        "description": desc,
+        "time": time,
+      },
+    );
+
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess updating reminder");
+      print(response.body);
+      return true;
+    } else {
+      print("failed updating reminder");
+
+      return false;
     }
   }
 }

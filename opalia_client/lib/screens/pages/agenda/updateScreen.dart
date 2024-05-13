@@ -1,69 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:opalia_client/Utils.dart';
-import '../../../bloc/reminder/reminder_bloc.dart';
+import 'package:opalia_client/services/apiService.dart';
 import '../../../services/notif_service.dart';
 import '../../../services/sharedprefutils.dart';
 import '../../../widegts/test/constant.dart';
-import '../../../widegts/test/search_btn.dart';
-import '../../../widegts/test/textformfield.dart';
 
-class FormReminderScreen extends StatefulWidget {
-  const FormReminderScreen({super.key});
+import '../../../models/reminder.dart';
+
+class UpdateScreen extends StatefulWidget {
+  final Reminder remind;
+  const UpdateScreen({super.key, required this.remind});
 
   @override
-  State<FormReminderScreen> createState() => _FormReminderScreenState();
+  State<UpdateScreen> createState() => _UpdateScreenState();
 }
 
-class _FormReminderScreenState extends State<FormReminderScreen> {
-  late FocusNode nameFocus;
-  late FocusNode jobFocus;
-  late FocusNode searchBtnFocus;
-  late FocusNode dateFocus;
-  late FocusNode dateFinFocus;
-  late FocusNode timeFocus;
-  late FocusNode descriptionFocus;
+class _UpdateScreenState extends State<UpdateScreen> {
   late TextEditingController descriptionController;
   late TextEditingController nameController;
-  late TextEditingController jobController;
+
   late TextEditingController dateController;
   late TextEditingController dateFinController;
   late TextEditingController timeController;
+  final dateFormatter = DateFormat('yMMMMd');
   @override
   void initState() {
+    descriptionController =
+        TextEditingController(text: widget.remind.description);
+    nameController = TextEditingController(text: widget.remind.remindertitre);
+    dateController = TextEditingController(
+        text:
+            dateFormatter.format(widget.remind.datedebutReminder as DateTime));
+    dateFinController = TextEditingController(
+        text: dateFormatter.format(widget.remind.datefinReminder as DateTime));
+    timeController = TextEditingController(text: widget.remind.time);
     super.initState();
-    descriptionFocus = FocusNode();
-    timeFocus = FocusNode();
-    dateFinFocus = FocusNode();
-    dateFocus = FocusNode();
-    nameFocus = FocusNode();
-    jobFocus = FocusNode();
-    searchBtnFocus = FocusNode();
-    descriptionController = TextEditingController();
-    nameController = TextEditingController();
-    jobController = TextEditingController();
-    dateController = TextEditingController();
-    dateFinController = TextEditingController();
-    timeController = TextEditingController();
   }
 
   @override
   void dispose() {
-    descriptionFocus.dispose();
-    timeFocus.dispose();
-    dateFocus.dispose();
-    nameFocus.dispose();
-    jobFocus.dispose();
     descriptionController.dispose();
     dateFinController.dispose();
-    searchBtnFocus.dispose();
+
     nameController.dispose();
-    jobController.dispose();
+
     dateController.dispose();
     timeController.dispose();
     super.dispose();
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  Future<void> _selectedDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (_picked != null) {
+      setState(() {
+        dateController.text = DateFormat('yyyy-MM-dd').format(_picked);
+      });
+    }
   }
 
   TimeOfDay _timeOfDay = TimeOfDay.now();
@@ -119,19 +117,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
     });
   }
 
-  Future<void> _selectedDate() async {
-    DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (_picked != null) {
-      setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(_picked);
-      });
-    }
-  }
-
   Future<void> _selectedDatefin() async {
     DateTime? _picked = await showDatePicker(
         context: context,
@@ -145,21 +130,25 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
         },
       );
     }
-    
   }
 
-  List colors = [0xffFF0000, 0xffb74094, 0xff006bce, 0xff32F935];
-  int selceted = 0;
-  bool _validate = false;
   bool select = false;
-  final _formKey = GlobalKey<FormState>();
-  late final FocusNode focusNode;
-  final ReminderBloc reminderBloc = ReminderBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(' Ajouter un rappel'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              stops: [1, 0.1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red.shade50, Colors.white],
+            ),
+          ),
+        ),
+        centerTitle: true,
+        title: Text('Modifier'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -252,49 +241,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               SizedBox(
                 height: 5,
               ),
-              Container(
-                margin: EdgeInsets.only(left: 10),
-                child: Text(
-                  'Nombre de rappel',
-                  style: TextStyle(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez saisire le nombre de rappel";
-                    } else {
-                      return null;
-                    }
-                  },
-                  controller: jobController,
-                  autofocus: false,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    hintText: "ecrire nombre de rappel",
-                    fillColor: Colors.transparent,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -335,10 +281,8 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                                 return null;
                               }
                             },
-                            focusNode: dateFocus,
                             controller: dateController,
                             decoration: InputDecoration(
-                              errorText: _validate ? "erreur" : null,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                   color: Colors.red,
@@ -379,7 +323,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                                 return null;
                               }
                             },
-                            focusNode: dateFinFocus,
                             controller: dateFinController,
                             decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
@@ -420,10 +363,8 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                             return null;
                           }
                         },
-                        focusNode: dateFocus,
                         controller: dateController,
                         decoration: InputDecoration(
-                          errorText: _validate ? "erreur" : null,
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Colors.red,
@@ -470,7 +411,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                       return null;
                     }
                   },
-                  focusNode: timeFocus,
                   controller: timeController,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
@@ -513,38 +453,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     SizedBox(
                       height: 5,
                     ),
-                    Container(
-                      height: 50,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: colors.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selceted = colors[index];
-                              });
-                              print(selceted);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: CircleAvatar(
-                                radius: 14,
-                                backgroundColor: Color(colors[index]),
-                                child: selceted == colors[index]
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: 16,
-                                      )
-                                    : Container(),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -564,44 +472,35 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      
-                      select
-                          ? reminderBloc.add(
-                              ReminderAddEvent(
-                                nameController.text,
-                                jobController.text,
-                                PreferenceUtils.getuserid(),
-                                dateController.text,
-                                dateFinController.text,
-                                selceted.toString(),
-                                timeController.text,
-                                descriptionController.text,
-                              ),
-                            )
-                          : reminderBloc.add(
-                              ReminderAddEvent(
-                                nameController.text,
-                                jobController.text,
-                                PreferenceUtils.getuserid(),
-                                dateController.text,
-                                dateController.text,
-                                selceted.toString(),
-                                timeController.text,
-                                descriptionController.text,
-                              ),
-                            );
-                      DateTime tempDate =
-                          new DateFormat("hh:mm").parse(timeController.text);
-                      await NotifiactionService.createScheduleNotification(
-                        title: nameController.text,
-                        body: descriptionController.text,
-                        date: tempDate,
-                      );
+                      print(PreferenceUtils.getuserid());
+                      // select
+                      //     ?
+                      await ApiService.updateReminder(
+                          nameController.text,
+                          widget.remind.reminderId,
+                          dateController.text,
+                          dateFinController.text,
+                          timeController.text,
+                          descriptionController.text);
+                      // : await ApiService.updateReminder(
+                      //     nameController.text,
+                      //     PreferenceUtils.getuserid(),
+                      //     dateController.text,
+                      //     dateController.text,
+                      //     timeController.text,
+                      //     descriptionController.text);
+                      // DateTime tempDate =
+                      //     new DateFormat("hh:mm").parse(timeController.text);
+                      // await NotifiactionService.createScheduleNotification(
+                      //   title: nameController.text,
+                      //   body: descriptionController.text,
+                      //   date: tempDate,
+                      // );
                       Get.back();
                     }
                   },
                   child: Text(
-                    "Ajoute reminder",
+                    "Modifier reminder",
                     style: TextStyle(color: Colors.white, fontSize: kfontSize),
                   ),
                 ),

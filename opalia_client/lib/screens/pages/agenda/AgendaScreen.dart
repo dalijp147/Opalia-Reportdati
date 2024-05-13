@@ -226,8 +226,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     case ReminderFetchSucess:
                       final sucessState = state as ReminderFetchSucess;
                       return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
+                        height: 500,
+                        width: 500,
                         padding: const EdgeInsets.all(8.0),
                         child: ListView.builder(
                           shrinkWrap: true,
@@ -236,12 +236,15 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           itemBuilder: (context, index) {
                             final reminder = sucessState.reminder![index];
 
-                            return reminder == null
-                                ? Center(
-                                    child:
-                                        Text('votre liste de rappel est vide'))
+                            return sucessState.reminder.length == 0
+                                ? Text(
+                                    'votre liste de rappel est vide',
+                                    style: TextStyle(color: Colors.red),
+                                  )
                                 : Dismissible(
-                                    key: Key(reminder.toString()),
+                                    key: Key(
+                                      reminder.toString(),
+                                    ),
                                     onDismissed: (direction) async {
                                       // Remove the item from the data source.
                                       await ApiService.deleteReminder(
