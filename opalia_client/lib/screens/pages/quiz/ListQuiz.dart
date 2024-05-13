@@ -64,9 +64,10 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
   int? selectedAnswerIndex;
   int questionIndex = 0;
   int score = 0;
-  List<Question> questions = [];
+
   @override
   Widget build(BuildContext context) {
+    List<Question> questions = [];
     final question = ques[questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
     return Scaffold(
@@ -74,7 +75,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
       body: PageView.builder(
         controller: _controller,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: question.question!.length,
+        itemCount: question.question?.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.all(8.0),

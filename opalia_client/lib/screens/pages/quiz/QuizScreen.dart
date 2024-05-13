@@ -31,7 +31,7 @@ class _QuizScreenState extends State<QuizScreen> {
         actions: [
           IconButton(
               onPressed: () {
-               Get.to(
+                Get.to(
                   MenuScreen(),
                 );
               },

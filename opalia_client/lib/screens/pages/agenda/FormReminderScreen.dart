@@ -150,6 +150,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   List colors = [0xffFF0000, 0xffb74094, 0xff006bce, 0xff32F935];
   int selceted = 0;
   bool _validate = false;
+  bool select = false;
   final _formKey = GlobalKey<FormState>();
   late final FocusNode focusNode;
   final ReminderBloc reminderBloc = ReminderBloc();
@@ -293,6 +294,26 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               SizedBox(
                 height: 5,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 10),
+                    child: Text(
+                      'pour selectioner une date de debut et de fin',
+                      style: TextStyle(),
+                    ),
+                  ),
+                  Switch(
+                    value: select,
+                    onChanged: (value) {
+                      setState(() {
+                        select = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
               Container(
                 margin: EdgeInsets.only(left: 10),
                 child: Text(
@@ -300,87 +321,134 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez une date de debut";
-                    } else {
-                      return null;
-                    }
-                  },
-                  focusNode: dateFocus,
-                  controller: dateController,
-                  decoration: InputDecoration(
-                    errorText: _validate ? "erreur" : null,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.red,
+              select
+                  ? Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "veullez une date de debut";
+                              } else {
+                                return null;
+                              }
+                            },
+                            focusNode: dateFocus,
+                            controller: dateController,
+                            decoration: InputDecoration(
+                              errorText: _validate ? "erreur" : null,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.red,
+                                ),
+                                borderRadius: kBorderRadius,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                  borderRadius: kBorderRadius),
+                              hintStyle: const TextStyle(
+                                color: Colors.grey,
+                              ),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              hintText: "date de debut",
+                              prefixIcon: const Icon(
+                                  Icons.calendar_month_rounded,
+                                  color: Colors.red),
+                            ),
+                            readOnly: true,
+                            onTap: () {
+                              _selectedDate();
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "veullez selectionner une date de fin";
+                              } else {
+                                return null;
+                              }
+                            },
+                            focusNode: dateFinFocus,
+                            controller: dateFinController,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                  borderRadius: kBorderRadius),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                  borderRadius: kBorderRadius),
+                              hintStyle: const TextStyle(
+                                color: Colors.grey,
+                              ),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              hintText: "date de fin",
+                              prefixIcon: const Icon(
+                                  Icons.calendar_month_rounded,
+                                  color: Colors.red),
+                            ),
+                            readOnly: true,
+                            onTap: () {
+                              _selectedDatefin();
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "veullez choisire une date";
+                          } else {
+                            return null;
+                          }
+                        },
+                        focusNode: dateFocus,
+                        controller: dateController,
+                        decoration: InputDecoration(
+                          errorText: _validate ? "erreur" : null,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                            ),
+                            borderRadius: kBorderRadius,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                              ),
+                              borderRadius: kBorderRadius),
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          hintText: "choisire une date",
+                          prefixIcon: const Icon(Icons.calendar_month_rounded,
+                              color: Colors.red),
+                        ),
+                        readOnly: true,
+                        onTap: () {
+                          _selectedDate();
+                        },
                       ),
-                      borderRadius: kBorderRadius,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    hintText: "date de debut",
-                    prefixIcon: const Icon(Icons.calendar_month_rounded,
-                        color: Colors.red),
-                  ),
-                  readOnly: true,
-                  onTap: () {
-                    _selectedDate();
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez selectionner une date de fin";
-                    } else {
-                      return null;
-                    }
-                  },
-                  focusNode: dateFinFocus,
-                  controller: dateFinController,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    hintText: "date de fin",
-                    prefixIcon: const Icon(Icons.calendar_month_rounded,
-                        color: Colors.red),
-                  ),
-                  readOnly: true,
-                  onTap: () {
-                    _selectedDatefin();
-                  },
-                ),
-              ),
               SizedBox(
                 height: 5,
               ),
@@ -495,25 +563,38 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      print(PreferenceUtils.getuserid());
-                      reminderBloc.add(
-                        ReminderAddEvent(
-                          nameController.text,
-                          jobController.text,
-                          PreferenceUtils.getuserid(),
-                          dateController.text,
-                          dateFinController.text,
-                          selceted.toString(),
-                          timeController.text,
-                          descriptionController.text,
-                        ),
-                      );
+                      select
+                          ? reminderBloc.add(
+                              ReminderAddEvent(
+                                nameController.text,
+                                jobController.text,
+                                PreferenceUtils.getuserid(),
+                                dateController.text,
+                                dateFinController.text,
+                                selceted.toString(),
+                                timeController.text,
+                                descriptionController.text,
+                              ),
+                            )
+                          : reminderBloc.add(
+                              ReminderAddEvent(
+                                nameController.text,
+                                jobController.text,
+                                PreferenceUtils.getuserid(),
+                                dateController.text,
+                                dateController.text,
+                                selceted.toString(),
+                                timeController.text,
+                                descriptionController.text,
+                              ),
+                            );
                       DateTime tempDate =
                           new DateFormat("hh:mm").parse(timeController.text);
                       await NotifiactionService.createScheduleNotification(
-                          title: nameController.text,
-                          body: descriptionController.text,
-                          date: tempDate);
+                        title: nameController.text,
+                        body: descriptionController.text,
+                        date: tempDate,
+                      );
                       Get.back();
                     }
                   },

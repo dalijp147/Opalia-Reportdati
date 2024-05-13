@@ -12,7 +12,7 @@ class NotifiactionService {
           channelKey: 'scheduled',
           channelName: 'scheduled',
           channelDescription: 'norification chanel for basic tests',
-          importance: NotificationImportance.Max,
+          importance: NotificationImportance.High,
           defaultColor: Colors.red,
           ledColor: Colors.white,
           channelShowBadge: true,
@@ -112,6 +112,7 @@ class NotifiactionService {
             hour: date.hour,
             minute: date.minute,
             allowWhileIdle: true,
+            preciseAlarm: true,
           ),
           content: NotificationContent(
             id: -1,

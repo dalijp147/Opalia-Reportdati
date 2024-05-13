@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/mediacment.dart';
@@ -44,18 +45,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
   final ReminderBloc reminderBloc = ReminderBloc();
   DateTime? _selectedDate;
   List<Reminder>? remind = [];
+  List<Reminder>? deletedrem = [];
   late List<Appointment?> appointments;
-
-  @override
-  void initState() {
-    reminderBloc.add(ReminderInitialFetchEvent(PreferenceUtils.getuserid()));
-
-    appointments = [];
-    _fetchEvents();
-
-    super.initState();
-  }
-
   Future<void> _fetchEvents() async {
     try {
       final events =
@@ -65,6 +56,31 @@ class _AgendaScreenState extends State<AgendaScreen> {
       });
     } catch (e) {
       print('Failed to fetch events: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    reminderBloc.add(ReminderInitialFetchEvent(PreferenceUtils.getuserid()));
+    appointments = [];
+    _fetchEvents();
+    deletereminderafterdate();
+    super.initState();
+  }
+
+  Future<void> deletereminderafterdate() async {
+    try {
+      DateTime currentDate = DateTime.now();
+      List<Reminder> eventss =
+          await ApiService.getAllReminder(PreferenceUtils.getuserid());
+
+      eventss.forEach((reminder) {
+        if (reminder.datefinReminder!.isBefore(currentDate)) {
+          ApiService.deleteReminder(PreferenceUtils.getuserid());
+        }
+      });
+    } catch (e) {
+      print('Failed to delete reminder: $e');
     }
   }
 
@@ -123,7 +139,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           fontSize: 25),
                     ),
                     const SizedBox(
-                      width: 40,    
+                      width: 40,
                     ),
                   ],
                 ),

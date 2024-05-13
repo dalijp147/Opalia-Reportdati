@@ -70,8 +70,8 @@ class _ResultScreenState extends State<ResultScreen> {
                   height: 300,
                   width: 300,
                   child: CircularProgressIndicator(
-                    strokeWidth: 10,
-                    value: widget.score / 9,
+                    strokeWidth: 3.0,
+                    value: widget.score / 3.0,
                     color: Colors.green,
                     backgroundColor: Colors.white,
                   ),
@@ -83,10 +83,6 @@ class _ResultScreenState extends State<ResultScreen> {
                       style: const TextStyle(fontSize: 80),
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      '${(widget.score / ques.length * 100).round()}%',
-                      style: const TextStyle(fontSize: 25),
-                    )
                   ],
                 ),
               ],
