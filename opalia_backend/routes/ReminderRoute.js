@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express.Router();
+const randomInt = import("random-int");
 const Reminder = require("../models/reminder.model");
 
 app.get("/", async (req, res) => {
@@ -12,6 +13,7 @@ app.get("/", async (req, res) => {
 });
 app.post("/newReminder", async (req, res) => {
   try {
+    const i = 0;
     const reminder = new Reminder({
       userId: req.body.userId,
       remindertitre: req.body.remindertitre,
@@ -21,6 +23,7 @@ app.post("/newReminder", async (req, res) => {
       color: req.body.color,
       time: req.body.time,
       description: req.body.description,
+      notifid: req.body.notifid,
     });
 
     const newReminder = await reminder.save();

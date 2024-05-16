@@ -22,7 +22,7 @@ class ApiService {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-
+      print('sucess load categorie');
       return categorieFromJson(data["data"]);
     } else {
       throw Exception('Failed to load categorie');
@@ -36,7 +36,8 @@ class ApiService {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      print(data);
+      print('sucess load reminder');
+
       return reminderFromJson(data);
     } else {
       throw Exception('Failed to load data reminder');
@@ -53,10 +54,11 @@ class ApiService {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var dataprod = jsonDecode(response.body);
-      print(response.body);
+      print('sucess load medicament');
+
       return mediFromJson(dataprod["data"]);
     } else {
-      throw Exception('Failed to load data');
+      throw Exception('Failed to load medicament');
     }
   }
 
@@ -77,21 +79,49 @@ class ApiService {
     }
   }
 
-  static Future<bool> postReminder(t, String n, u, String db, String df,
-      String col, String time, String desc) async {
-    var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/newReminder');
+  static Future<bool> postDossierMedicale(
+    String poid,
+    String age,
+    u,
+    db,
+  ) async {
+    var url = Uri.http(Config.apiUrl, Config.dosserMedApi + '/newDoss');
     var response = await client.post(url, body: {
-      "remindertitre": t,
-      "nombrederappelparjour": n,
+      "poids": poid,
+      "age": age,
       "userId": u,
-      "datedebutReminder": db,
-      "datefinReminder": df,
-      "color": col,
-      "description": desc,
-
-      "time": time,
-      // "color": color,
+      "maladie": db,
     });
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding dosiermedical");
+      print(response.body);
+      return true;
+    } else {
+      print('eroor failed adding dossiermed');
+      return false;
+    }
+  }
+
+  static Future<bool> postReminder(t, String n, u, String db, String df,
+      String col, time, String desc, String notifid) async {
+    var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/newReminder');
+    String timesString = time.join(',');
+    //String jsonData = jsonEncode({'time': timesString});
+    var response = await client.post(
+      url,
+      body: {
+        "remindertitre": t,
+        "nombrederappelparjour": n,
+        "userId": u,
+        "datedebutReminder": db,
+        "datefinReminder": df,
+        "color": col,
+        "time": timesString,
+        "description": desc,
+        "notifid": notifid,
+      },
+    );
     print(u);
     print(url);
     print(response.body);
@@ -136,30 +166,6 @@ class ApiService {
     } else {
       print('eroor ');
       throw Exception('Failed to load data question');
-    }
-  }
-
-  static Future<bool> postDossierMedicale(
-    String poid,
-    String age,
-    u,
-    db,
-  ) async {
-    var url = Uri.http(Config.apiUrl, Config.dosserMedApi + '/newDoss');
-    var response = await client.post(url, body: {
-      "poids": poid,
-      "age": age,
-      "userId": u,
-      "maladie": db,
-    });
-    print(url);
-    if (response.statusCode == 200) {
-      print("sucess adding dosiermedical");
-      print(response.body);
-      return true;
-    } else {
-      print('eroor failed adding dossiermed');
-      return false;
     }
   }
 
@@ -275,6 +281,53 @@ class ApiService {
     } else {
       print("failed updating reminder");
 
+      return false;
+    }
+  }
+
+  static Future<bool> postScore(String t, String u, String i) async {
+    var url = Uri.http(Config.apiUrl, Config.scoreApi);
+    var response = await client.post(
+      url,
+      body: {
+        "userid": t,
+        "attempts": u,
+        "points": i,
+      },
+    );
+
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding score");
+      return true;
+    } else {
+      print("failed adding score");
+
+      return false;
+    }
+  }
+
+  static Future<bool> getResultUserId(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.scoreApi + '/' + id);
+
+    var response = await client.get(url, headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print(url);
+      if (data != null) {
+        print('This user has a score.');
+        return true;
+      } else {
+        print('Error: Empty response body.');
+        return false;
+      }
+    } else {
+      print('Error: HTTP ${response.statusCode}');
       return false;
     }
   }

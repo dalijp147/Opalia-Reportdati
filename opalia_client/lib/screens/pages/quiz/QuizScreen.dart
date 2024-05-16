@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/pages/quiz/ListQuiz.dart';
 
+import '../../../services/apiService.dart';
+import '../../../services/sharedprefutils.dart';
 import '../menu/MenuScreen.dart';
 import '../menu/SettingsScreen.dart';
 
@@ -13,6 +15,29 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  bool v = false;
+  Future<bool> verify() async {
+    final x = await ApiService.getResultUserId(PreferenceUtils.getuserid());
+    if (x == true) {
+      setState(() {
+        v = x;
+      });
+
+      print("ok");
+      print(v);
+      return v;
+    } else {
+      print("error");
+      return v;
+    }
+  }
+
+  @override
+  void initState() {
+    verify();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,15 +92,21 @@ class _QuizScreenState extends State<QuizScreen> {
           SizedBox(
             height: 50,
           ),
-          ElevatedButton(
-              onPressed: () {
-                Get.to(ListQuizScreen());
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: Text(
-                'Lets get Started',
-                style: TextStyle(color: Colors.white),
-              ))
+          v
+              ? Text(
+                  'Tu a deja partcipé au quiz',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                )
+              : ElevatedButton(
+                  onPressed: () async {
+                    Get.to(ListQuizScreen());
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: Text(
+                    'Lets get Started',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
         ],
       ),
     );

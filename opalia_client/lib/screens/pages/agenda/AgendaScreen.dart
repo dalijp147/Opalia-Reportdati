@@ -16,6 +16,7 @@ import 'package:opalia_client/services/sharedprefutils.dart';
 import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'dart:ui' as ui;
 
 import 'package:iconsax/iconsax.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
@@ -76,7 +77,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
       eventss.forEach((reminder) {
         if (reminder.datefinReminder!.isBefore(currentDate)) {
-          ApiService.deleteReminder(PreferenceUtils.getuserid());
+          ApiService.deleteReminder(reminder.reminderId);
         }
       });
     } catch (e) {
@@ -120,7 +121,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Padding(
+              const Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
@@ -144,25 +145,60 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   ],
                 ),
               ),
-              Container(
-                height: 490,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SfCalendar(
-                    view: CalendarView.month,
-                    monthViewSettings: MonthViewSettings(
-                        appointmentDisplayMode:
-                            MonthAppointmentDisplayMode.appointment),
-                    dataSource: _CalendarDataSource(remind),
-                    firstDayOfWeek: 1,
-                    allowedViews: const [
-                      CalendarView.day,
-                      CalendarView.timelineWeek,
-                      CalendarView.month,
-                    ],
-                  ),
-                ),
-              ),
+              remind!.isEmpty
+                  ? Stack(
+                      children: <Widget>[
+                        Container(
+                          height: 490,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SfCalendar(
+                              view: CalendarView.month,
+                              monthViewSettings: MonthViewSettings(
+                                  appointmentDisplayMode:
+                                      MonthAppointmentDisplayMode.appointment),
+                              dataSource: _CalendarDataSource(remind),
+                              firstDayOfWeek: 1,
+                              allowedViews: const [
+                                CalendarView.day,
+                                CalendarView.timelineWeek,
+                                CalendarView.month,
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: BackdropFilter(
+                            filter: ui.ImageFilter.blur(
+                              sigmaX: 5.0,
+                              sigmaY: 5.0,
+                            ),
+                            child: Container(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : Container(
+                      height: 490,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SfCalendar(
+                          view: CalendarView.month,
+                          monthViewSettings: MonthViewSettings(
+                              appointmentDisplayMode:
+                                  MonthAppointmentDisplayMode.appointment),
+                          dataSource: _CalendarDataSource(remind),
+                          firstDayOfWeek: 1,
+                          allowedViews: const [
+                            CalendarView.day,
+                            CalendarView.timelineWeek,
+                            CalendarView.month,
+                          ],
+                        ),
+                      ),
+                    ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -186,16 +222,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-
-                        String? token = prefs.getString('token');
-
-                        Map<String, dynamic> jsonDecoddd =
-                            JwtDecoder.decode(token!);
-                        var userId = jsonDecoddd['_id'];
-                        print(userId);
-                        await ApiService.getDossierUserId(userId)
+                        await ApiService.getDossierUserId(
+                                PreferenceUtils.getuserid())
                             ? Get.to(FormReminderScreen())
                             : Get.to(MedicalReport());
                       },
@@ -210,38 +238,65 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   ],
                 ),
               ),
-              BlocConsumer<ReminderBloc, ReminderState>(
-                bloc: reminderBloc,
-                listenWhen: (previous, current) =>
-                    current is ReminderActionState,
-                buildWhen: (previous, current) =>
-                    current is! ReminderActionState,
-                listener: (context, state) {},
-                builder: (context, state) {
-                  switch (state.runtimeType) {
-                    case ReminderFetchLoadingState:
-                      return Lottie.asset('assets/animation/heartrate.json',
-                          height: 210, width: 210);
+              SizedBox(
+                height: 15,
+              ),
+              remind!.isEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'votre liste de rappel est vide veillez ajouter un rappel',
+                              style: TextStyle(
+                                  color: const Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : BlocConsumer<ReminderBloc, ReminderState>(
+                      bloc: reminderBloc,
+                      listenWhen: (previous, current) =>
+                          current is ReminderActionState,
+                      buildWhen: (previous, current) =>
+                          current is! ReminderActionState,
+                      listener: (context, state) {},
+                      builder: (context, state) {
+                        switch (state.runtimeType) {
+                          case ReminderFetchLoadingState:
+                            return Lottie.asset(
+                                'assets/animation/heartrate.json',
+                                height: 210,
+                                width: 210);
 
-                    case ReminderFetchSucess:
-                      final sucessState = state as ReminderFetchSucess;
-                      return Container(
-                        height: 500,
-                        width: 500,
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: sucessState.reminder.length,
-                          itemBuilder: (context, index) {
-                            final reminder = sucessState.reminder![index];
+                          case ReminderFetchSucess:
+                            final sucessState = state as ReminderFetchSucess;
 
-                            return sucessState.reminder.length == 0
-                                ? Text(
-                                    'votre liste de rappel est vide',
-                                    style: TextStyle(color: Colors.red),
-                                  )
-                                : Dismissible(
+                            return Container(
+                              height: 300,
+                              width: 500,
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: sucessState.reminder.length,
+                                itemBuilder: (context, index) {
+                                  final reminder = sucessState.reminder![index];
+                                  return
+                                      //  remind! == null
+                                      //     ? Text(
+                                      //         'votre liste de rappel est vide',
+                                      //         style: TextStyle(color: Colors.red),
+                                      //       )
+                                      //     :
+                                      Dismissible(
                                     key: Key(
                                       reminder.toString(),
                                     ),
@@ -249,10 +304,16 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                       // Remove the item from the data source.
                                       await ApiService.deleteReminder(
                                           reminder.reminderId);
+                                      await NotifiactionService.cancelnotif(
+                                        id: reminder.notifiid!,
+                                      );
                                       // Then show a snackbar.
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(' dismissed')));
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(' dismissed'),
+                                        ),
+                                      );
                                     },
                                     child: GestureDetector(
                                       onTap: () {
@@ -265,15 +326,17 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                       ),
                                     ),
                                   );
-                          },
-                        ),
-                      );
-                    default:
-                      return Lottie.asset('assets/animation/heartrate.json',
-                          height: 210, width: 210);
-                  }
-                },
-              ),
+                                },
+                              ),
+                            );
+                          default:
+                            return Lottie.asset(
+                                'assets/animation/heartrate.json',
+                                height: 210,
+                                width: 210);
+                        }
+                      },
+                    ),
             ],
           ),
         ),

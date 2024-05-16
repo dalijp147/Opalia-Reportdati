@@ -59,14 +59,25 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          actions: [
-            SizedBox(
-              width: 20,
-            )
-          ],
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    stops: [1, 0.1],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.red.shade50, Colors.white])),
+          ),
+          title: Text(
+            'Medicament',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
         body: Column(
           children: [
+            SizedBox(
+              height: 10,
+            ),
             TextField(
               onChanged: (value) => _runfilter(value),
               decoration: InputDecoration(
@@ -78,7 +89,7 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
               ),
             ),
             SizedBox(
-              height: 5,
+              height: 10,
             ),
             Expanded(
               child: FutureBuilder<List<Medicament>>(

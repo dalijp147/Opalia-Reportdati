@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:opalia_client/bloc/quiz/bloc/quiz_bloc.dart';
 import 'package:opalia_client/models/question.dart';
 import 'package:opalia_client/screens/pages/quiz/QuizScreen.dart';
+import 'package:opalia_client/services/sharedprefutils.dart';
 
+import '../../../bloc/quiz/quiz_bloc.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
 import '../../../services/apiService.dart';
 import '../../../widegts/quiz/RectangularButton.dart';
@@ -114,7 +115,11 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                 ),
                 isLastQuestion
                     ? RectangularButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          await ApiService.postScore(
+                              PreferenceUtils.getuserid(),
+                              '0',
+                              score.toString());
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (_) => ResultScreen(

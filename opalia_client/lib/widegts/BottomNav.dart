@@ -30,19 +30,19 @@ class _BottomNavState extends State<BottomNav> {
                 onTabChange: (value) => controller.selectedIndex.value = value,
                 tabActiveBorder: Border.all(
                     color: Colors.red, width: 1), // tab button border
-                gap: 5,
-                iconSize: 25,
+                gap: 2,
+                iconSize: 20,
                 color: Colors.red,
                 activeColor: Colors.red,
 
                 tabs: const [
                   GButton(
                     icon: Icons.home,
-                    text: 'Home',
+                    text: 'Accueil',
                   ),
                   GButton(
-                    icon: Icons.newspaper,
-                    text: 'News',
+                    icon: Icons.medical_services,
+                    text: 'Medicament',
                   ),
                   GButton(
                     icon: Icons.view_agenda,
@@ -64,8 +64,8 @@ class _BottomNavState extends State<BottomNav> {
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
   final screens = [
-    HomeScreen(),
     NewsScreen(),
+    HomeScreen(),
     AgendaScreen(),
     QuizScreen(),
   ];

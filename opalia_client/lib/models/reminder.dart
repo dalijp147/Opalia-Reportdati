@@ -15,6 +15,7 @@ class Reminder {
   late int? color;
   late String? time;
   late String? description;
+  late int? notifiid;
   Reminder({
     this.reminderId,
     this.userID,
@@ -25,6 +26,7 @@ class Reminder {
     this.color,
     this.time,
     this.description,
+    this.notifiid,
   });
 
   factory Reminder.fromMap(Map<String, dynamic> json) {
@@ -36,24 +38,24 @@ class Reminder {
       datefinReminder: DateTime.parse(json['datefinReminder'].toString()),
       nombrederappelparjour: json['nombrederappelparjour'] ?? 0,
       color: json['color'] ?? 0,
-      time: json['time'] ?? "",
+      time: json['time'] ?? "0",
       description: json['description'] ?? "",
+      notifiid: json['notifid'] ?? 0,
     );
   }
-  Map<String, dynamic> toMap() {
-    return {
-      '_id': reminderId,
-      'remindertitre': remindertitre,
-      'datedebutReminder': datedebutReminder,
-      'datefinReminder': datefinReminder,
-      'nombrederappelparjour': nombrederappelparjour,
-      'color': color,
-      'time': time,
-      'description': description,
-    };
-  }
 
-  factory Reminder.fromJson(String source) =>
-      Reminder.fromMap(json.decode(source));
-  String toJson() => json.encode(toMap());
+  Map<String, dynamic> toJson() {
+    final _dos = <String, dynamic>{};
+    _dos['_id'] = reminderId;
+    _dos['userId'] = userID;
+    _dos['remindertitre'] = remindertitre;
+    _dos['datedebutReminder'] = datedebutReminder;
+    _dos['datefinReminder'] = datefinReminder;
+    _dos['nombrederappelparjour'] = nombrederappelparjour;
+    _dos['color'] = color;
+    _dos['time'] = time;
+    _dos['description'] = description;
+    _dos['notifid'] = notifiid;
+    return _dos;
+  }
 }

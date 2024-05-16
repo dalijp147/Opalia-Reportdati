@@ -16,8 +16,9 @@ class ReminderAddEvent extends ReminderEvent {
   final String debutReminder;
   final String finReminder;
   final String color;
-  final String time;
+  final List<dynamic> time;
   final String description;
+  final String notifid;
   ReminderAddEvent(
     this.remindertitre,
     this.nombrederappelparjour,
@@ -27,5 +28,6 @@ class ReminderAddEvent extends ReminderEvent {
     this.color,
     this.time,
     this.description,
+    this.notifid,
   );
 }

@@ -24,9 +24,10 @@ const reminderSchema = moogoose.Schema({
   color: {
     type: Number,
   },
+  notifid: { type: Number, unique: true },
   time: {
     type: String,
-    default: Date.now,
+    default: "",
   },
   userId: { type: moogoose.Schema.Types.ObjectId, ref: "User", required: true },
 });

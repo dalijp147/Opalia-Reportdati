@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:opalia_client/Utils.dart';
+import 'package:opalia_client/services/apiService.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
 import '../../../services/notif_service.dart';
 import '../../../services/sharedprefutils.dart';
 import '../../../widegts/test/constant.dart';
-import '../../../widegts/test/search_btn.dart';
 import '../../../widegts/test/textformfield.dart';
 
 class FormReminderScreen extends StatefulWidget {
@@ -31,9 +33,20 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   late TextEditingController dateController;
   late TextEditingController dateFinController;
   late TextEditingController timeController;
+  List<TextEditingController> notes = [];
+  void initializeControllers() {
+    // Clear any existing controllers
+    notes.clear();
+    // Populate the list with new TextEditingController instances
+    for (int i = 0; i < 5; i++) {
+      notes.add(TextEditingController());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    initializeControllers();
     descriptionFocus = FocusNode();
     timeFocus = FocusNode();
     dateFinFocus = FocusNode();
@@ -51,6 +64,9 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
 
   @override
   void dispose() {
+    for (var c in notes) {
+      c.dispose();
+    }
     descriptionFocus.dispose();
     timeFocus.dispose();
     dateFocus.dispose();
@@ -68,7 +84,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
 
   TimeOfDay _timeOfDay = TimeOfDay.now();
 
-  Future<void> _showTimePicker() async {
+  Future<void> _showTimePicker(int index) async {
     TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -114,7 +130,10 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
 
       String formattedTime =
           replacingTime.hour.toString() + ":" + replacingTime.minute.toString();
-      timeController.text = formattedTime;
+      //notes[index].text = formattedTime;
+      setState(() {
+        notes[index].text = formattedTime;
+      });
       print(formattedTime);
     });
   }
@@ -145,7 +164,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
         },
       );
     }
-    
   }
 
   List colors = [0xffFF0000, 0xffb74094, 0xff006bce, 0xff32F935];
@@ -155,6 +173,10 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   final _formKey = GlobalKey<FormState>();
   late final FocusNode focusNode;
   final ReminderBloc reminderBloc = ReminderBloc();
+  int attemps = 1;
+
+  Random random = new Random();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,6 +281,9 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
+              SizedBox(
+                height: 5,
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -269,6 +294,12 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     } else {
                       return null;
                     }
+                  },
+                  onChanged: (value) {
+                    jobController.text = value;
+                    setState(() {
+                      attemps = int.parse(value) ?? 1;
+                    });
                   },
                   controller: jobController,
                   autofocus: false,
@@ -321,6 +352,9 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   'Date',
                   style: TextStyle(),
                 ),
+              ),
+              SizedBox(
+                height: 5,
               ),
               select
                   ? Column(
@@ -460,44 +494,100 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez selectionner une heure";
-                    } else {
-                      return null;
-                    }
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: attemps,
+                  itemBuilder: (_, index) {
+                    //_controllers!.add(TextEditingController());
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "veullez selectionner une heure";
+                          } else {
+                            return null;
+                          }
+                        },
+                        // onSaved: (value) {
+                        //   notes[index] == value;
+                        // },
+                        controller: notes[index],
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                            ),
+                            borderRadius: kBorderRadius,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                            ),
+                            borderRadius: kBorderRadius,
+                          ),
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          hintText: "choisire une heure",
+                          prefixIcon: const Icon(
+                            Icons.watch_later_outlined,
+                            color: Colors.red,
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () {
+                          _showTimePicker(index);
+                        },
+                      ),
+                    );
                   },
-                  focusNode: timeFocus,
-                  controller: timeController,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    hintText: "choisire une heure",
-                    prefixIcon: const Icon(
-                      Icons.watch_later_outlined,
-                      color: Colors.red,
-                    ),
-                  ),
-                  readOnly: true,
-                  onTap: _showTimePicker,
                 ),
               ),
+
+              ////
+
+              // TextFormField(
+              //   validator: (value) {
+              //     if (value!.isEmpty) {
+              //       return "veullez selectionner une heure";
+              //     } else {
+              //       return null;
+              //     }
+              //   },
+              //   focusNode: timeFocus,
+              //   controller: timeController,
+              //   decoration: InputDecoration(
+              //     enabledBorder: OutlineInputBorder(
+              //         borderSide: const BorderSide(
+              //           color: Colors.red,
+              //         ),
+              //         borderRadius: kBorderRadius),
+              //     focusedBorder: OutlineInputBorder(
+              //         borderSide: const BorderSide(
+              //           color: Colors.red,
+              //         ),
+              //         borderRadius: kBorderRadius),
+              //     hintStyle: const TextStyle(
+              //       color: Colors.grey,
+              //     ),
+              //     filled: true,
+              //     fillColor: Colors.transparent,
+              //     hintText: "choisire une heure",
+              //     prefixIcon: const Icon(
+              //       Icons.watch_later_outlined,
+              //       color: Colors.red,
+              //     ),
+              //   ),
+              //   readOnly: true,
+              //   onTap: _showTimePicker,
+              // ),
               SizedBox(
                 height: 5,
               ),
@@ -522,9 +612,15 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              setState(() {
-                                selceted = colors[index];
-                              });
+                              setState(
+                                () {
+                                  if (selceted != null) {
+                                    selceted = colors[index];
+                                  } else {
+                                    print('veuillez saisire une couleur');
+                                  }
+                                },
+                              );
                               print(selceted);
                             },
                             child: Padding(
@@ -563,20 +659,42 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     ),
                   ),
                   onPressed: () async {
+                    List<String> times = [];
+                    for (var controller in notes) {
+                      times.add(controller.text);
+                    }
+
+                    List<String> formattedTimes = [];
+
+                    List<String>? notesText =
+                        notes?.map((controller) => controller.text).toList();
+                    print(notesText);
                     if (_formKey.currentState!.validate()) {
-                      
+                      int randomNumber = random.nextInt(1000);
                       select
-                          ? reminderBloc.add(
-                              ReminderAddEvent(
-                                nameController.text,
-                                jobController.text,
-                                PreferenceUtils.getuserid(),
-                                dateController.text,
-                                dateFinController.text,
-                                selceted.toString(),
-                                timeController.text,
-                                descriptionController.text,
-                              ),
+                          // ? reminderBloc.add(
+                          //     ReminderAddEvent(
+                          //       nameController.text,
+                          //       jobController.text,
+                          //       PreferenceUtils.getuserid(),
+                          //       dateController.text,
+                          //       dateFinController.text,
+                          //       selceted.toString(),
+                          //       notesText!,
+                          //       descriptionController.text,
+                          //       randomNumber.toString(),
+                          //     ),
+                          //   )
+                          ? await ApiService.postReminder(
+                              nameController.text,
+                              jobController.text,
+                              PreferenceUtils.getuserid(),
+                              dateController.text,
+                              dateFinController.text,
+                              selceted.toString(),
+                              notesText!,
+                              descriptionController.text,
+                              randomNumber.toString(),
                             )
                           : reminderBloc.add(
                               ReminderAddEvent(
@@ -586,17 +704,37 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                                 dateController.text,
                                 dateController.text,
                                 selceted.toString(),
-                                timeController.text,
+                                notesText!,
                                 descriptionController.text,
+                                randomNumber.toString(),
                               ),
                             );
-                      DateTime tempDate =
-                          new DateFormat("hh:mm").parse(timeController.text);
-                      await NotifiactionService.createScheduleNotification(
-                        title: nameController.text,
-                        body: descriptionController.text,
-                        date: tempDate,
-                      );
+                      print(notesText.toString());
+
+                      void scheduleNotifications(
+                          List<String> timeStrings) async {
+                        try {
+                          for (int i = 0; i < timeStrings.length; i++) {
+                            DateTime tempDate =
+                                new DateFormat("hh:mm").parse(timeStrings[i]);
+
+                            await NotifiactionService
+                                .createScheduleNotification(
+                              userid: PreferenceUtils.getuserid(),
+                              badge: randomNumber,
+                              id: randomNumber + i,
+                              title: nameController.text,
+                              body: descriptionController.text,
+                              date: tempDate,
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
+                      }
+
+                      scheduleNotifications(notesText);
+
                       Get.back();
                     }
                   },

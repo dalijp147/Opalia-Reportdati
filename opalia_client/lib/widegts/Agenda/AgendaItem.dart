@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:opalia_client/services/apiService.dart';
 
 import '../../models/reminder.dart';
+import '../../services/notif_service.dart';
 
 class AgendaItem extends StatefulWidget {
   final Reminder reminder;
@@ -13,7 +16,13 @@ class AgendaItem extends StatefulWidget {
 }
 
 class _AgendaItemState extends State<AgendaItem> {
-    var dateFormat = new DateFormat('dd-MM-yyyy hh:mm');
+  var dateFormat = new DateFormat('dd-MM-yyyy hh:mm');
+
+  @override
+  void initState() {
+    // scheduleNotifications(widget.reminder.time!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

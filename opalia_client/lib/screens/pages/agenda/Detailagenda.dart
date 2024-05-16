@@ -15,6 +15,18 @@ class DetailAgenda extends StatefulWidget {
 
 class _DetailAgendaState extends State<DetailAgenda> {
   var dateFormat = new DateFormat('dd-MM-yyyy hh:mm');
+  list(String time) {
+    List<String> formattedTimeList =
+        time.split(',').map((time) => time.trim()).toList();
+    print(time);
+    return time;
+  }
+
+  @override
+  void initState() {
+    list(widget.remind.time!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

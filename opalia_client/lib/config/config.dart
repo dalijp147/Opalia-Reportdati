@@ -8,6 +8,7 @@ class Config {
   static const String quizApi = "/quiz";
   static const String userApi = "/user";
   static const String dosserMedApi = "/dossier";
+  static const String scoreApi = "/result";
   static const String medicaCategorieAPI = "/medicament/";
   static const String imageURL = "http://10.0.2.2:3001";
 }

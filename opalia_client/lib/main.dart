@@ -13,9 +13,11 @@ void main() async {
   await NotifiactionService.initializeNotification();
   await PreferenceUtils.init();
 
-  runApp(MyApp(
-    token: PreferenceUtils.getString('token'),
-  ));
+  runApp(
+    MyApp(
+      token: PreferenceUtils.getString('token'),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

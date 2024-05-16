@@ -32,5 +32,5 @@ class DossierMed {
     _dos['poids'] = poids;
     _dos['maladie'] = maladies;
     return _dos;
-  }
+  } 
 }

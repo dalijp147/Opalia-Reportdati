@@ -34,7 +34,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             dateFormatter.format(widget.remind.datedebutReminder as DateTime));
     dateFinController = TextEditingController(
         text: dateFormatter.format(widget.remind.datefinReminder as DateTime));
-    timeController = TextEditingController(text: widget.remind.time);
+    //timeController = TextEditingController(text: widget.remind.time);
     super.initState();
   }
 
@@ -476,12 +476,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
                       // select
                       //     ?
                       await ApiService.updateReminder(
-                          nameController.text,
-                          widget.remind.reminderId,
-                          dateController.text,
-                          dateFinController.text,
-                          timeController.text,
-                          descriptionController.text);
+                        nameController.text,
+                        widget.remind.reminderId,
+                        dateController.text,
+                        dateFinController.text,
+                        timeController.text,
+                        descriptionController.text,
+                      );
                       // : await ApiService.updateReminder(
                       //     nameController.text,
                       //     PreferenceUtils.getuserid(),

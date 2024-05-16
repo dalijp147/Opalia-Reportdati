@@ -12,12 +12,12 @@ class NotifiactionService {
           channelKey: 'scheduled',
           channelName: 'scheduled',
           channelDescription: 'norification chanel for basic tests',
-          importance: NotificationImportance.High,
+          importance: NotificationImportance.Max,
           defaultColor: Colors.red,
           ledColor: Colors.white,
           channelShowBadge: true,
           onlyAlertOnce: true,
-          playSound: true,
+          //playSound: true,
           criticalAlerts: true,
         ),
       ],
@@ -62,64 +62,53 @@ class NotifiactionService {
     // Your code goes here
   }
 
-  static Future<void> showNotification({
-    required final String title,
-    required final String body,
-    final String? summary,
-    final Map<String, String>? payload,
-    final ActionType actionType = ActionType.Default,
-    final NotificationLayout notificationLayout = NotificationLayout.Default,
-    final NotificationCategory? category,
-    final String? bigPicture,
-    final List<NotificationActionButton>? actionButtons,
-    final bool scheduled = false,
-    final int? interval,
-  }) async {
-    assert(!scheduled || (scheduled && interval != null));
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: -1,
-        channelKey: 'high_importance_channel',
-        title: title,
-        body: body,
-        actionType: actionType,
-        notificationLayout: notificationLayout,
-        summary: summary,
-        category: category,
-        payload: payload,
-        bigPicture: bigPicture,
-      ),
-      actionButtons: actionButtons,
-      schedule: scheduled
-          ? NotificationInterval(
-              interval: interval,
-              timeZone:
-                  await AwesomeNotifications().getLocalTimeZoneIdentifier(),
-              preciseAlarm: true,
-            )
-          : null,
-    );
-  }
-
   static Future<void> createScheduleNotification({
+    required int id,
+    required int badge,
     required String body,
+    required String userid,
     required String title,
     required DateTime date,
   }) async {
     try {
       await AwesomeNotifications().createNotification(
-          schedule: NotificationCalendar(
-            hour: date.hour,
-            minute: date.minute,
-            allowWhileIdle: true,
-            preciseAlarm: true,
-          ),
-          content: NotificationContent(
-            id: -1,
+        schedule: NotificationCalendar(
+          hour: date.hour,
+          minute: date.minute,
+          allowWhileIdle: true,
+          preciseAlarm: true,
+        ),
+        content: NotificationContent(
+            id: id,
             channelKey: 'scheduled',
             title: title,
             body: body,
-          ));
-    } catch (e) {}
+            badge: badge,
+            payload: {'userId': userid}),
+      );
+      print('sucess sucessfully notif ${id}');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<void> cancelnotif({
+    required int id,
+  }) async {
+    try {
+      await AwesomeNotifications().cancel(id);
+      print('sucess deleting notif ${id}');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<void> cacellll() async {
+    try {
+      await AwesomeNotifications().cancelAll();
+      print('sucess deleting notif');
+    } catch (e) {
+      print(e);
+    }
   }
 }
