@@ -1,12 +1,65 @@
 const express = require("express");
 const app = express.Router();
 const Categorie = require("../models/categories.model");
-
 const upload = require("../middleware/upload");
-
+const puppetire = require("puppeteer");
+const URL = "https://www.opaliarecordati.com/fr/produits/medical";
+const fetchDataCategorie = async () => {
+  try {
+    browserInstance = await puppetire.launch({
+      headless: false,
+      defaultViewport: null,
+    });
+    const page = await browserInstance.newPage();
+    await page.goto(URL, { waitUntil: "networkidle2" });
+    const categorisHandles = await page.$$("div.bloc_left.left > div.panel");
+    for (const categoriehnadle of categorisHandles) {
+      const categorietitle = await page.evaluate(
+        (el) => el.querySelector("ul > li > a").textContent,
+        categoriehnadle
+      );
+      //   const newsDescription = await page.evaluate(
+      //     (el) => el.querySelector("div.cat_description").textContent,
+      //     newshandle
+      //   );
+      //   const newsImage = await page.evaluate(
+      //     (el) => el.querySelector("a > div.image_cat > img").getAttribute("src"),
+      //     newshandle
+      //   );
+      let articlesSaved = 0;
+      let duplicateArticles = 0;
+      // const categorie = new Categorie({
+      //   categorienom: categorietitle,
+      // });
+      console.log("Title:", categorietitle);
+      //   console.log("Description:", newsDescription);
+      //   console.log("Image URL:", newsImage);
+      console.log("-------------------------");
+      // try {
+      //   await categorie.save();
+      //   articlesSaved++;
+      // } catch (error) {
+      //   if (error.code === 11000) {
+      //     duplicateArticles++;
+      //   } else {
+      //     console.error("Error saving article:", error);
+      //   }
+      // }
+    }
+    await browserInstance.close();
+    // res.status(200).json({
+    //   message: "Scraping completed",
+    // });
+  } catch (e) {
+    console.log(e);
+    //res.status(500).json({ error: "An error occurred during scraping" });
+  }
+};
+fetchDataCategorie();
 app.get("/", async (req, res) => {
   try {
-    const categories = await Categorie.find().populate("productList");
+    const categories = await Categorie.find();
+    fetchDataCategorie();
     res.status(200).json({ data: categories });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -40,7 +93,7 @@ app.post("/", upload.single("categorieImage"), async (req, res) => {
       categorieImage: imageUrl,
     });
     const newCategories = await categories.save();
-    res.status(201).json(newCategories);
+    res.status(201).json({ data: newCategories });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/config/config.dart';
-import 'package:opalia_client/screens/auth/signin.dart';
-import 'package:opalia_client/screens/pages/HomeScreen.dart';
-import 'package:opalia_client/widegts/TextForm.dart';
+import 'package:opalia_client/screens/pages/auth/signin.dart';
+import 'package:opalia_client/screens/pages/categorie/CategorieScreen.dart';
 import 'package:http/http.dart' as http;
-import '../../widegts/BottomNav.dart';
+import '../../widegts/Allappwidgets/BottomNav.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -22,7 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController nomController = TextEditingController();
   TextEditingController prenomController = TextEditingController();
   late FocusNode emailFocus;
-    late FocusNode passwordFocus;
+  late FocusNode passwordFocus;
   late FocusNode nomFocus;
   late FocusNode prenomFocus;
   bool _obscured = false;

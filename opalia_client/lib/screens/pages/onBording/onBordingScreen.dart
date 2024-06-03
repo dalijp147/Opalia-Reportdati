@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:lottie/lottie.dart';
-import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/screens/pages/auth/signin.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBordingScreen extends StatefulWidget {

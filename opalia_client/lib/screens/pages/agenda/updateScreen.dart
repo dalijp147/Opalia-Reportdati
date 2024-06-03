@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:opalia_client/services/apiService.dart';
-import '../../../services/notif_service.dart';
-import '../../../services/sharedprefutils.dart';
-import '../../../widegts/test/constant.dart';
+import '../../../services/local/sharedprefutils.dart';
+import '../../../services/remote/apiService.dart';
+
+import '../../widegts/Allappwidgets/constant.dart';
 
 import '../../../models/reminder.dart';
 
@@ -46,7 +46,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     nameController.dispose();
 
     dateController.dispose();
-    timeController.dispose();
+    //timeController.dispose();
     super.dispose();
   }
 
@@ -78,33 +78,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
         );
       },
     );
-
-    // setState(
-    //   () {
-    //     final DateTime deadlineDateTime = DateTime(
-    //       timeOfDay!.hour,
-    //       timeOfDay.minute,
-    //     );
-    //     _timeOfDay = timeOfDay;
-    //     timeController.text =
-    //         DateFormat('hh:mm').format(deadlineDateTime).toString();
-
-    //     print(timeController.text);
-    //   },
-    // );
-    // if (timeOfDay != null) {
-    //   setState(() {
-    //     final DateTime deadlineDateTime = DateTime(
-    //       timeOfDay.hour,
-    //       timeOfDay.minute,
-    //     );
-    //     DateTime date = DateTime.now();
-
-    //     timeController.text = Utils.toTime(date);
-
-    //     print(timeController.text);
-    //   });
-    // }
 
     setState(() {
       var replacingTime = timeOfDay!
@@ -394,50 +367,50 @@ class _UpdateScreenState extends State<UpdateScreen> {
               SizedBox(
                 height: 5,
               ),
-              Container(
-                margin: EdgeInsets.only(left: 10),
-                child: Text(
-                  'heure',
-                  style: TextStyle(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez selectionner une heure";
-                    } else {
-                      return null;
-                    }
-                  },
-                  controller: timeController,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    hintText: "choisire une heure",
-                    prefixIcon: const Icon(
-                      Icons.watch_later_outlined,
-                      color: Colors.red,
-                    ),
-                  ),
-                  readOnly: true,
-                  onTap: _showTimePicker,
-                ),
-              ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 10),
+              //   child: Text(
+              //     'heure',
+              //     style: TextStyle(),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: TextFormField(
+              //     validator: (value) {
+              //       if (value!.isEmpty) {
+              //         return "veullez selectionner une heure";
+              //       } else {
+              //         return null;
+              //       }
+              //     },
+              //     controller: timeController,
+              //     decoration: InputDecoration(
+              //       enabledBorder: OutlineInputBorder(
+              //           borderSide: const BorderSide(
+              //             color: Colors.red,
+              //           ),
+              //           borderRadius: kBorderRadius),
+              //       focusedBorder: OutlineInputBorder(
+              //           borderSide: const BorderSide(
+              //             color: Colors.red,
+              //           ),
+              //           borderRadius: kBorderRadius),
+              //       hintStyle: const TextStyle(
+              //         color: Colors.grey,
+              //       ),
+              //       filled: true,
+              //       fillColor: Colors.transparent,
+              //       hintText: "choisire une heure",
+              //       prefixIcon: const Icon(
+              //         Icons.watch_later_outlined,
+              //         color: Colors.red,
+              //       ),
+              //     ),
+              //     readOnly: true,
+              //     onTap: _showTimePicker,
+              //   ),
+              // ),
               SizedBox(
                 height: 5,
               ),
@@ -480,7 +453,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                         widget.remind.reminderId,
                         dateController.text,
                         dateFinController.text,
-                        timeController.text,
+                        //timeController.text,
                         descriptionController.text,
                       );
                       // : await ApiService.updateReminder(

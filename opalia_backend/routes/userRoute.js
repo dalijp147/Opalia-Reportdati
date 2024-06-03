@@ -24,6 +24,14 @@ app.post("/registration", async (req, res) => {
     res.status(400).json({ message: "error" });
   }
 });
+app.patch("/update/:id", async (req, res) => {
+  try {
+    const updateUser = await res.reminder.save();
+    res.json(updateReminder);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -52,4 +60,5 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ status: true, token: token });
   } catch (err) {}
 });
+
 module.exports = app;

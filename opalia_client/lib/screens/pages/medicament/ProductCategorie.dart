@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/models/mediacment.dart';
-import 'package:opalia_client/services/apiService.dart';
 
 import '../../../bloc/product/product_bloc.dart';
+import '../../../services/remote/apiService.dart';
 import 'DetailScreen.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:http/http.dart' as http;
 
 class ProductCategorieScreen extends StatefulWidget {
-  final String name;
-  const ProductCategorieScreen({super.key, required this.name});
+  //final String name;
+  const ProductCategorieScreen({
+    super.key,
+    //required this.name,
+  });
 
   @override
   State<ProductCategorieScreen> createState() => _ProductCategorieScreenState();
@@ -18,15 +23,38 @@ class ProductCategorieScreen extends StatefulWidget {
 class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
   final ProductBloc productBloc = ProductBloc();
   List<Medicament>? allMedicament = [];
-  Future<void> _fetchMedicament() async {
-    try {
-      final medicament = await ApiService.getMedicamentBycategorie(widget.name);
-      setState(() {
-        allMedicament = medicament;
-      });
-    } catch (e) {
-      print('Failed to fetch categorie: $e');
-    }
+  // Future<void> _fetchMedicament() async {
+  //   try {
+  //     final medicament = await ApiService.getMedicamentBycategorie(widget.name);
+  //     setState(() {
+  //       allMedicament = medicament;
+  //     });
+  //   } catch (e) {
+  //     print('Failed to fetch categorie: $e');
+  //   }
+  // }
+
+  Future getWebsiteData() async {
+    final url = Uri.parse(
+        "https://www.opaliarecordati.com/fr/produits/medical/specialite/62-dermatologie");
+    final response = await http.get(url);
+    dom.Document html = dom.Document.html(response.body);
+    final titles = html
+        .querySelectorAll('a > div.cat_titre')
+        .map((e) => e.innerHtml.trim())
+        .toList();
+    final images = html
+        .querySelectorAll('div.image_cat > img')
+        .map((e) => e.attributes['src'])
+        .toList();
+    print('count ${titles.length}');
+    setState(() {
+      allMedicament = List.generate(
+        titles.length,
+        (index) =>
+            Medicament(mediname: titles[index], mediImage: images[index]),
+      );
+    });
   }
 
   @override
@@ -34,14 +62,16 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
     // productBloc.add(CategorieMedicamentInitialFetchEvent(widget.name));
     //ApiService.getMedicamentBycategorie(widget.name);
     //print(widget.name);
-    _fetchMedicament();
+    //_fetchMedicament();
+    getWebsiteData();
     super.initState();
   }
 
   void _runfilter(String enterdKeyword) {
     List<Medicament>? results = [];
     if (enterdKeyword.isEmpty) {
-      _fetchMedicament();
+      // _fetchMedicament();
+      getWebsiteData();
     } else {
       results = allMedicament!
           .where((user) => user.mediname!
@@ -84,7 +114,8 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                 constraints: BoxConstraints(maxWidth: 300),
                 labelText: 'Recherche',
                 border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1)),
+                    borderSide: BorderSide(color: Colors.red, width: 1),
+                    borderRadius: BorderRadius.circular(50.0)),
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -93,7 +124,7 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
             ),
             Expanded(
               child: FutureBuilder<List<Medicament>>(
-                future: ApiService.getMedicamentBycategorie(widget.name),
+                //future: ApiService.getMedicamentBycategorie(widget.name),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Medicament>> model) {
                   if (model.connectionState == ConnectionState.waiting) {
@@ -121,7 +152,11 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                                 final categorie = allMedicament![index];
                                 return GestureDetector(
                                   onTap: () {
-                                    Get.to(DetailProduct(medi: categorie));
+                                    //Get.to(DetailProduct(medi: categorie));
+                                    Get.to(DetailProduct(
+                                      image: categorie.mediImage!,
+                                      title: categorie.mediname!,
+                                    ));
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -143,7 +178,7 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                                                     categorie.mediImage == "")
                                                 ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
                                                 : categorie.mediImage!,
-                                            height: 150,
+                                            height: 100,
                                             width: 100,
                                             fit: BoxFit.scaleDown,
                                           ),

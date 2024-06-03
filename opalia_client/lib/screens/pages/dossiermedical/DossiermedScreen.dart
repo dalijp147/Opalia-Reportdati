@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 
 import '../../../bloc/med/med_bloc.dart';
 import '../../../models/dossierMed.dart';
-import '../../../services/sharedprefutils.dart';
+import '../../../services/local/sharedprefutils.dart';
 
 class DossierMedScreen extends StatefulWidget {
   const DossierMedScreen({super.key});

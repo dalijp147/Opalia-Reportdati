@@ -5,7 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:opalia_client/models/question.dart';
 import 'package:http/http.dart' as http;
-import 'package:opalia_client/services/apiService.dart';
+import '../../services/remote/apiService.dart';
 import '../../../config/config.dart';
 
 part 'quiz_event.dart';

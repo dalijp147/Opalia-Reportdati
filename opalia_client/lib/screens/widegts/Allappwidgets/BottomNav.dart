@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:opalia_client/screens/pages/HomeScreen.dart';
+import 'package:opalia_client/screens/pages/categorie/CategorieScreen.dart';
 import 'package:opalia_client/screens/pages/news/NewsScreen.dart';
 
-import '../screens/pages/agenda/AgendaScreen.dart';
-import '../screens/pages/quiz/QuizScreen.dart';
+import '../../pages/agenda/AgendaScreen.dart';
+import '../../pages/quiz/QuizScreen.dart';
 
 class BottomNav extends StatefulWidget {
   final token;

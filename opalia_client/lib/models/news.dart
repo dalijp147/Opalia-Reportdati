@@ -8,6 +8,7 @@ class News {
   late String? newsTitle;
   late String? newsDetail;
   late String? newsImage;
+  late String? author;
   late DateTime? newsPublication;
   late String? categorienews;
   News({
@@ -17,6 +18,7 @@ class News {
     this.newsImage,
     this.newsPublication,
     this.categorienews,
+    this.author,
   });
 
   factory News.fromMap(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class News {
       newsTitle: json['newsTitle'],
       newsDetail: json['newsDetail'],
       newsImage: json['newsImage'],
+      author: json['newsAuthor'],
       newsPublication: DateTime.parse(
         json['newsPublication'].toString(),
       ),
@@ -37,6 +40,7 @@ class News {
       'newsTitle': newsTitle,
       'newsDetail': newsDetail,
       'newsImage': newsImage,
+      'newsAuthor': author,
       'newsPublication': newsPublication,
       'categorienews': categorienews,
     };

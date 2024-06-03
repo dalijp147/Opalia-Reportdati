@@ -25,6 +25,13 @@ class _DetailAgendaState extends State<DetailAgenda> {
   @override
   void initState() {
     list(widget.remind.time!);
+    int startSlice = 0;
+    int endSlice = widget.remind.time!.length;
+
+    if (widget.remind.time!.startsWith(',')) startSlice = 1;
+    if (widget.remind.time!.endsWith(',')) endSlice -= 1;
+
+    widget.remind.time = widget.remind.time!.substring(startSlice, endSlice);
     super.initState();
   }
 
@@ -118,7 +125,7 @@ class _DetailAgendaState extends State<DetailAgenda> {
               Row(
                 children: [
                   Text(
-                    "Heure du Rappel:",
+                    "Heure du Rappel :",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -138,7 +145,7 @@ class _DetailAgendaState extends State<DetailAgenda> {
               Row(
                 children: [
                   Text(
-                    "Nombre de Rappel:",
+                    "Nombre de Rappel :",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -156,10 +163,18 @@ class _DetailAgendaState extends State<DetailAgenda> {
                 child: Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(widget.remind.color!),
+                    ),
                     onPressed: () {
                       Get.to(UpdateScreen(remind: widget.remind));
                     },
-                    child: Text('Modifier Reminder'),
+                    child: Text(
+                      'Modifier Reminder',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:opalia_client/Utils.dart';
-import 'package:opalia_client/services/apiService.dart';
+import 'package:opalia_client/services/remote/apiService.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
-import '../../../services/notif_service.dart';
-import '../../../services/sharedprefutils.dart';
-import '../../../widegts/test/constant.dart';
-import '../../../widegts/test/textformfield.dart';
+import '../../../models/categories.dart';
+import '../../../services/local/notif_service.dart';
+import '../../../services/local/sharedprefutils.dart';
+import '../../widegts/Allappwidgets/constant.dart';
 
 class FormReminderScreen extends StatefulWidget {
   const FormReminderScreen({super.key});
@@ -46,6 +49,8 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchCategories();
+
     initializeControllers();
     descriptionFocus = FocusNode();
     timeFocus = FocusNode();
@@ -96,33 +101,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
         );
       },
     );
-
-    // setState(
-    //   () {
-    //     final DateTime deadlineDateTime = DateTime(
-    //       timeOfDay!.hour,
-    //       timeOfDay.minute,
-    //     );
-    //     _timeOfDay = timeOfDay;
-    //     timeController.text =
-    //         DateFormat('hh:mm').format(deadlineDateTime).toString();
-
-    //     print(timeController.text);
-    //   },
-    // );
-    // if (timeOfDay != null) {
-    //   setState(() {
-    //     final DateTime deadlineDateTime = DateTime(
-    //       timeOfDay.hour,
-    //       timeOfDay.minute,
-    //     );
-    //     DateTime date = DateTime.now();
-
-    //     timeController.text = Utils.toTime(date);
-
-    //     print(timeController.text);
-    //   });
-    // }
 
     setState(() {
       var replacingTime = timeOfDay!
@@ -176,7 +154,33 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   int attemps = 1;
 
   Random random = new Random();
+  String selectedCategory = ''; // Variable to hold the selected category
+  List<String> categoryNames = [];
+  Future<void> _fetchCategories() async {
+    try {
+      var categories = await ApiService.getAllCategory(); // Fetch data
 
+      setState(() {
+        categoryNames =
+            categories!.map((category) => category.categorienom!).toList();
+        if (categoryNames.isNotEmpty) {
+          selectedCategory =
+              categoryNames.first; // Set initial selected category
+        } // Update state
+      });
+      print('this is a = $categoryNames');
+    } catch (e) {
+      print('Failed to fetch categories: $e');
+    }
+  }
+
+  List list = [
+    'Choisire une categorie de medicament',
+    'Choisire un rappel',
+  ];
+
+  bool selctedcategorie = false;
+  String selString = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,43 +196,114 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
               Container(
                 margin: EdgeInsets.only(left: 10),
                 child: Text(
-                  'Titre du rappel',
+                  'Type du rappel',
                   style: TextStyle(),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez saisire un titre du medicament ";
-                    } else {
-                      return null;
-                    }
-                  },
-                  controller: nameController,
-                  autofocus: false,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
+              Container(
+                width: 1000,
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: list!.length,
+                  itemBuilder: (_, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(
+                            () {
+                              if (index == 0) {
+                                selctedcategorie = true;
+                                selString = list[index];
+                              } else {
+                                selctedcategorie = false;
+                                selString = list[index];
+                              }
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(width: 2, color: Colors.red),
+                            color: selString == list[index].toString()
+                                ? Colors.red
+                                : Colors.white,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Center(
+                              child: Text(
+                                list[index],
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
                         ),
-                        borderRadius: kBorderRadius),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.red,
                       ),
-                      borderRadius: kBorderRadius,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    filled: true,
-                    hintText: "ecrire un titre",
-                    fillColor: Colors.transparent,
-                  ),
+                    );
+                  },
                 ),
               ),
+
+              selctedcategorie
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropdownButton<String>(
+                        value: selectedCategory,
+                        isExpanded: true, // Expand dropdown to full width
+                        items: categoryNames.map((name) {
+                          return DropdownMenuItem<String>(
+                            value: name,
+                            child: Text(name),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategory = value!;
+                            nameController.text =
+                                value; // Update the text controller with the selected value
+                          });
+                        },
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "veullez saisire un titre du medicament ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: nameController,
+                        autofocus: false,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                              ),
+                              borderRadius: kBorderRadius),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                            ),
+                            borderRadius: kBorderRadius,
+                          ),
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          filled: true,
+                          hintText: "ecrire un titre",
+                          fillColor: Colors.transparent,
+                        ),
+                      ),
+                    ),
+
               SizedBox(
                 height: 5,
               ),
@@ -664,13 +739,12 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                       times.add(controller.text);
                     }
 
-                    List<String> formattedTimes = [];
-
                     List<String>? notesText =
                         notes?.map((controller) => controller.text).toList();
                     print(notesText);
                     if (_formKey.currentState!.validate()) {
                       int randomNumber = random.nextInt(1000);
+
                       select
                           // ? reminderBloc.add(
                           //     ReminderAddEvent(
@@ -685,16 +759,18 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                           //       randomNumber.toString(),
                           //     ),
                           //   )
-                          ? await ApiService.postReminder(
-                              nameController.text,
-                              jobController.text,
-                              PreferenceUtils.getuserid(),
-                              dateController.text,
-                              dateFinController.text,
-                              selceted.toString(),
-                              notesText!,
-                              descriptionController.text,
-                              randomNumber.toString(),
+                          ? reminderBloc.add(
+                              ReminderAddEvent(
+                                nameController.text,
+                                jobController.text,
+                                PreferenceUtils.getuserid(),
+                                dateController.text,
+                                dateFinController.text,
+                                selceted.toString(),
+                                notesText!,
+                                descriptionController.text,
+                                randomNumber.toString(),
+                              ),
                             )
                           : reminderBloc.add(
                               ReminderAddEvent(
@@ -709,6 +785,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                                 randomNumber.toString(),
                               ),
                             );
+
                       print(notesText.toString());
 
                       void scheduleNotifications(
@@ -718,15 +795,28 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                             DateTime tempDate =
                                 new DateFormat("hh:mm").parse(timeStrings[i]);
 
-                            await NotifiactionService
-                                .createScheduleNotification(
-                              userid: PreferenceUtils.getuserid(),
-                              badge: randomNumber,
-                              id: randomNumber + i,
-                              title: nameController.text,
-                              body: descriptionController.text,
-                              date: tempDate,
-                            );
+                            DateTime dateday = new DateFormat('yyyy-MM-dd')
+                                .parse(dateController.text);
+                            select
+                                ? await NotifiactionService
+                                    .createScheduleNotificationaSchedule(
+                                    userid: PreferenceUtils.getuserid(),
+                                    badge: randomNumber,
+                                    id: randomNumber + i,
+                                    title: nameController.text,
+                                    body: descriptionController.text,
+                                    date: tempDate,
+                                  )
+                                : await NotifiactionService
+                                    .createScheduleNotificationday(
+                                    userid: PreferenceUtils.getuserid(),
+                                    badge: randomNumber,
+                                    id: randomNumber + i,
+                                    title: nameController.text,
+                                    body: descriptionController.text,
+                                    date: tempDate,
+                                    day: dateday,
+                                  );
                           }
                         } catch (e) {
                           print(e);

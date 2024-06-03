@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/pages/quiz/ListQuiz.dart';
+import 'package:opalia_client/screens/widegts/quiz/ListQuiz.dart';
 
-import '../../../services/apiService.dart';
-import '../../../services/sharedprefutils.dart';
+import '../../../services/local/sharedprefutils.dart';
+import '../../../services/remote/apiService.dart';
+import '../../widegts/Allappwidgets/AppbarWidegts.dart';
+import '../../widegts/Allappwidgets/Drawerwidgets.dart';
 import '../menu/MenuScreen.dart';
-import '../menu/SettingsScreen.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -15,20 +16,20 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  bool v = false;
+  bool verif = false;
   Future<bool> verify() async {
     final x = await ApiService.getResultUserId(PreferenceUtils.getuserid());
     if (x == true) {
       setState(() {
-        v = x;
+        verif = x;
       });
 
       print("ok");
-      print(v);
-      return v;
+      print(verif);
+      return verif;
     } else {
       print("error");
-      return v;
+      return verif;
     }
   }
 
@@ -41,35 +42,8 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  stops: [1, 0.1],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.red.shade50, Colors.white])),
-        ),
-        leading: Text(''),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(
-                  MenuScreen(),
-                );
-              },
-              icon: const Icon(
-                Icons.person,
-                color: Colors.red,
-              ))
-        ],
-        title: const Text(
-          'OPALIA RECORDATI',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-        ),
-      ),
+      drawer: DrawerWidget(),
+      appBar: AppbarWidgets(),
       body: Column(
         children: [
           SizedBox(
@@ -92,13 +66,21 @@ class _QuizScreenState extends State<QuizScreen> {
           SizedBox(
             height: 50,
           ),
-          v
-              ? Text(
-                  'Tu a deja partcipé au quiz',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          verif
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Tu a deja partcipé au quiz , passer nous voire une prochaine fois.',
+                    softWrap: true,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 )
               : ElevatedButton(
                   onPressed: () async {
+                    //Get.to(ListQuizScreen());
                     Get.to(ListQuizScreen());
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

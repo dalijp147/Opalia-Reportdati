@@ -3,7 +3,7 @@ const moogoose = require("mongoose");
 const newsSchema = moogoose.Schema({
   newsTitle: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
   newsAuthor: {
@@ -11,7 +11,7 @@ const newsSchema = moogoose.Schema({
   },
   newsDetail: {
     type: String,
-    require: true,
+    required: true,
   },
   newsImage: {
     type: String,

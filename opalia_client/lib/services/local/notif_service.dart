@@ -62,7 +62,40 @@ class NotifiactionService {
     // Your code goes here
   }
 
-  static Future<void> createScheduleNotification({
+  static Future<void> createScheduleNotificationday({
+    required int id,
+    required int badge,
+    required String body,
+    required String userid,
+    required String title,
+    required DateTime date,
+    required DateTime day,
+  }) async {
+    try {
+      await AwesomeNotifications().createNotification(
+        schedule: NotificationCalendar(
+          hour: date.hour,
+          minute: date.minute,
+          allowWhileIdle: true,
+          preciseAlarm: true,
+          day: day.day,
+        ),
+        content: NotificationContent(
+          id: id,
+          channelKey: 'scheduled',
+          title: title,
+          body: body,
+          badge: badge,
+          payload: {'userId': userid},
+        ),
+      );
+      print('sucess sucessfully notif ${id}');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<void> createScheduleNotificationaSchedule({
     required int id,
     required int badge,
     required String body,
@@ -79,12 +112,13 @@ class NotifiactionService {
           preciseAlarm: true,
         ),
         content: NotificationContent(
-            id: id,
-            channelKey: 'scheduled',
-            title: title,
-            body: body,
-            badge: badge,
-            payload: {'userId': userid}),
+          id: id,
+          channelKey: 'scheduled',
+          title: title,
+          body: body,
+          badge: badge,
+          payload: {'userId': userid},
+        ),
       );
       print('sucess sucessfully notif ${id}');
     } catch (e) {

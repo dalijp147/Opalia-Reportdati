@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:opalia_client/models/news.dart';
 import 'package:intl/intl.dart';
 
-import '../../bloc/news/bloc/news_bloc.dart';
+import '../../../bloc/news/bloc/news_bloc.dart';
 
 class NewsItem extends StatefulWidget {
   final News model;
@@ -24,7 +24,10 @@ class _NewsItemState extends State<NewsItem> {
         height: 170,
         width: 100,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.only(
+            bottomRight: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
           color: Colors.white,
           border: Border.all(
             width: 1,
@@ -35,7 +38,24 @@ class _NewsItemState extends State<NewsItem> {
           children: [
             Image.network(
               widget.model.newsImage!,
-              height: 400,
+              fit: BoxFit.fill,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  height: 200,
+                  width: 150,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  ),
+                );
+              },
+              height: 200,
               width: 150,
             ),
             Padding(
@@ -46,13 +66,15 @@ class _NewsItemState extends State<NewsItem> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.model.newsTitle!,
-                  ),
-                  Text(
-                    widget.model.newsTitle!,
-                    softWrap: true,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  Container(
+                    width: 150,
+                    child: Text(
+                      widget.model.newsTitle!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
                   ),
                   Text(
                     'poster le : ${formatter.format(widget.model.newsPublication!)}',

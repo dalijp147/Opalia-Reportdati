@@ -7,13 +7,13 @@ import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/mediacment.dart';
-import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/screens/pages/auth/signin.dart';
 import 'package:opalia_client/screens/pages/agenda/Detailagenda.dart';
 import 'package:opalia_client/screens/pages/agenda/FormReminderScreen.dart';
 import 'package:opalia_client/screens/pages/chatbot/GemniScreen.dart';
-import 'package:opalia_client/services/apiService.dart';
-import 'package:opalia_client/services/sharedprefutils.dart';
-import 'package:opalia_client/widegts/Agenda/AgendaItem.dart';
+import 'package:opalia_client/services/remote/apiService.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
+import 'package:opalia_client/screens/widegts/Agenda/AgendaItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'dart:ui' as ui;
@@ -21,10 +21,11 @@ import 'dart:ui' as ui;
 import 'package:iconsax/iconsax.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
 import '../../../models/reminder.dart';
-import '../../../services/notif_service.dart';
-import '../MedicalRepo/MedicalReportForm.dart';
+import '../../../services/local/notif_service.dart';
+import '../../widegts/Allappwidgets/AppbarWidegts.dart';
+import '../../widegts/Allappwidgets/Drawerwidgets.dart';
+import '../dossiermedical/MedicalReportForm.dart';
 import '../menu/MenuScreen.dart';
-import '../menu/SettingsScreen.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -72,12 +73,19 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Future<void> deletereminderafterdate() async {
     try {
       DateTime currentDate = DateTime.now();
+
       List<Reminder> eventss =
           await ApiService.getAllReminder(PreferenceUtils.getuserid());
 
       eventss.forEach((reminder) {
-        if (reminder.datefinReminder!.isBefore(currentDate)) {
+        Duration difference = currentDate.difference(reminder.datefinReminder!);
+        if ((reminder.datefinReminder!.isBefore(currentDate) &&
+                reminder.datedebutReminder!.isBefore(currentDate)) &&
+            difference.inHours >= 24) {
           ApiService.deleteReminder(reminder.reminderId);
+          NotifiactionService.cancelnotif(
+            id: reminder.notifiid!,
+          );
         }
       });
     } catch (e) {
@@ -88,32 +96,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  stops: [1, 0.1],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.red.shade50, Colors.white])),
-        ),
-        leading: Text(''),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(MenuScreen());
-              },
-              icon: const Icon(
-                Icons.person,
-                color: Colors.red,
-              ))
-        ],
-        title: const Text(
-          'OPALIA RECORDATI',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-        ),
-      ),
+      drawer: DrawerWidget(),
+      appBar: AppbarWidgets(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -170,11 +154,20 @@ class _AgendaScreenState extends State<AgendaScreen> {
                         Positioned.fill(
                           child: BackdropFilter(
                             filter: ui.ImageFilter.blur(
-                              sigmaX: 5.0,
-                              sigmaY: 5.0,
+                              sigmaX: 4.0,
+                              sigmaY: 1.0,
                             ),
                             child: Container(
                               color: Colors.transparent,
+                              child: Center(
+                                  child: Text(
+                                "Calendrier vide",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 50,
+                                ),
+                              )),
                             ),
                           ),
                         )

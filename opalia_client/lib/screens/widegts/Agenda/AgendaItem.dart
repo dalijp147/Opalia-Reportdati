@@ -2,10 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:opalia_client/services/apiService.dart';
 
-import '../../models/reminder.dart';
-import '../../services/notif_service.dart';
+import '../../../models/reminder.dart';
 
 class AgendaItem extends StatefulWidget {
   final Reminder reminder;
@@ -21,10 +19,17 @@ class _AgendaItemState extends State<AgendaItem> {
   @override
   void initState() {
     // scheduleNotifications(widget.reminder.time!);
+    int startSlice = 0;
+    int endSlice = widget.reminder.time!.length;
+
+    if (widget.reminder.time!.startsWith(',')) startSlice = 1;
+    if (widget.reminder.time!.endsWith(',')) endSlice -= 3;
+
+    widget.reminder.time =
+        widget.reminder.time!.substring(startSlice, endSlice);
     super.initState();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -58,9 +63,23 @@ class _AgendaItemState extends State<AgendaItem> {
                     widget.reminder.remindertitre!,
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                  Text(
-                    widget.reminder.time.toString()!,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  Row(
+                    children: [
+                      Text(
+                        'Heure:',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        widget.reminder.time.toString()!,
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ],
                   ),
                 ]),
           ),

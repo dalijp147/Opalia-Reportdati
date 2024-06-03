@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/question.dart';
 import 'package:opalia_client/screens/pages/quiz/QuizScreen.dart';
-import 'package:opalia_client/services/sharedprefutils.dart';
+import 'package:opalia_client/screens/pages/quiz/SpinScreen.dart';
 
 import '../../../bloc/quiz/quiz_bloc.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
-import '../../../services/apiService.dart';
-import '../../../widegts/quiz/RectangularButton.dart';
-import '../../../widegts/quiz/anwserCard.dart';
-import 'ScoreScreen.dart';
+import '../../../bloc/score/score_bloc.dart';
+import '../../../services/local/sharedprefutils.dart';
+import '../../../services/remote/apiService.dart';
+import 'RectangularButton.dart';
+import 'anwserCard.dart';
+import '../../pages/quiz/ScoreScreen.dart';
 
 class ListQuizScreen extends StatefulWidget {
   const ListQuizScreen({super.key});
@@ -65,7 +68,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
   int? selectedAnswerIndex;
   int questionIndex = 0;
   int score = 0;
-
+  final ScoreBloc scoreBloc = ScoreBloc();
   @override
   Widget build(BuildContext context) {
     List<Question> questions = [];
@@ -116,17 +119,38 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                 isLastQuestion
                     ? RectangularButton(
                         onPressed: () async {
-                          await ApiService.postScore(
-                              PreferenceUtils.getuserid(),
-                              '0',
-                              score.toString());
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (_) => ResultScreen(
-                                score: score,
-                              ),
-                            ),
-                          );
+                          score == 5
+                              ? scoreBloc.add(
+                                  ScoreAddEvent(
+                                    PreferenceUtils.getuserid(),
+                                    '1',
+                                    score.toString(),
+                                    true,
+                                  ),
+                                )
+                              : scoreBloc.add(
+                                  ScoreAddEvent(
+                                    PreferenceUtils.getuserid(),
+                                    '1',
+                                    score.toString(),
+                                    false,
+                                  ),
+                                );
+                          score == 5
+                              ? Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => SpinWheel(
+                                      score: score,
+                                    ),
+                                  ),
+                                )
+                              : Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => ResultScreen(
+                                      score: score,
+                                    ),
+                                  ),
+                                );
                         },
                         label: 'Finish',
                       )

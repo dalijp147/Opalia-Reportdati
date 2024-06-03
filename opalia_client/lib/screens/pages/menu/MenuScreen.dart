@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/services/sharedprefutils.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../auth/signin.dart';
-import '../MedicalRepo/DossiermedScreen.dart';
+import '../auth/signin.dart';
+import '../dossiermedical/DossiermedScreen.dart';
+import '../user/updateScreenUser.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -72,6 +73,64 @@ class _MenuScreenState extends State<MenuScreen> {
           SizedBox(
             height: 10,
           ),
+          const Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Modifier profil",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  margin: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red.shade100,
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.red,
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  'Modifier',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(UpdateUser());
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    margin: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(
+                      Icons.navigate_next_rounded,
+                      color: Colors.black,
+                      size: 50,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -95,7 +154,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     color: Colors.red.shade100,
                   ),
                   child: Icon(
-                    Icons.person,
+                    Icons.edit_document,
                     color: Colors.red,
                   ),
                 ),
@@ -276,12 +335,15 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
           SizedBox(
-            height: 50,
+            height: 35,
           ),
           Expanded(
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(100, 50),
+                ),
                 onPressed: () async {
                   SharedPreferences pref =
                       await SharedPreferences.getInstance();
@@ -292,7 +354,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     (Route<dynamic> route) => false,
                   );
                 },
-                child: Text('deconecter'),
+                child: Text('déconnecter'),
               ),
             ),
           ),

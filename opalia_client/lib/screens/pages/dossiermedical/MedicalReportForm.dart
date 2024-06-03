@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:opalia_client/models/categories.dart';
 import 'package:opalia_client/screens/pages/agenda/FormReminderScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../services/apiService.dart';
-import '../../../services/sharedprefutils.dart';
-import '../../../widegts/test/constant.dart';
+
+import '../../../services/local/sharedprefutils.dart';
+import '../../../services/remote/apiService.dart';
+import '../../widegts/Allappwidgets/constant.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class MedicalReport extends StatefulWidget {
@@ -46,6 +50,35 @@ class _MedicalReportState extends State<MedicalReport> {
     'diabet',
   ];
   final formkey = GlobalKey<FormState>();
+  DateTime _selectedDate = DateTime.now().toLocal();
+
+  var myFormat = DateFormat('d-MM-yyyy');
+
+  String myAge = '';
+
+  Future<void> pickDob() async {
+    DateTime? _picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (_picked != null) {
+      calculateAge(_picked);
+    }
+  }
+
+  calculateAge(DateTime birth) {
+    DateTime now = DateTime.now();
+    Duration age = now.difference(birth);
+    int years = age.inDays ~/ 365;
+    int months = (age.inDays % 365) ~/ 30;
+    int days = ((age.inDays % 365) % 30);
+    setState(() {
+      ageController.text = '$years';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
@@ -68,11 +101,8 @@ class _MedicalReportState extends State<MedicalReport> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value!.isEmpty ||
-                        RegExp(r'^[0-9]{2-3}+$').hasMatch(value!) ||
-                        value.length != 2) {
+                    if (value!.isEmpty) {
                       return "veullez saisire votre age";
                     } else {
                       return null;
@@ -80,9 +110,6 @@ class _MedicalReportState extends State<MedicalReport> {
                   },
                   controller: ageController,
                   autofocus: false,
-                  // onFieldSubmitted: (value) {
-                  //   FocusScope.of(context).requestFocus(focusNode);
-                  // },
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
@@ -100,8 +127,13 @@ class _MedicalReportState extends State<MedicalReport> {
                     filled: true,
                     fillColor: Colors.transparent,
                   ),
+                  readOnly: true,
+                  onTap: () {
+                    pickDob();
+                  },
                 ),
               ),
+              //Text("${DateTime.now().year - _selectedDate.year}"),
               SizedBox(
                 height: 5,
               ),
@@ -128,9 +160,6 @@ class _MedicalReportState extends State<MedicalReport> {
                   },
                   controller: poidsController,
                   autofocus: false,
-                  // onFieldSubmitted: (value) {
-                  //   FocusScope.of(context).requestFocus(focusNode);
-                  // },
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(

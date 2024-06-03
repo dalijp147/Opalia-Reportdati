@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:opalia_client/models/reminder.dart';
 import 'package:http/http.dart' as http;
-import 'package:opalia_client/services/apiService.dart';
+import '../../services/remote/apiService.dart';
 
 import '../../config/config.dart';
 part 'reminder_event.dart';

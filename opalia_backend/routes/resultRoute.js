@@ -1,7 +1,10 @@
 const express = require("express");
-const app = express.Router();
+const Scoreapp = express.Router();
 const Result = require("../models/result.model");
-app.get("/", async (req, res) => {
+const sendmail = require("../middleware/sendMail");
+const User = require("../models/user.model");
+
+Scoreapp.get("/", async (req, res) => {
   try {
     const result = await Result.find();
     res.json(result);
@@ -9,17 +12,61 @@ app.get("/", async (req, res) => {
     res.json({ error });
   }
 });
-app.post("/", async (req, res) => {
+
+Scoreapp.post("/", async (req, res) => {
+  const { userid, attempts, points, gagner } = req.body;
   try {
-    const { userid, attempts, points } = req.body;
-    if (!points && !userid) throw new Error("data  not provided");
-    Result.create({ userid, attempts, points });
+    const result = new Result({ userid, attempts, points, gagner });
+    await result.save();
+    // req.body.resultId = Result._id;
+    //sendWinnerEmail(result._id);
     res.json({ msg: "sucess result" });
   } catch (error) {
     res.json({ error });
   }
 });
-app.get("/byUser/:userid", async (req, res) => {
+const sendWinnerEmail = async (_id) => {
+  try {
+    //const user = await User.findById(userid);
+    const result = await Result.findById(_id).populate("userid");
+    if (!result) {
+      return res.status(404).send({ message: "Result not found" });
+    }
+    if (result.gagner) {
+      await sendmail(
+        result.userid.email,
+        "Félicitation! You have won!",
+        "Dear Patient,\n\nCongratulations on your recent victory! We're excited to inform you that you have won.\n\nBest regards,\nOpalia Recordati"
+      );
+    } else {
+      res.status(400).send({ message: "User did not win." });
+    }
+  } catch (error) {
+    res.status(500).send({ message: "Internal server error", error });
+  }
+};
+// Scoreapp.post("/check-and-send-email", async (req, res) => {
+//   try {
+//     const { _id } = req.body;
+//     //const user = await User.findById(userid);
+//     const result = await Result.findById(_id).populate("userid");
+//     if (!result) {
+//       return res.status(404).send({ message: "Result not found" });
+//     }
+//     if (result.gagner) {
+//       await sendmail(
+//         result.userid.email,
+//         "Congratulations! You have won!",
+//         "Dear Patient,\n\nCongratulations on your recent victory! We're excited to inform you that you have won.\n\nBest regards,\nOpalia Recordati"
+//       );
+//     } else {
+//       res.status(400).send({ message: "User did not win." });
+//     }
+//   } catch (error) {
+//     res.status(500).send({ message: "Internal server error", error });
+//   }
+// });
+Scoreapp.get("/byUser/:userid", async (req, res) => {
   const userid = req.params.userid;
 
   try {
@@ -29,11 +76,11 @@ app.get("/byUser/:userid", async (req, res) => {
 
     res.status(200).json(allResult);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).send({ message: "Failed to create result", error });
   }
 });
 
-app.get("/:userid", async (req, res) => {
+Scoreapp.get("/:userid", async (req, res) => {
   const userid = req.params.userid;
   try {
     const result = await Result.findOne({ userid });
@@ -47,7 +94,7 @@ app.get("/:userid", async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-app.delete("/delete/:id", geREsult, async (req, res) => {
+Scoreapp.delete("/delete/:id", geREsult, async (req, res) => {
   try {
     await res.result.deleteOne();
     res.status(200).json({ message: "Delete Result" });
@@ -67,4 +114,4 @@ async function geREsult(req, res, next) {
   res.result = result;
   next();
 }
-module.exports = app;
+module.exports = Scoreapp;

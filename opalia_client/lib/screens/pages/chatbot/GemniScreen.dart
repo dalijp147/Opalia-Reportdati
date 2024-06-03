@@ -52,7 +52,7 @@ class _ChatBotState extends State<ChatBot> {
           ),
         ),
         title: Text(
-          'chatter avec votre assistant personel',
+          'chatter avec votre conseiller médical',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),

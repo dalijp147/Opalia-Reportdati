@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:opalia_client/screens/auth/signin.dart';
+import 'package:opalia_client/screens/pages/auth/signin.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/services/sharedprefutils.dart';
-import 'package:opalia_client/widegts/BottomNav.dart';
+import 'package:opalia_client/screens/widegts/Allappwidgets/BottomNav.dart';
+import 'package:opalia_client/services/local/notif_service.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './services/notif_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   await NotifiactionService.initializeNotification();
   await PreferenceUtils.init();
 
+  await Hive.openBox('favoriteBox');
   runApp(
     MyApp(
-      token: PreferenceUtils.getString('token'),
+     token: PreferenceUtils.getString('token'),
     ),
   );
 }

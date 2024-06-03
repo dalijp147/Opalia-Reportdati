@@ -6,19 +6,22 @@ import 'package:opalia_client/models/categories.dart';
 import 'package:opalia_client/models/dossierMed.dart';
 import 'package:opalia_client/models/mediacment.dart';
 import 'package:opalia_client/models/question.dart';
-import '../config/config.dart';
-import '../models/news.dart';
-import '../models/reminder.dart';
-import '../models/user.dart';
 
-final apiService = Provider((ref) => ApiService());
+import '../../config/config.dart';
+import '../../models/news.dart';
+import '../../models/reminder.dart';
+import '../../models/user.dart';
 
 class ApiService {
   static var client = http.Client();
   static var urls = Config.apiUrl;
+
+  ///Categorie
+
   static Future<List<Categorie>?> getAllCategory() async {
     Map<String, String> requestHandler = {'Content-Type': 'application/json'};
-    var url = Uri.http(urls, Config.categorieAPI);
+    var url = Uri.http(Config.apiUrl, Config.categorieAPI + '/');
+    print(url);
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
@@ -26,21 +29,6 @@ class ApiService {
       return categorieFromJson(data["data"]);
     } else {
       throw Exception('Failed to load categorie');
-    }
-  }
-
-  static Future<List<Reminder>> getAllReminder(String userId) async {
-    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
-    var url = Uri.http(urls, Config.reminderAPI + '/' + userId);
-    //print(url);
-    var response = await client.get(url, headers: requestHandler);
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      print('sucess load reminder');
-
-      return reminderFromJson(data);
-    } else {
-      throw Exception('Failed to load data reminder');
     }
   }
 
@@ -62,6 +50,8 @@ class ApiService {
     }
   }
 
+//NEWS
+
   static Future<List<News>> getnewsbycategorie(String categoriname) async {
     Map<String, String> requestHandler = {
       'Content-Type': 'application/json',
@@ -72,10 +62,79 @@ class ApiService {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var dataprod = jsonDecode(response.body);
-      print(response.body);
+      print("sucess load news");
       return newsFromJson(dataprod);
     } else {
       throw Exception('Failed to load data news');
+    }
+  }
+
+  static Future<List<News>> getnewsallNews() async {
+    Map<String, String> requestHandler = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.newsAPI + '/');
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var dataprod = jsonDecode(response.body);
+      print("sucess load news");
+      return newsFromJson(dataprod);
+    } else {
+      throw Exception('Failed to load data news');
+    }
+  }
+////Dossier Medicale
+
+  static Future<bool> getDossierUserId(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.dosserMedApi + '/' + id);
+
+    var response = await client.get(url, headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data != null) {
+        print('This user has a medical dossier.');
+        return true;
+      } else {
+        print('Error: Empty response body.');
+        return false;
+      }
+    } else {
+      print('Error: HTTP ${response.statusCode}');
+      return false;
+    }
+  }
+
+  static Future<List<DossierMed>> fetchDossserMed(String userid) async {
+    Map<String, String> requestHandler = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Charset': 'utf-8'
+    };
+    List<DossierMed> dossier = [];
+
+    var url =
+        Uri.http(Config.apiUrl, Config.dosserMedApi + '/byUser/' + userid);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    try {
+      if (response.statusCode == 200) {
+        List data = jsonDecode(response.body);
+
+        for (int i = 0; i < data.length; i++) {
+          DossierMed dos = DossierMed.fromJson(data[i] as Map<String, dynamic>);
+          dossier.add(dos);
+        }
+      }
+      return dossier;
+    } catch (e) {
+      print('eroor fetch dossier');
+      throw (e);
     }
   }
 
@@ -100,6 +159,82 @@ class ApiService {
     } else {
       print('eroor failed adding dossiermed');
       return false;
+    }
+  }
+
+  /// Question
+  static Future<List<Question>> fetchQuestion() async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    List<Question> questions = [];
+
+    var url = Uri.http(Config.apiUrl, Config.quizApi);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body);
+
+      for (int i = 0; i < data.length; i++) {
+        Question ques = Question.fromMap(data[i] as Map<String, dynamic>);
+        questions.add(ques);
+      }
+      return questions;
+    } else {
+      print('eroor ');
+      throw Exception('Failed to load data question');
+    }
+  }
+
+  static Future<List<User>> getusername(String userid) async {
+    Map<String, String> requestHandler = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.userApi);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var dataprod = jsonDecode(response.body);
+      return (dataprod);
+    } else {
+      throw Exception('Failed to load data  users name');
+    }
+  }
+
+  /// Reminder
+  static Future<List<Reminder>> getAllReminder(String userId) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(urls, Config.reminderAPI + '/' + userId);
+    //print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('sucess load reminder');
+
+      return reminderFromJson(data);
+    } else {
+      throw Exception('Failed to load data reminder');
+    }
+  }
+
+  static Future<List<Reminder>> fetchReminder(String userid) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    List<Reminder> reminder = [];
+
+    var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/' + userid);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    try {
+      if (response.statusCode == 200) {
+        List data = jsonDecode(response.body);
+
+        for (int i = 0; i < data.length; i++) {
+          Reminder remind = Reminder.fromMap(data[i] as Map<String, dynamic>);
+          reminder.add(remind);
+        }
+      }
+      return reminder;
+    } catch (e) {
+      print('eroor  fetch reminder');
+      throw ('error');
     }
   }
 
@@ -149,118 +284,14 @@ class ApiService {
     }
   }
 
-  static Future<List<Question>> fetchQuestion() async {
-    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
-    List<Question> questions = [];
-
-    var url = Uri.http(Config.apiUrl, Config.quizApi);
-    var response = await client.get(url, headers: requestHandler);
-    if (response.statusCode == 200) {
-      List data = jsonDecode(response.body);
-
-      for (int i = 0; i < data.length; i++) {
-        Question ques = Question.fromMap(data[i] as Map<String, dynamic>);
-        questions.add(ques);
-      }
-      return questions;
-    } else {
-      print('eroor ');
-      throw Exception('Failed to load data question');
-    }
-  }
-
-  static Future<List<User>> getusername(String userid) async {
-    Map<String, String> requestHandler = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    var url = Uri.http(Config.apiUrl, Config.userApi);
-    print(url);
-    var response = await client.get(url, headers: requestHandler);
-    if (response.statusCode == 200) {
-      var dataprod = jsonDecode(response.body);
-      return (dataprod);
-    } else {
-      throw Exception('Failed to load data  users name');
-    }
-  }
-
-  static Future<bool> getDossierUserId(String id) async {
-    Map<String, String> requestHeaders = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    var url = Uri.http(Config.apiUrl, Config.dosserMedApi + '/' + id);
-
-    var response = await client.get(url, headers: requestHeaders);
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      if (data != null) {
-        print('This user has a medical dossier.');
-        return true;
-      } else {
-        print('Error: Empty response body.');
-        return false;
-      }
-    } else {
-      print('Error: HTTP ${response.statusCode}');
-      return false;
-    }
-  }
-
-  static Future<List<Reminder>> fetchReminder(String userid) async {
-    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
-    List<Reminder> reminder = [];
-
-    var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/' + userid);
-    print(url);
-    var response = await client.get(url, headers: requestHandler);
-    try {
-      if (response.statusCode == 200) {
-        List data = jsonDecode(response.body);
-
-        for (int i = 0; i < data.length; i++) {
-          Reminder remind = Reminder.fromMap(data[i] as Map<String, dynamic>);
-          reminder.add(remind);
-        }
-      }
-      return reminder;
-    } catch (e) {
-      print('eroor  fetch reminder');
-      throw ('error');
-    }
-  }
-
-  static Future<List<DossierMed>> fetchDossserMed(String userid) async {
-    Map<String, String> requestHandler = {
-      'Content-Type': 'application/json;charset=UTF-8',
-      'Charset': 'utf-8'
-    };
-    List<DossierMed> dossier = [];
-
-    var url =
-        Uri.http(Config.apiUrl, Config.dosserMedApi + '/byUser/' + userid);
-    print(url);
-    var response = await client.get(url, headers: requestHandler);
-    try {
-      if (response.statusCode == 200) {
-        List data = jsonDecode(response.body);
-
-        for (int i = 0; i < data.length; i++) {
-          DossierMed dos = DossierMed.fromJson(data[i] as Map<String, dynamic>);
-          dossier.add(dos);
-        }
-      }
-      return dossier;
-    } catch (e) {
-      print('eroor fetch dossier');
-      throw (e);
-    }
-  }
-
   static Future<bool> updateReminder(
-      t, u, String db, String df, String time, String desc) async {
+    t,
+    u,
+    String db,
+    String df,
+    //String time,
+    String desc,
+  ) async {
     var url = Uri.http(Config.apiUrl, Config.reminderAPI + '/update/' + u);
     var response = await client.patch(
       url,
@@ -269,7 +300,7 @@ class ApiService {
         "datedebutReminder": db,
         "datefinReminder": df,
         "description": desc,
-        "time": time,
+        //"time": time,
       },
     );
 
@@ -285,7 +316,8 @@ class ApiService {
     }
   }
 
-  static Future<bool> postScore(String t, String u, String i) async {
+//// SCore
+  static Future<bool> postScore(String t, String u, String i, d) async {
     var url = Uri.http(Config.apiUrl, Config.scoreApi);
     var response = await client.post(
       url,
@@ -293,6 +325,7 @@ class ApiService {
         "userid": t,
         "attempts": u,
         "points": i,
+        "gagner": d.toString(),
       },
     );
 

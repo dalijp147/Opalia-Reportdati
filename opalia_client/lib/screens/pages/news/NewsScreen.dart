@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:opalia_client/bloc/news/bloc/news_bloc.dart';
 import 'package:opalia_client/models/news.dart';
-import 'package:opalia_client/screens/pages/news/DetailScreenNews.dart';
-import 'package:opalia_client/widegts/News/NewsList.dart';
 
-import '../../../services/apiService.dart';
-import '../../../widegts/News/NewsItem.dart';
+import 'package:opalia_client/screens/widegts/Allappwidgets/Drawerwidgets.dart';
+import 'package:opalia_client/screens/widegts/News/NewsList.dart';
+
+import '../../widegts/Allappwidgets/AppbarWidegts.dart';
 import '../chatbot/GemniScreen.dart';
-import '../menu/MenuScreen.dart';
-import '../menu/SettingsScreen.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:http/http.dart' as http;
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -21,11 +21,29 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> {
+  List<News>? allNews = [];
+
   final NewsBloc newsbloc = NewsBloc();
   @override
   void initState() {
     newsbloc.add(NewsInitialFetchEvent());
     super.initState();
+    getWebsiteData();
+  }
+
+  Future getWebsiteData() async {
+    final url = Uri.parse("https://www.opaliarecordati.com/fr/articles");
+    final response = await http.get(url);
+    dom.Document html = dom.Document.html(response.body);
+    final titles = html
+        .querySelectorAll('div.bloc_left.left > ul > li > a')
+        .map((e) => e.innerHtml.trim())
+        .toList();
+    print('count ${titles.length}');
+    setState(() {
+      allNews = List.generate(titles.length,
+          (index) => News(categorienews: titles[index].toString()));
+    });
   }
 
   List calender = [
@@ -38,34 +56,8 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  stops: [1, 0.1],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.red.shade50, Colors.white])),
-        ),
-        leading: Text(''),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(
-                  MenuScreen(),
-                );
-              },
-              icon: const Icon(
-                Icons.person,
-                color: Colors.red,
-              ))
-        ],
-        title: const Text(
-          'OPALIA RECORDATI',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-        ),
-      ),
+      drawer: DrawerWidget(),
+      appBar: AppbarWidgets(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -97,12 +89,12 @@ class _NewsScreenState extends State<NewsScreen> {
               height: 20,
             ),
             SizedBox(
-              height: 30,
+              height: 100,
               width: double.infinity,
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: calender.length,
+                itemCount: allNews!.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 2, left: 10),
@@ -110,8 +102,8 @@ class _NewsScreenState extends State<NewsScreen> {
                       onTap: () {
                         setState(
                           () {
-                            selcted = calender[index].toString();
-                            if (selcted == calender[0]) {
+                            selcted = allNews![index].categorienews!.toString();
+                            if (selcted == allNews![0]) {
                               selcted = '';
                             }
                           },
@@ -125,16 +117,22 @@ class _NewsScreenState extends State<NewsScreen> {
                             color: Colors.red,
                           ),
                         ),
-                        height: 30,
-                        width: 80,
+                        height: 100,
+                        width: 100,
                         child: Center(
-                          child: Text(
-                            calender[index],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: selcted == calender[index].toString()
-                                  ? Colors.red
-                                  : Colors.black,
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.5),
+                            child: Text(
+                              allNews![index].categorienews!,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: selcted ==
+                                        allNews![index]
+                                            .categorienews!
+                                            .toString()
+                                    ? Colors.red
+                                    : Colors.black,
+                              ),
                             ),
                           ),
                         ),

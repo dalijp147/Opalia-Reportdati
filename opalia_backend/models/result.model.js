@@ -5,7 +5,7 @@ const resultSchema = moogoose.Schema({
 
   attempts: { type: Number, default: 0 },
   points: { type: Number, default: 0 },
-
+  gagner: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 module.exports = moogoose.model("Result", resultSchema);

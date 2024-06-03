@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:opalia_client/models/dossierMed.dart';
 
-import '../../services/apiService.dart';
+import '../../services/remote/apiService.dart';
 
 part 'med_event.dart';
 part 'med_state.dart';

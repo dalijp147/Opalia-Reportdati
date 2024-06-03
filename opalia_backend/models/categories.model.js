@@ -8,13 +8,6 @@ const categorieSchema = mongoose.Schema({
   },
   categorieImage: {
     type: String,
-    require: true,
   },
-  productList: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Medicament",
-    },
-  ],
 });
 module.exports = mongoose.model("categorie", categorieSchema);
