@@ -1,20 +1,15 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
-import 'package:intl/intl.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
+
 import 'package:lottie/lottie.dart';
-import 'package:opalia_client/models/mediacment.dart';
-import 'package:opalia_client/screens/pages/auth/signin.dart';
+
 import 'package:opalia_client/screens/pages/agenda/Detailagenda.dart';
 import 'package:opalia_client/screens/pages/agenda/FormReminderScreen.dart';
 import 'package:opalia_client/screens/pages/chatbot/GemniScreen.dart';
 import 'package:opalia_client/services/remote/apiService.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:opalia_client/screens/widegts/Agenda/AgendaItem.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'dart:ui' as ui;
 
@@ -24,8 +19,6 @@ import '../../../models/reminder.dart';
 import '../../../services/local/notif_service.dart';
 import '../../widegts/Allappwidgets/AppbarWidegts.dart';
 import '../../widegts/Allappwidgets/Drawerwidgets.dart';
-import '../dossiermedical/MedicalReportForm.dart';
-import '../menu/MenuScreen.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -159,15 +152,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
                             ),
                             child: Container(
                               color: Colors.transparent,
-                              child: Center(
-                                  child: Text(
-                                "Calendrier vide",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 50,
-                                ),
-                              )),
                             ),
                           ),
                         )
@@ -215,10 +199,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        await ApiService.getDossierUserId(
-                                PreferenceUtils.getuserid())
-                            ? Get.to(FormReminderScreen())
-                            : Get.to(MedicalReport());
+                        Get.to(FormReminderScreen());
                       },
                       child: const Text(
                         'Rappel',

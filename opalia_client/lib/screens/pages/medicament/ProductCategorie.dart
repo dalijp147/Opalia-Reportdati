@@ -35,8 +35,8 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
   // }
 
   Future getWebsiteData() async {
-    final url = Uri.parse(
-        "https://www.opaliarecordati.com/fr/produits/medical/specialite/62-dermatologie");
+    final url =
+        Uri.parse("https://www.opaliarecordati.com/fr/produits/paramedical");
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
     final titles = html
@@ -98,7 +98,7 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                     colors: [Colors.red.shade50, Colors.white])),
           ),
           title: Text(
-            'Medicament',
+            'Santé familiale',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -152,7 +152,6 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                                 final categorie = allMedicament![index];
                                 return GestureDetector(
                                   onTap: () {
-                                    //Get.to(DetailProduct(medi: categorie));
                                     Get.to(DetailProduct(
                                       image: categorie.mediImage!,
                                       title: categorie.mediname!,
@@ -171,9 +170,31 @@ class _ProductCategorieScreenState extends State<ProductCategorieScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Image.network(
-                                            // categorie.categorieImage!,
-                                            // height: 50,
-                                            // width: 50,
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return Container(
+                                                height: 100,
+                                                width: 150,
+                                                child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                             (categorie.mediImage == null ||
                                                     categorie.mediImage == "")
                                                 ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"

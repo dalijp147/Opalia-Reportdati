@@ -97,7 +97,7 @@ const fetchData = async () => {
 Newsapp.get("/", async (req, res) => {
   try {
     const allNews = await News.find();
-    //fetchData();
+  //fetchData();
     res.status(200).json(allNews);
   } catch (err) {
     res.status(400).json({ message: err.message });

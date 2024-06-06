@@ -115,7 +115,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: 200,
                     width: 200,
                   ),
-                  Text('Créer un nouveau compte'),
+                  Text(
+                    'Créer un nouveau compte',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(
                     height: 10,
                   ),
@@ -124,7 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Nom',
+                        'Nom :',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -163,7 +166,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Prenom',
+                        'Prenom :',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -202,7 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Email',
+                        'Email :',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -238,7 +241,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Password',
+                        'Mot de passe :',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -260,7 +263,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       // ignore: dead_code
-                      hintText: "password",
+                      hintText: "Mot de passe",
                       suffixIcon: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                           child: GestureDetector(
@@ -282,20 +285,65 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 20,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        registerUSer();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: Text(
-                      'suivant',
-                      style: TextStyle(color: Colors.white),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(value: true, onChanged: (value) {}),
+                      ),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "je suis d'accord avec ",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10),
+                            ),
+                            TextSpan(
+                              text: "politique de confidentialité",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 11),
+                            ),
+                            TextSpan(
+                              text: "et",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10),
+                            ),
+                            TextSpan(
+                              text: "termes et conditions",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: 370,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          registerUSer();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                      child: Text(
+                        'Créez votre compte',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],

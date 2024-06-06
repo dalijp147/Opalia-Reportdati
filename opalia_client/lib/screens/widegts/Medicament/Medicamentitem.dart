@@ -22,9 +22,6 @@ class _MedicamentItemState extends State<MedicamentItem> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              // categorie.categorieImage!,
-              // height: 50,
-              // width: 50,
               widget.model.mediImage!.replaceFirst("file:///", "http://"),
               height: 1000,
               width: 100,

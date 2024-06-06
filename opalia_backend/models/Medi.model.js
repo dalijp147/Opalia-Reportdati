@@ -3,16 +3,23 @@ const mongoose = require("mongoose");
 const mediSchema = mongoose.Schema({
   mediname: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
-  medidesc: {
+
+  présentationmedi: {
     type: String,
-    require: true,
   },
+  classeparamédicalemedi: {
+    type: String,
+  },
+  sousclassemedi: {
+    type: String,
+  },
+
   mediImage: {
     type: String,
-    require: true,
+    required: true,
   },
   categorie: {
     type: mongoose.Schema.Types.ObjectId,

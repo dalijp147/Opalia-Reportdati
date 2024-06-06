@@ -50,7 +50,7 @@ class _NewsListState extends State<NewsList> {
                       height: 100,
                     ),
                     Center(
-                      child: Text('Pas d actualite pour cette categorie,'),
+                      child: Text('Pas d actualite pour cette categorie'),
                     ),
                   ],
                 )

@@ -17,7 +17,7 @@ class SpinWheel extends StatefulWidget {
 }
 
 class _SpinWheelState extends State<SpinWheel> {
-  List<String> items = ['', '', '', '', 'Opa'];
+  List<String> items = ['', '', 'Hosper', '', 'invitation évenement'];
   @override
   void initState() {
     // showDialog(
@@ -52,6 +52,7 @@ class _SpinWheelState extends State<SpinWheel> {
             width: 500,
             height: 500,
             child: FortuneWheel(
+              
               selected: selected.stream,
               animateFirst: false,
               items: [
@@ -62,6 +63,7 @@ class _SpinWheelState extends State<SpinWheel> {
                 }
               ],
               onAnimationEnd: () {
+                
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -97,7 +99,7 @@ class _SpinWheelState extends State<SpinWheel> {
             onTap: () {
               setState(() {
                 selected.add(
-                  Fortune.randomInt(0, 4),
+                  Fortune.randomInt(0, items.length),
                 );
               });
             },

@@ -131,67 +131,6 @@ class _MenuScreenState extends State<MenuScreen> {
           SizedBox(
             height: 10,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Dossier Medical",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-            ),
-          ),
-          SizedBox(
-            height: 9,
-          ),
-          Container(
-            width: double.infinity,
-            child: Row(
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  margin: EdgeInsets.only(left: 5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red.shade100,
-                  ),
-                  child: Icon(
-                    Icons.edit_document,
-                    color: Colors.red,
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  'Consulter dossier medical',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(DossierMedScreen());
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    margin: EdgeInsets.only(right: 5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.navigate_next_rounded,
-                      color: Colors.black,
-                      size: 50,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
           const Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -337,30 +276,30 @@ class _MenuScreenState extends State<MenuScreen> {
           SizedBox(
             height: 35,
           ),
-          Expanded(
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(100, 50),
-                ),
-                onPressed: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  await pref.clear();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => SigninScreen()),
-                    (Route<dynamic> route) => false,
-                  );
-                },
-                child: Text('déconnecter'),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          )
+          // Expanded(
+          //   child: Align(
+          //     alignment: FractionalOffset.bottomCenter,
+          //     child: ElevatedButton(
+          //       style: ElevatedButton.styleFrom(
+          //         minimumSize: Size(100, 50),
+          //       ),
+          //       onPressed: () async {
+          //         SharedPreferences pref =
+          //             await SharedPreferences.getInstance();
+          //         await pref.clear();
+          //         Navigator.pushAndRemoveUntil(
+          //           context,
+          //           MaterialPageRoute(builder: (context) => SigninScreen()),
+          //           (Route<dynamic> route) => false,
+          //         );
+          //       },
+          //       child: Text('déconnecter'),
+          //     ),
+          //   ),
+          // ),
+          // SizedBox(
+          //   height: 10,
+          // )
         ],
       ),
     );

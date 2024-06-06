@@ -8,11 +8,13 @@ class AppbarWidgets extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       flexibleSpace: Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-                stops: [1, 0.1],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.red.shade50, Colors.white])),
+          gradient: LinearGradient(
+            stops: [1, 0.1],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.red.shade50, Colors.white],
+          ),
+        ),
       ),
       centerTitle: true,
       title: const Text(

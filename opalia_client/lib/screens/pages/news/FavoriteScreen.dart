@@ -40,8 +40,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       appBar: AppBar(),
       body: _items.isEmpty
           ? Center(
-              child: Lottie.asset('assets/animation/emptybox.json',
-                  height: 210, width: 210),
+              child: Lottie.asset(
+                'assets/animation/emptybox.json',
+                height: 210,
+                width: 210,
+              ),
             )
           : ListView.builder(
               itemCount: _items.length,

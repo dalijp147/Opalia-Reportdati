@@ -18,8 +18,8 @@ Scoreapp.post("/", async (req, res) => {
   try {
     const result = new Result({ userid, attempts, points, gagner });
     await result.save();
-    // req.body.resultId = Result._id;
-    //sendWinnerEmail(result._id);
+    req.body.resultId = Result._id;
+    sendWinnerEmail(result._id);
     res.json({ msg: "sucess result" });
   } catch (error) {
     res.json({ error });

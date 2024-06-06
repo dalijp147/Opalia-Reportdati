@@ -75,7 +75,6 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
     final question = ques[questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
     return Scaffold(
-      appBar: AppBar(),
       body: PageView.builder(
         controller: _controller,
         physics: const NeverScrollableScrollPhysics(),
@@ -87,7 +86,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
-                  height: 32,
+                  height: 100,
                 ),
                 Text(
                   question.question!,

@@ -9,6 +9,21 @@ import '../../pages/news/FavoriteScreen.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({super.key});
+  Future<void> logout(BuildContext context) async {
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      await pref.remove('token');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SigninScreen()),
+      );
+    } catch (error) {
+      print('Error during logout: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Logout failed. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +49,8 @@ class DrawerWidget extends StatelessWidget {
             ), //UserAccountDrawerHeader
           ),
           ListTile(
+            hoverColor: Colors.grey,
+            selectedColor: Colors.grey,
             leading: const Icon(Icons.person),
             title: const Text('Menu'),
             onTap: () {
@@ -58,14 +75,7 @@ class DrawerWidget extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Déconnecter'),
             onTap: () async {
-              SharedPreferences pref = await SharedPreferences.getInstance();
-              await pref.clear();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => SigninScreen()),
-                (Route<dynamic> route) => false,
-              );
-              Navigator.pop(context);
+              await logout(context);
             },
           ),
         ],

@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
-import 'package:opalia_client/Utils.dart';
+import 'package:opalia_client/config/Utils.dart';
 import 'package:opalia_client/services/remote/apiService.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
 import '../../../models/categories.dart';

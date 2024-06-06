@@ -17,9 +17,17 @@ void main() async {
   await PreferenceUtils.init();
 
   await Hive.openBox('favoriteBox');
+  String? token = PreferenceUtils.getString('token');
+
+  // Debugging token retrieval
+  if (token == null) {
+    print('No token found!');
+  } else {
+    print('Retrieved token: $token');
+  }
   runApp(
     MyApp(
-     token: PreferenceUtils.getString('token'),
+      token: token,
     ),
   );
 }
@@ -32,6 +40,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool isTokenValid = token != null && !JwtDecoder.isExpired(token!);
+    if (token != null) {
+      print('Token is expired: ${JwtDecoder.isExpired(token!)}');
+    }
+
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -40,9 +53,7 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 1, 1)),
         useMaterial3: true,
       ),
-      home: (token != null && JwtDecoder.isExpired(token) == false)
-          ? BottomNav(token: token)
-          : SigninScreen(),
+      home: isTokenValid ? BottomNav(token: token!) : SigninScreen(),
     );
   }
 }

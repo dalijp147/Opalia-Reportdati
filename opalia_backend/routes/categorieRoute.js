@@ -3,19 +3,21 @@ const app = express.Router();
 const Categorie = require("../models/categories.model");
 const upload = require("../middleware/upload");
 const puppetire = require("puppeteer");
-const URL = "https://www.opaliarecordati.com/fr/produits/medical";
+const URL = "https://www.opaliarecordati.com/fr/produits/paramedical";
+
 const fetchDataCategorie = async () => {
   try {
-    browserInstance = await puppetire.launch({
+    const browser = await puppetire.launch({
       headless: false,
       defaultViewport: null,
     });
-    const page = await browserInstance.newPage();
+    const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2" });
-    const categorisHandles = await page.$$("div.bloc_left.left > div.panel");
+    const categorisHandles = await page.$$(".panel > li");
     for (const categoriehnadle of categorisHandles) {
       const categorietitle = await page.evaluate(
-        (el) => el.querySelector("ul > li > a").textContent,
+        (el) =>
+          el.querySelector("div.bloc_left.left > ul > li > a").textContent,
         categoriehnadle
       );
       //   const newsDescription = await page.evaluate(
@@ -28,25 +30,25 @@ const fetchDataCategorie = async () => {
       //   );
       let articlesSaved = 0;
       let duplicateArticles = 0;
-      // const categorie = new Categorie({
-      //   categorienom: categorietitle,
-      // });
+      const categorie = new Categorie({
+        categorienom: categorietitle,
+      });
       console.log("Title:", categorietitle);
       //   console.log("Description:", newsDescription);
       //   console.log("Image URL:", newsImage);
       console.log("-------------------------");
-      // try {
-      //   await categorie.save();
-      //   articlesSaved++;
-      // } catch (error) {
-      //   if (error.code === 11000) {
-      //     duplicateArticles++;
-      //   } else {
-      //     console.error("Error saving article:", error);
-      //   }
-      // }
+      try {
+        await categorie.save();
+        articlesSaved++;
+      } catch (error) {
+        if (error.code === 11000) {
+          duplicateArticles++;
+        } else {
+          console.error("Error saving article:", error);
+        }
+      }
     }
-    await browserInstance.close();
+    await browser.close();
     // res.status(200).json({
     //   message: "Scraping completed",
     // });
@@ -55,10 +57,11 @@ const fetchDataCategorie = async () => {
     //res.status(500).json({ error: "An error occurred during scraping" });
   }
 };
-fetchDataCategorie();
+
 app.get("/", async (req, res) => {
   try {
     const categories = await Categorie.find();
+
     fetchDataCategorie();
     res.status(200).json({ data: categories });
   } catch (err) {

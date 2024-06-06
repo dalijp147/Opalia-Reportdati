@@ -26,8 +26,8 @@ class DetailProduct extends StatefulWidget {
 class _DetailProductState extends State<DetailProduct> {
   List<Medicament>? allMedicament = [];
   Future getWebsiteData() async {
-    final url = Uri.parse(
-        "https://www.opaliarecordati.com/fr/produits/medical/specialite/62-dermatologie");
+    final url =
+        Uri.parse("https://www.opaliarecordati.com/fr/produits/paramedical");
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
     final titles = html
@@ -303,7 +303,7 @@ class _DetailProductState extends State<DetailProduct> {
                   height: 250,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: 2,
+                    itemCount: allMedicament!.length,
                     itemBuilder: (context, index) {
                       final medicament = allMedicament![index];
                       return GestureDetector(

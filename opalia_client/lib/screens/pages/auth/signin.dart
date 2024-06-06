@@ -161,7 +161,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       return null;
                     }
                   },
-                  autofocus: true,
+                  autofocus: false,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     filled: true,
@@ -191,45 +191,65 @@ class _SigninScreenState extends State<SigninScreen> {
                 SizedBox(
                   height: 15,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      loginUser();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: Text(
-                    'login',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
                 SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'mot de passe oublier ? ',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(SignupScreen());
-                  },
-                  child: Text(
-                    'Créer un nouveau compte ',
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                  width: 370,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        loginUser();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      'Se connecter',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 15,
+                ),
+                SizedBox(
+                  width: 370,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.to(SignupScreen());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'Créer un compte',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Text('ou se connectez avec:'),
+                SizedBox(
+                  height: 15,
                 ),
                 Center(
                   child: Container(
+                    width: 370,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(width: 3, color: Colors.grey),

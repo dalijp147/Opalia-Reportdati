@@ -2,10 +2,71 @@ const express = require("express");
 const app = express.Router();
 const Medicament = require("../models/Medi.model");
 const upload = require("../middleware/upload");
+const puppetire = require("puppeteer");
 
+const URL =
+  "https://www.opaliarecordati.com/fr/produits/paramedical/specialite/11-complement-alimentaire";
+const fetchDataMedical = async () => {
+  try {
+    const browser = await puppetire.launch({
+      headless: false,
+      defaultViewport: null,
+    });
+    const page = await browser.newPage();
+    await page.goto(URL, { waitUntil: "networkidle2" });
+    const MedicalHandles = await page.$$("div.inter_categorie > div.bloc3");
+    for (const mediehnadle of MedicalHandles) {
+      const medietitle = await page.evaluate(
+        (el) => el.querySelector("div > a > div.cat_titre").textContent,
+        mediehnadle
+      );
+      // const medieDescription = await page.evaluate(
+      //   (el) => el.querySelector("div.cat_description").textContent,
+      //   newshandle
+      // );
+      const medieImage = await page.evaluate(
+        (el) => el.querySelector("a > div.image_cat > img").getAttribute("src"),
+        mediehnadle
+      );
+      let articlesSaved = 0;
+      let duplicateArticles = 0;
+      const medi = new Medicament({
+        mediname: medietitle,
+        mediImage: medieImage,
+        présentationmedi: "Unkown",
+        classeparamédicalemedi: "Unkown",
+        sousclassemedi: "Unkown",
+        categorie: "6661950c05a7ad1260734b84",
+      });
+      // console.log("Title:", medietitle);
+      // console.log("Description:", newsDescription);
+      // console.log("Image URL:", medieImage);
+      console.log("-------------------------");
+      try {
+        await medi.save();
+        articlesSaved++;
+      } catch (error) {
+        if (error.code === 11000) {
+          duplicateArticles++;
+        } else {
+          console.error("Error saving article:", error);
+        }
+      }
+    }
+    await browser.close();
+    // res.status(200).json({
+    //   message: "Scraping completed",
+    // });
+  } catch (e) {
+    console.log(e);
+    //res.status(500).json({ error: "An error occurred during scraping" });
+  }
+};
 app.get("/", async (req, res) => {
   try {
     const medicaments = await Medicament.find().populate("categorie");
+
+    fetchDataMedical();
     res.json(medicaments);
   } catch (err) {
     res.status(400).json({ message: err.message });

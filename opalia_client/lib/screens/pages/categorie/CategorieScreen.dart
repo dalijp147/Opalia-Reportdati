@@ -8,6 +8,7 @@ import '../chatbot/GemniScreen.dart';
 import '../medicament/ProductCategorie.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
+import '../../../services/remote/apiService.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,45 +19,54 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Categorie>? allcategorie = [];
-  // Future<void> _fetchCategorie() async {
-  //   try {
-  //     final categories = await ApiService.getAllCategory();
-  //     setState(() {
-  //       allcategorie = categories;
-  //     });
-  //   } catch (e) {
-  //     print('Failed to fetch categorie: $e');
-  //   }
-  // }
+  List<Categorie>? allSante = [];
+  Future<void> _fetchCategorie() async {
+    try {
+      final categories = await ApiService.getAllCategory();
+      setState(() {
+        allcategorie = categories;
+      });
+    } catch (e) {
+      print('Failed to fetch categorie: $e');
+    }
+  }
 
   List<Categorie>? found = [];
   @override
   void initState() {
     super.initState();
-    //_fetchCategorie();
-    getWebsiteData();
+    _fetchCategorie();
+    //getWebsiteData();
   }
 
-  Future getWebsiteData() async {
-    final url =
-        Uri.parse("https://www.opaliarecordati.com/fr/produits/medical");
-    final response = await http.get(url);
-    dom.Document html = dom.Document.html(response.body);
-    final titles = html
-        .querySelectorAll('div.bloc_left.left > ul > li > a')
-        .map((e) => e.innerHtml.trim())
-        .toList();
-    print('count ${titles.length}');
-    setState(() {
-      allcategorie = List.generate(
-          titles.length, (index) => Categorie(categorienom: titles[index]));
-    });
-  }
+  // Future getWebsiteData() async {
+  //   final urll =
+  //       Uri.parse("https://www.opaliarecordati.com/fr/produits/paramedical");
+
+  //   final responseSante = await http.get(urll);
+
+  //   dom.Document htmls = dom.Document.html(responseSante.body);
+
+  //   final titlesante = htmls
+  //       .querySelectorAll('div.bloc_left.left > ul > li > a')
+  //       .map((e) => e.innerHtml.trim())
+  //       .toList();
+  //   print('count ${titlesante.length}');
+
+  //   setState(() {
+  //     allSante = List.generate(
+  //       titlesante.length,
+  //       (index) => Categorie(
+  //         categorienom: titlesante[index],
+  //       ),
+  //     );
+  //   });
+  // }
 
   void _runfilter(String enterdKeyword) {
     List<Categorie>? results = [];
     if (enterdKeyword.isEmpty) {
-      getWebsiteData();
+      _fetchCategorie();
     } else {
       results = allcategorie!
           .where((user) => user.categorienom!
@@ -69,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String selcted = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 10,
                 ),
                 const Text(
-                  'Classe Terapetique',
+                  'Santé familiale',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.red,
@@ -122,54 +133,56 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           SizedBox(
-            height: 15,
+            height: 5,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(width: 2, color: Colors.red),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Text(
-                    'Medical',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(width: 2, color: Colors.red),
-                    color: Colors.white),
-                child: Center(
-                  child: Text(
-                    'Santé Familiale',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Container(
+          //       width: 100,
+          //       height: 100,
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.circular(20),
+          //         border: Border.all(width: 2, color: Colors.red),
+          //         color: Colors.white,
+          //       ),
+          //       child: Center(
+          //         child: Text(
+          //           'Medical',
+          //           style: TextStyle(
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 15,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(
+          //       width: 15,
+          //     ),
+          //     Container(
+          //       width: 100,
+          //       height: 100,
+          //       decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(20),
+          //           border: Border.all(width: 2, color: Colors.red),
+          //           color: Colors.white),
+          //       child: Center(
+          //         child: Text(
+          //           'Santé Familiale',
+          //           style: TextStyle(
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 15,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           SizedBox(
             height: 10,
           ),
+
           allcategorie!.isEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
