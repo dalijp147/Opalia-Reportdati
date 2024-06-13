@@ -1,8 +1,8 @@
 const express = require("express");
 const Scoreapp = express.Router();
-const Result = require("../models/result.model");
+const Result = require("../models/Patient/result.model");
 const sendmail = require("../middleware/sendMail");
-const User = require("../models/user.model");
+const User = require("../models/Patient/user.model");
 
 Scoreapp.get("/", async (req, res) => {
   try {

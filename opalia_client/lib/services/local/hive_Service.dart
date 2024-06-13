@@ -6,7 +6,11 @@ class HiveService {
     Map<String, dynamic> newsitem,
   ) async {
     try {
-      await boxFavorite.add(newsitem);
+      if (boxFavorite.containsKey(newsitem['isnews'])) {
+        print("aleardy exists");
+      } else {
+        await boxFavorite.add(newsitem);
+      }
       print('sucess adding hive ${newsitem}');
     } catch (e) {
       print('hive ${e}');
@@ -22,7 +26,8 @@ class HiveService {
         "isnews": item["isnews"],
         "newsImage": item["newsImage"],
         "newsDate": item["newsDate"],
-        "random": item["random"]
+        "random": item["random"],
+        "favorite": item["favorite"]
       };
     }).toList();
     return data;
@@ -35,5 +40,9 @@ class HiveService {
     } catch (e) {
       print('hive delete ${e}');
     }
+  }
+
+  static bool itemExists(dynamic isnews) {
+    return boxFavorite.containsKey(isnews);
   }
 }

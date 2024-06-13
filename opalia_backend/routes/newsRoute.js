@@ -56,10 +56,7 @@ const fetchData = async () => {
         newsAuthor: "Unknown", // Modify if the author is available
         categorienews: "Unknown", // Modify if the category is available
       });
-      console.log("Title:", newstitle);
-      console.log("Description:", newsDescription);
-      console.log("Image URL:", newsImage);
-      console.log("-------------------------");
+      console.log("scrape news succes");
       try {
         await newsArticle.save();
         articlesSaved++;
@@ -97,7 +94,7 @@ const fetchData = async () => {
 Newsapp.get("/", async (req, res) => {
   try {
     const allNews = await News.find();
-  //fetchData();
+    //fetchData();
     res.status(200).json(allNews);
   } catch (err) {
     res.status(400).json({ message: err.message });

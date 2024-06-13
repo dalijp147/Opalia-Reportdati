@@ -1,4 +1,4 @@
-const UserModel = require("../models/user.model");
+const UserModel = require("../models/Patient/user.model");
 const jwt = require("jsonwebtoken");
 class USerService {
   static async checkuser(email) {

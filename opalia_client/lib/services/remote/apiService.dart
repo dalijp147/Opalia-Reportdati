@@ -32,12 +32,32 @@ class ApiService {
     }
   }
 
-  static Future<List<Medicament>> getMedicamentBycategorie(String name) async {
+  static Future<List<Medicament>> getMedicamentBycategorie(id) async {
     Map<String, String> requestHandler = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
-    var url = Uri.http(Config.apiUrl, Config.medicaCategorieAPI + name);
+    var url = Uri.http(Config.apiUrl, Config.medicaCategorieAPI + id);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var dataprod = jsonDecode(response.body);
+      print('sucess load medicament');
+
+      return mediFromJson(dataprod["data"]);
+    } else {
+      throw Exception('Failed to load medicament');
+    }
+  }
+
+//MEDICAMENT
+
+  static Future<List<Medicament>> getAllMedicament() async {
+    Map<String, String> requestHandler = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.medicaCategorieAPI);
     print(url);
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
@@ -361,6 +381,38 @@ class ApiService {
       }
     } else {
       print('Error: HTTP ${response.statusCode}');
+      return false;
+    }
+  }
+
+  ///USer
+  static Future<bool> updateUser(
+    id,
+    String family,
+    String name,
+    String email,
+    //String time,
+  ) async {
+    var url = Uri.http(Config.apiUrl, Config.userApi + '/update/' + id);
+    var response = await client.patch(
+      url,
+      body: {
+        "familyname": family,
+        "username": name,
+        "email": email,
+
+        //"time": time,
+      },
+    );
+
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess updating user");
+      print(response.body);
+      return true;
+    } else {
+      print("failed updating user");
+
       return false;
     }
   }

@@ -1,7 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/pages/agenda/AgendaScreen.dart';
+import 'package:opalia_client/screens/client/pages/agenda/AgendaScreen.dart';
 
 class NotifiactionService {
   static Future<void> initializeNotification() async {

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:opalia_client/screens/pages/auth/signin.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/widegts/Allappwidgets/BottomNav.dart';
+import 'package:opalia_client/Widget/profileScreen.dart';
+import 'package:opalia_client/screens/client/pages/auth/signin.dart';
+import 'package:opalia_client/screens/client/widgets/Allappwidgets/BottomNav.dart';
+import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
 import 'package:opalia_client/services/local/notif_service.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,8 +26,8 @@ void main() async {
   }
   runApp(
     MyApp(
-      token: token,
-    ),
+        //token: token,
+        ),
   );
 }
 
@@ -53,7 +52,9 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 1, 1)),
         useMaterial3: true,
       ),
-      home: isTokenValid ? BottomNav(token: token!) : SigninScreen(),
+      home:
+          //isTokenValid ? BottomNav(token: token!) : SigninScreen(),
+          BottomNavPRo(),
     );
   }
 }

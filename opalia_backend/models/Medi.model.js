@@ -7,16 +7,21 @@ const mediSchema = mongoose.Schema({
     unique: true,
   },
 
-  présentationmedi: {
+  presentationmedi: {
     type: String,
   },
-  classeparamédicalemedi: {
+  classeparamedicalemedi: {
     type: String,
   },
   sousclassemedi: {
     type: String,
   },
-
+  dci: {
+    type: String,
+  },
+  forme: {
+    type: String,
+  },
   mediImage: {
     type: String,
     required: true,
@@ -24,6 +29,10 @@ const mediSchema = mongoose.Schema({
   categorie: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "categorie",
+  },
+  categoriePro: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categorieMedecin",
   },
 });
 module.exports = mongoose.model("Medicament", mediSchema);
