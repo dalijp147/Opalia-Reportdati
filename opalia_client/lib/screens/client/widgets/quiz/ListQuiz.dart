@@ -39,7 +39,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
 
   void pickAnswer(int value) {
     selectedAnswerIndex = value;
-    final question = ques![questionIndex];
+    final question = ques[0];
     if (selectedAnswerIndex == question.answer) {
       score++;
     }
@@ -58,7 +58,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
     try {
       final events = await ApiService.fetchQuestion();
       setState(() {
-        ques = events!;
+        ques = events;
       });
     } catch (e) {
       print('Failed to fetch events: $e');
@@ -72,7 +72,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
   @override
   Widget build(BuildContext context) {
     List<Question> questions = [];
-    final question = ques[questionIndex];
+    final question = ques![questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
     return Scaffold(
       body: PageView.builder(
@@ -119,12 +119,11 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                     ? RectangularButton(
                         onPressed: () async {
                           score == 5
-                              ? scoreBloc.add(
-                                  ScoreAddEvent(
-                                    PreferenceUtils.getuserid(),
-                                    '1',
-                                    score.toString(),
-                                    true,
+                              ? Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => SpinWheel(
+                                      score: score,
+                                    ),
                                   ),
                                 )
                               : scoreBloc.add(
@@ -151,13 +150,13 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                                   ),
                                 );
                         },
-                        label: 'Finish',
+                        label: 'Terminer',
                       )
                     : RectangularButton(
                         onPressed: selectedAnswerIndex != null
                             ? goToNextQuestion
                             : null,
-                        label: 'Next',
+                        label: 'Suivant',
                       ),
               ],
             ),

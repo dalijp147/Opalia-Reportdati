@@ -9,10 +9,23 @@ const medecinSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  numeroTel: {
+    type: Number,
+    //required: true,
+  },
+  description: {
+    type: String,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
+  },
+  image: {
+    type: String,
+  },
+  specialite: {
+    type: String,
   },
   password: {
     type: String,

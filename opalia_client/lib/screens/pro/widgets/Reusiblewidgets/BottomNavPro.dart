@@ -8,6 +8,7 @@ import 'package:opalia_client/screens/pro/pages/Events/EventsScreen.dart';
 import '../../../client/pages/HomeScreen.dart';
 import '../../../client/pages/agenda/AgendaScreen.dart';
 import '../../pages/Categorie/CategorieHomePro.dart';
+import '../../pages/HomeScreenPro.dart';
 
 class BottomNavPRo extends StatefulWidget {
   const BottomNavPRo({super.key});
@@ -65,7 +66,7 @@ class _BottomNavPRoState extends State<BottomNavPRo> {
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
   final screens = [
-    HomeScreenApp(),
+    HomeScreenAppPRo(),
     CategorieProScreen(),
     EventsScreen(),
   ];

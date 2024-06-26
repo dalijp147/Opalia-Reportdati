@@ -8,22 +8,24 @@ import '../../../bloc/news/bloc/news_bloc.dart';
 import '../../../models/news.dart';
 import '../../../services/local/sharedprefutils.dart';
 import '../../../services/remote/apiService.dart';
-import '../widgets/Allappwidgets/AppbarWidegts.dart';
-import '../widgets/Allappwidgets/Drawerwidgets.dart';
-import '../widgets/News/NewsList.dart';
-import '../widgets/quiz/ListQuiz.dart';
-import 'chatbot/GemniScreen.dart';
+
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 
-class HomeScreenApp extends StatefulWidget {
-  const HomeScreenApp({super.key});
+import '../../client/pages/chatbot/GemniScreen.dart';
+import '../../client/widgets/News/NewsList.dart';
+import '../../client/widgets/quiz/ListQuiz.dart';
+import '../widgets/Reusiblewidgets/AppBarWidgetPro.dart';
+import '../widgets/Reusiblewidgets/Drawerwidgets.dart';
+
+class HomeScreenAppPRo extends StatefulWidget {
+  const HomeScreenAppPRo({super.key});
 
   @override
-  State<HomeScreenApp> createState() => _HomeScreenAppState();
+  State<HomeScreenAppPRo> createState() => _HomeScreenAppPRoState();
 }
 
-class _HomeScreenAppState extends State<HomeScreenApp> {
+class _HomeScreenAppPRoState extends State<HomeScreenAppPRo> {
   bool verif = false;
   Future<bool> verify() async {
     final x = await ApiService.getResultUserId(PreferenceUtils.getuserid());
@@ -72,8 +74,8 @@ class _HomeScreenAppState extends State<HomeScreenApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(),
-      appBar: AppbarWidgets(),
+      drawer: DrawerWidgetPro(),
+      appBar: AppBarWidget(),
       body: ListView(
         children: [
           const SizedBox(

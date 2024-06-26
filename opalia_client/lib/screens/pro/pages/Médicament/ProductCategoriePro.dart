@@ -7,6 +7,7 @@ import 'package:opalia_client/models/mediacment.dart';
 import '../../../../bloc/product/product_bloc.dart';
 import '../../../../services/remote/apiService.dart';
 import '../../../../services/remote/apiServicePro.dart';
+import '../../widgets/Reusiblewidgets/Drawerwidgets.dart';
 import 'DetailMedicamentScreen.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;

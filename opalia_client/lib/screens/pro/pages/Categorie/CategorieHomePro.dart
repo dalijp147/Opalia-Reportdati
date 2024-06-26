@@ -8,6 +8,7 @@ import '../../../../models/mediacment.dart';
 import '../../../../services/remote/apiService.dart';
 import '../../../client/pages/chatbot/GemniScreen.dart';
 import '../../widgets/Reusiblewidgets/AppBarWidgetPro.dart';
+import '../../widgets/Reusiblewidgets/Drawerwidgets.dart';
 import '../Médicament/ProductCategoriePro.dart';
 
 class CategorieProScreen extends StatefulWidget {
@@ -54,6 +55,7 @@ class _CategorieProScreenState extends State<CategorieProScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(),
+      drawer: DrawerWidgetPro(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,54 +155,9 @@ class _CategorieProScreenState extends State<CategorieProScreen> {
           SizedBox(
             height: 5,
           ),
-
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Container(
-          //       width: 100,
-          //       height: 100,
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(20),
-          //         border: Border.all(width: 2, color: Colors.red),
-          //         color: Colors.white,
-          //       ),
-          //       child: Center(
-          //         child: Text(
-          //           'Medical',
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 15,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //     SizedBox(
-          //       width: 15,
-          //     ),
-          //     Container(
-          //       width: 100,
-          //       height: 100,
-          //       decoration: BoxDecoration(
-          //           borderRadius: BorderRadius.circular(20),
-          //           border: Border.all(width: 2, color: Colors.red),
-          //           color: Colors.white),
-          //       child: Center(
-          //         child: Text(
-          //           'Santé Familiale',
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 15,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           SizedBox(
             height: 10,
           ),
-
           allCategoriePro!.isEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,

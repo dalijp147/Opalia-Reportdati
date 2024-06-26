@@ -38,7 +38,20 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Actualitée favorites'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              stops: [1, 0.1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red.shade50, Colors.white],
+            ),
+          ),
+        ),
+        title: Text(
+          'Actualitée favorites',
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: _items.isEmpty

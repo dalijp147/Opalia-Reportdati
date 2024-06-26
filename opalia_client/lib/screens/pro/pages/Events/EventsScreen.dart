@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 import 'package:opalia_client/screens/pro/pages/Events/DetailEventScreen.dart';
+import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/Drawerwidgets.dart';
 
 import '../../../../models/events.dart';
 import '../../../../services/remote/apiServicePro.dart';
@@ -16,6 +18,7 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen> {
   List<Events>? allEvents = [];
+  late Future<Events> futureAppointment;
   Future<void> _fetchMedicament() async {
     try {
       final events = await ApiServicePro.getAllEvents();
@@ -33,10 +36,12 @@ class _EventsScreenState extends State<EventsScreen> {
     super.initState();
   }
 
+  var formatter = new DateFormat('yyyy-MM-dd');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(),
+      drawer: DrawerWidgetPro(),
       body: Column(
         children: [
           const Padding(
@@ -115,7 +120,10 @@ class _EventsScreenState extends State<EventsScreen> {
                             );
                           },
                         ),
-                        Text(event.eventname!),
+                        Text(
+                          event.eventname!,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(
                           height: 10,
                         ),
@@ -125,7 +133,13 @@ class _EventsScreenState extends State<EventsScreen> {
                               Icons.location_on,
                               color: Colors.red,
                             ),
-                            Text(event.eventname!),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              event.eventLocation!,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -140,7 +154,13 @@ class _EventsScreenState extends State<EventsScreen> {
                                   Icons.date_range,
                                   color: Colors.red,
                                 ),
-                                Text(event.dateEvent!.toString()),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  '${formatter.format(event.dateEvent!)}',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ],
                             ),
                             ElevatedButton(

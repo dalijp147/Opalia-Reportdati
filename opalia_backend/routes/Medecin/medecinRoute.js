@@ -2,6 +2,8 @@ const express = require("express");
 const app = express.Router();
 const Medecin = require("../../models/Medecin/Medecin.model");
 const USerService = require("../../middleware/service");
+const upload = require("../../middleware/upload");
+
 app.get("/", async (req, res) => {
   try {
     const allUsers = await Medecin.find();
@@ -10,19 +12,28 @@ app.get("/", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-app.post("/registration", async (req, res) => {
-  const medecin = new Medecin({
-    familyname: req.body.familyname,
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-    identifiantMedecin: req.body.identifiantMedecin,
-  });
+app.post("/registration", upload.single("image"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const path = req.file.path.replace(/\\/g, "/");
+    const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+    const medecin = new Medecin({
+      image: imageUrl,
+      specialite: req.body.specialite,
+      familyname: req.body.familyname,
+      numeroTel: req.body.numeroTel,
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+      identifiantMedecin: req.body.identifiantMedecin,
+    });
+
     const newmedecin = await medecin.save();
     res.status(200).json(newmedecin);
   } catch (err) {
-    res.status(400).json({ message: "error" });
+    res.status(400).json({ message: err.message });
   }
 });
 app.patch("/update/:id", async (req, res) => {
@@ -39,9 +50,9 @@ app.post("/login", async (req, res) => {
     if (!email || !password) {
       throw new Error("Parameter are not correct");
     }
-    const user = await USerService.checkuser(email);
+    const user = await USerService.checkuserMedecin(email);
     if (!user) {
-      throw new Error("User dont exist");
+      throw new Error("Medecin dont exist");
     }
     const isMatch = await user.comparePassword(password);
     if (isMatch === false) {
@@ -49,6 +60,7 @@ app.post("/login", async (req, res) => {
     }
     let tokenData = {
       _id: user._id,
+      numeroTel: user.numeroTel,
       email: user.email,
       username: user.username,
       familyname: user.familyname,

@@ -18,7 +18,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       title: const Text(
-        'My OPALIA Pro',
+        'My OPALIA PRO',
         style: TextStyle(
           color: Colors.red,
           fontWeight: FontWeight.bold,

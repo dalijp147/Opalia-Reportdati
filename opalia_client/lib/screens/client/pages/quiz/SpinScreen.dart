@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../../../bloc/score/score_bloc.dart';
+import '../../../../services/local/sharedprefutils.dart';
 import 'ScoreScreen.dart';
 
 class SpinWheel extends StatefulWidget {
@@ -17,145 +22,125 @@ class SpinWheel extends StatefulWidget {
 }
 
 class _SpinWheelState extends State<SpinWheel> {
-  List<String> items = ['', '', 'Hosper', '', 'invitation évenement'];
-  @override
-  void initState() {
-    // showDialog(
-    //   context: context,
-    //   builder: _buildPopupDialog(context),
-    // );
-
-    super.initState();
-  }
+  StreamController<int> controller = StreamController<int>();
+  List<String> items = [
+    'Won',
+    'Won',
+    'Won',
+  ];
 
   @override
   void dispose() {
-    selected.close();
+    controller.close();
+
     super.dispose();
+  }
+
+  final ScoreBloc scoreBloc = ScoreBloc();
+  void spinWheel() {
+    final random = Random();
+    final selected = random.nextInt(items.length);
+    controller.add(selected);
+
+    Future.delayed(Duration(seconds: 4), () {
+      if (items[selected] == 'Won') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Félicitaion!'),
+              content: Text('Tu as gagné un produit de la gamme Hosper'),
+              actions: <Widget>[
+                TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      scoreBloc.add(
+                        ScoreAddEvent(
+                          PreferenceUtils.getuserid(),
+                          '1',
+                          widget.score.toString(),
+                          true,
+                        ),
+                      );
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => ResultScreen(
+                            score: widget.score,
+                          ),
+                        ),
+                      );
+                    }),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Try Again!'),
+              content: Text('You did not win this time.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    scoreBloc.add(
+                      ScoreAddEvent(
+                        PreferenceUtils.getuserid(),
+                        '1',
+                        widget.score.toString(),
+                        false,
+                      ),
+                    );
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => ResultScreen(
+                          score: widget.score,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 
   final selected = BehaviorSubject<int>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Tourné pour gagner'),
+      ),
       body: Column(
         children: [
-          SizedBox(
-            height: 10,
-          ),
-          Text(''),
-          SizedBox(
-            height: 20,
+          Expanded(
+            child: FortuneWheel(
+              animateFirst: false,
+              selected: controller.stream,
+              // duration: const Duration(seconds: 3),
+              items: [
+                for (var item in items) FortuneItem(child: Text(item)),
+              ],
+            ),
           ),
           Container(
-            width: 500,
-            height: 500,
-            child: FortuneWheel(
-              selected: selected.stream,
-              animateFirst: false,
-              items: [
-                for (int i = 0; i < items.length; i++) ...<FortuneItem>{
-                  FortuneItem(
-                    child: Text(items[i]),
-                  ),
-                }
-              ],
-              onAnimationEnd: () {
-                selected.last.then(
-                  (selectedIndex) {
-                    final selectedItem = items[selectedIndex];
-                    if (selectedItem == 'Hosper' ||
-                        selectedItem == 'invitation évenement') {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text('Félicitations!'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                Text('Vous avez gagné! Félicitations!'),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Fermer'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => ResultScreen(
-                                      score: widget.score,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text('Perdu'),
-                          content: const SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                Text(
-                                    'Désole vous avez perdu essayer une prochaine fois'),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('Fermer'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => ResultScreen(
-                                      score: widget.score,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                );
-              },
+            height: 50,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: spinWheel,
+              child: Text(
+                'Spin the Wheel!',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selected.add(
-                  Fortune.randomInt(0, items.length),
-                );
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  width: 2,
-                  color: Colors.red,
-                ),
-                color: Colors.redAccent,
-              ),
-              height: 40,
-              width: 120,
-              child: Center(
-                child: Text(
-                  'Tourner',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          )
+          SizedBox(height: 30),
         ],
       ),
     );

@@ -11,7 +11,12 @@ const UserRoute = require("../routes/Patient/userRoute.js");
 const DossierRoute = require("../routes/Patient/DossierMediRoute.js");
 const DoctorRoute = require("../routes/Medecin/medecinRoute.js");
 const EventRoute = require("../routes/Medecin/eventRoute.js");
+const ParticapntRoute = require("../routes/Medecin/participantRoute.js");
 const CategoriePtoRoute = require("../routes/Medecin/categorieMedecinRoute.js");
+const ProgrammeRoute = require("../routes/Medecin/programmeRoute.js");
+const DiscussionRoute = require("../routes/Medecin/discussionRoute.js");
+const CommentRoute = require("../routes/Medecin/commentRoute.js");
+
 const dotenv = require("dotenv");
 const body_parser = require("body-parser");
 dotenv.config();
@@ -20,8 +25,8 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(body_parser.json());
-
 app.use("/uploads", express.static("uploads"));
+
 //routes
 app.use("/dossier", DossierRoute);
 app.use("/catgorie", categorieRoute);
@@ -34,6 +39,11 @@ app.use("/user", UserRoute);
 app.use("/medecin", DoctorRoute);
 app.use("/categoriePro", CategoriePtoRoute);
 app.use("/event", EventRoute);
+app.use("/programme", ProgrammeRoute);
+app.use("/discussion", DiscussionRoute);
+app.use("/participant", ParticapntRoute);
+app.use("/comment", CommentRoute);
+
 //mongoose connection
 mongoose.connect(process.env.MONGO_URL, {}).then(
   () => {
@@ -44,6 +54,7 @@ mongoose.connect(process.env.MONGO_URL, {}).then(
   }
 );
 
+///run server
 app.listen(process.env.PORT, () =>
   console.log(`Running Express Server on Port  ${process.env.PORT} `)
 );

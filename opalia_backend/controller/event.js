@@ -8,9 +8,8 @@ exports.create = (req, res) => {
   const path = req.file.path.replace(/\\/g, "/");
   const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
   var event = new Event({
-    doctorId: req.body.doctorId,
     eventname: req.body.eventname,
-    participant: req.body.participant,
+
     eventdescription: req.body.eventdescription,
     eventimage: imageUrl,
     eventLocalisation: req.body.eventLocalisation,
@@ -31,6 +30,7 @@ exports.create = (req, res) => {
 
 exports.get = (req, res) => {
   Event.find()
+
     .then((data) => {
       var message = "";
       if (data === undefined || data.length == 0) message = "No Event found!";

@@ -25,7 +25,7 @@ exports.get = (req, res) => {
       if (data === undefined || data.length == 0) message = "No Quiz found!";
       else message = "Quiz successfully retrieved";
 
-      res.status(200).json({ data });
+      res.status(200).json(data);
     })
     .catch((err) => {
       res.status(500).send({

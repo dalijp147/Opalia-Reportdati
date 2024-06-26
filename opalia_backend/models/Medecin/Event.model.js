@@ -1,10 +1,6 @@
 const moogoose = require("mongoose");
 
 const EventSchema = moogoose.Schema({
-  doctorId: {
-    type: moogoose.Schema.Types.ObjectId,
-    ref: "Medecin",
-  },
   eventname: {
     type: String,
     required: true,
@@ -15,12 +11,10 @@ const EventSchema = moogoose.Schema({
 
     default: Date.now(),
   },
-  eventLocalisation: [
-    {
-      longitude: { type: String },
-      latitude: { type: String },
-    },
-  ],
+  eventLocalisation: {
+    type: String,
+    default: "jendouba",
+  },
 
   eventdescription: {
     type: String,
@@ -30,13 +24,8 @@ const EventSchema = moogoose.Schema({
     type: String,
     required: true,
   },
-  participant: [
-    {
-      doctorId: {
-        type: moogoose.Schema.Types.ObjectId,
-        ref: "Medecin",
-      },
-    },
-  ],
+  nombreparticipant: {
+    type: Number,
+  },
 });
 module.exports = moogoose.model("Event", EventSchema);

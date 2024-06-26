@@ -184,7 +184,10 @@ class ApiService {
 
   /// Question
   static Future<List<Question>> fetchQuestion() async {
-    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    Map<String, String> requestHandler = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Charset': 'utf-8'
+    };
     List<Question> questions = [];
 
     var url = Uri.http(Config.apiUrl, Config.quizApi);

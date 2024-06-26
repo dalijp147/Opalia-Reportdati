@@ -42,7 +42,7 @@ const sendWinnerEmail = async (_id) => {
       res.status(400).send({ message: "User did not win." });
     }
   } catch (error) {
-    res.status(500).send({ message: "Internal server error", error });
+    res.status(400).send({ message: "Internal server error", error });
   }
 };
 // Scoreapp.post("/check-and-send-email", async (req, res) => {
