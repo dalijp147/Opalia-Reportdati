@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../medicament/DetailScreen.dart';
+import 'RelatedNewsDeatil.dart';
 
 class RelatedActualieItem extends StatefulWidget {
   final String nameNews;
   final String imageNews;
-
+  final String desc;
   const RelatedActualieItem(
-      {super.key, required this.nameNews, required this.imageNews});
+      {super.key,
+      required this.nameNews,
+      required this.imageNews,
+      required this.desc});
 
   @override
   State<RelatedActualieItem> createState() => _RelatedActualieItemState();
@@ -19,9 +23,10 @@ class _RelatedActualieItemState extends State<RelatedActualieItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(DetailProduct(
+        Get.to(DatailRelatednews(
           image: widget.imageNews,
-          title: widget.nameNews,
+          name: widget.nameNews,
+          description: widget.desc,
         ));
       },
       child: Padding(

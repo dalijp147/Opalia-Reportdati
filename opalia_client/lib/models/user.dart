@@ -6,12 +6,14 @@ class User {
   late String? password;
   late String? name;
   late String? familyname;
+  late String? image;
   User({
     this.userId,
     this.email,
     this.password,
     this.name,
     this.familyname,
+    this.image,
   });
   List<User> userFromJson(dynamic str) =>
       List<User>.from((str).map((x) => User.fromMap(x)));
@@ -22,6 +24,7 @@ class User {
       familyname: json['username'],
       email: json['email'],
       password: json['password'],
+      image: json['image'] ?? '',
     );
   }
   Map<String, dynamic> toMap() {
@@ -31,6 +34,7 @@ class User {
       'familyname': familyname,
       'email': email,
       'password': password,
+      'image': image,
     };
   }
 

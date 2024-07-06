@@ -2,6 +2,8 @@ const express = require("express");
 const app = express.Router();
 const User = require("../../models/Patient/user.model");
 const USerService = require("../../middleware/service");
+const upload = require("../../middleware/upload");
+
 app.get("/", async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -22,12 +24,19 @@ async function geUserId(req, res, next) {
   res.userr = userr;
   next();
 }
-app.post("/registration", async (req, res) => {
+app.post("/registration", upload.single("image"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const path = req.file.path.replace(/\\/g, "/");
+  const imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
   const user = new User({
     familyname: req.body.familyname,
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
+    image: imageUrl,
   });
   try {
     const newuser = await user.save();
@@ -67,6 +76,7 @@ app.post("/login", async (req, res) => {
       email: user.email,
       username: user.username,
       familyname: user.familyname,
+      image: user.image,
     };
     const token = await USerService.generateAccessToken(
       tokenData,

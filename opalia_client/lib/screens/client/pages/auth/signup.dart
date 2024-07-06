@@ -1,7 +1,8 @@
 import 'dart:convert';
-
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:opalia_client/config/config.dart';
 import 'package:opalia_client/screens/client/pages/auth/signin.dart';
 import 'package:opalia_client/screens/client/pages/categorie/CategorieScreen.dart';
@@ -60,27 +61,66 @@ class _SignupScreenState extends State<SignupScreen> {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         nomController.text.isNotEmpty &&
-        prenomController.text.isNotEmpty) {
+        prenomController.text.isNotEmpty &&
+        _image != null) {
       var rgBody = {
         "email": emailController.text,
         "password": passwordController.text,
         "username": nomController.text,
-        "familyname": prenomController.text
+        "familyname": prenomController.text,
+        "image": _image,
       };
       var url = Uri.http(Config.apiUrl, Config.userApi + "/registration");
-      var response = await http.post(url, body: rgBody);
-      print(response.body);
-      var jsonResponse = jsonDecode(response.body);
-      print(url);
-      if (response.statusCode == 200) {
-        Get.to(SigninScreen());
-      } else {
-        print('something went wrong in signup');
+      var request = http.MultipartRequest('POST', url);
+
+      request.fields
+          .addAll(rgBody.map((key, value) => MapEntry(key, value.toString())));
+      request.files
+          .add(await http.MultipartFile.fromPath('image', _image!.path));
+      // var response = await http.post(url, body: rgBody);
+      // print(response.body);
+      // var jsonResponse = jsonDecode(response.body);
+      // print(url);
+      // if (response.statusCode == 200) {
+      //   Get.to(SigninScreen());
+      // } else {
+      //   print('something went wrong in signup');
+      // }
+      try {
+        var response = await request.send();
+        var responseBody = await http.Response.fromStream(response);
+
+        if (response.statusCode == 200) {
+          Get.to(SigninScreen());
+        } else {
+          print('Something went wrong in signup: ${responseBody.body}');
+        }
+      } catch (e) {
+        print('Error during registration: $e');
+      } finally {
+        setState(() {
+          //isLoading = false;
+        });
       }
     } else {
       setState(() {
         isNotValide = true;
       });
+    }
+  }
+
+  io.File? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = io.File(pickedFile.path);
+      });
+    } else {
+      print('No image selected.');
     }
   }
 
@@ -117,6 +157,14 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     'Créer un nouveau compte',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  _image == null
+                      ? Text('No image selected.')
+                      : Image.file(_image!, height: 100),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    child: Text('Pick Image from Gallery'),
                   ),
                   const SizedBox(
                     height: 10,

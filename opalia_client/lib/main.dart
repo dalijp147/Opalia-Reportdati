@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:opalia_client/Widget/profileScreen.dart';
 import 'package:opalia_client/screens/client/pages/auth/signin.dart';
 import 'package:opalia_client/screens/client/widgets/Allappwidgets/BottomNav.dart';
+import 'package:opalia_client/screens/pro/pages/auth/signinpro.dart';
 import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
 import 'package:opalia_client/services/local/notif_service.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
@@ -26,24 +27,29 @@ void main() async {
   }
   runApp(
     MyApp(
-        //  token: token,
-        ),
+      token: token,
+    ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final token;
+  final String? token;
 
   const MyApp({super.key, this.token});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    bool isTokenValid = token != null && !JwtDecoder.isExpired(token!);
-    if (token != null) {
-      print('Token is expired: ${JwtDecoder.isExpired(token!)}');
-    }
+    bool isTokenValid = false;
 
+    if (token != null) {
+      try {
+        isTokenValid = !JwtDecoder.isExpired(token!);
+        print('Token is expired: ${JwtDecoder.isExpired(token!)}');
+      } catch (e) {
+        print('Error decoding token: $e');
+      }
+    }
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -52,9 +58,10 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 1, 1)),
         useMaterial3: true,
       ),
-      home:
-          // isTokenValid ? BottomNav(token: token!) : SigninScreen(),
-          BottomNavPRo(),
+
+      // home: isTokenValid ? BottomNav(token: token!) : SigninScreen(),
+      home: isTokenValid ? BottomNavPRo(token: token!) : SigninproScreen(),
+      //BottomNavPRo(),
     );
   }
 }

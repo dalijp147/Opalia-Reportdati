@@ -72,13 +72,13 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
   @override
   Widget build(BuildContext context) {
     List<Question> questions = [];
-    final question = ques![questionIndex];
+    final question = ques?[questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
     return Scaffold(
       body: PageView.builder(
         controller: _controller,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: question.question?.length,
+        itemCount: question?.question?.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -89,7 +89,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                   height: 100,
                 ),
                 Text(
-                  question.question!,
+                  question!.question!,
                   style: TextStyle(fontSize: 20),
                 ),
                 const SizedBox(
@@ -106,7 +106,7 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                             : null,
                         child: AnswerCard(
                           currentIndex: index,
-                          question: question.options![index],
+                          question: question!.options![index],
                           isSelected: selectedAnswerIndex == index,
                           selectedAnswerIndex: selectedAnswerIndex,
                           correctAnswerIndex: question.answer!,
@@ -128,7 +128,8 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
                                 )
                               : scoreBloc.add(
                                   ScoreAddEvent(
-                                    PreferenceUtils.getuserid(),
+                                    // PreferenceUtils.getuserid(),
+                                    "66684e7a656cbdf2a9b6da32",
                                     '1',
                                     score.toString(),
                                     false,

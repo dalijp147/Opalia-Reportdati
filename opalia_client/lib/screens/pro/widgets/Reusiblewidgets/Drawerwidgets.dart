@@ -8,6 +8,7 @@ import '../../../client/pages/menu/MenuScreen.dart';
 import '../../../client/pages/news/FavoriteScreen.dart';
 import '../../pages/PharmaCo/PhamaCoFormScreen.dart';
 import '../../pages/auth/signinpro.dart';
+import '../../pages/calculator/CalculatorScreen.dart';
 
 class DrawerWidgetPro extends StatelessWidget {
   const DrawerWidgetPro({super.key});
@@ -93,6 +94,18 @@ class DrawerWidgetPro extends StatelessWidget {
             ),
             onTap: () {
               Get.to(const PharmaCoVigilanceScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.calculate),
+            title: const Text(
+              'Calculator',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Get.to(const CalculatorScreen());
             },
           ),
           ListTile(

@@ -64,6 +64,7 @@ app.post("/login", async (req, res) => {
       email: user.email,
       username: user.username,
       familyname: user.familyname,
+      specialite: user.specialite,
       identifiantMedecin: user.identifiantMedecin,
     };
     const token = await USerService.generateAccessToken(
@@ -72,7 +73,9 @@ app.post("/login", async (req, res) => {
       "9999 years"
     );
     res.status(200).json({ status: true, token: token });
-  } catch (err) {}
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 module.exports = app;

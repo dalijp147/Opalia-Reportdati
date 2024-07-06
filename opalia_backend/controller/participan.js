@@ -107,8 +107,57 @@ exports.getparicipant = (req, res) => {
       });
     });
 };
+exports.getParticipantById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await Partipant.findById(id); // Use findById to find by ID
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Participant not found",
+      });
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).send({
+      success: false,
+      message:
+        err.message || "Some error occurred while retrieving Participant.",
+    });
+  }
+};
 exports.delete = (req, res) => {
   Partipant.findByIdAndDelete(req.params.id)
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({
+          success: false,
+          message: "Participant not found with id " + req.params.id,
+        });
+      }
+      res.send({
+        success: true,
+        message: "Participant successfully deleted!",
+      });
+    })
+    .catch((err) => {
+      if (err.kind === "ObjectId" || err.name === "NotFound") {
+        return res.status(404).send({
+          success: false,
+          message: "Participant not found with id " + req.params.id,
+        });
+      }
+      return res.status(500).send({
+        success: false,
+        message: "Could not delete Participant with id " + req.params.id,
+      });
+    });
+};
+exports.deletebydoctor = (req, res) => {
+  const doctorId = req.params.doctorId;
+  Partipant.findOneAndDelete({ doctorId })
     .then((data) => {
       if (!data) {
         return res.status(404).send({

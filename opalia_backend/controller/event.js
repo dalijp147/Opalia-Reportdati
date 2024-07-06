@@ -14,6 +14,7 @@ exports.create = (req, res) => {
     eventimage: imageUrl,
     eventLocalisation: req.body.eventLocalisation,
     dateEvent: req.body.dateEvent,
+    nombreparticipant: req.body.nombreparticipant,
   });
   event
     .save()
@@ -27,7 +28,54 @@ exports.create = (req, res) => {
       });
     });
 };
+exports.update = (req, res) => {
+  const eventId = req.params.eventId;
 
+  // Check if the event ID is provided
+  if (!eventId) {
+    return res.status(400).json({ message: "Event ID is required" });
+  }
+
+  // Check if a file is uploaded and update the image URL
+  let imageUrl = null;
+  if (req.file) {
+    const path = req.file.path.replace(/\\/g, "/");
+    imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+  }
+
+  // Find the event by ID and update the fields
+  Event.findById(eventId)
+    .then((event) => {
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      event.eventname = req.body.eventname || event.eventname;
+      event.eventdescription =
+        req.body.eventdescription || event.eventdescription;
+      event.eventLocalisation =
+        req.body.eventLocalisation || event.eventLocalisation;
+      event.dateEvent = req.body.dateEvent || event.dateEvent;
+      event.nombreparticipant =
+        req.body.nombreparticipant || event.nombreparticipant;
+
+      // Update the image URL if a new file is uploaded
+      if (imageUrl) {
+        event.eventimage = imageUrl;
+      }
+
+      return event.save();
+    })
+    .then((updatedEvent) => {
+      res.status(200).json({ data: updatedEvent });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while updating the event.",
+      });
+    });
+};
 exports.get = (req, res) => {
   Event.find()
 
@@ -72,4 +120,13 @@ exports.delete = (req, res) => {
         message: "Could not delete event with id " + req.params.id,
       });
     });
+};
+exports.deletePastEvents = async (req, res) => {
+  try {
+    const now = new Date();
+    const result = await Event.deleteMany({ dateEvent: { $lt: now } });
+    res.status(200).json({ message: "Deleted past events", result });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting past events", error });
+  }
 };

@@ -5,9 +5,11 @@ import 'package:lottie/lottie.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/client/pages/auth/signup.dart';
 import 'package:http/http.dart' as http;
+import 'package:opalia_client/screens/pro/pages/auth/signuppro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../config/config.dart';
 import '../../../client/widgets/Allappwidgets/BottomNav.dart';
+import '../../widgets/Reusiblewidgets/BottomNavPro.dart';
 
 class SigninproScreen extends StatefulWidget {
   const SigninproScreen({super.key});
@@ -59,14 +61,14 @@ class _SigninproScreenState extends State<SigninproScreen> {
         "email": emailController.text,
         "password": passwordController.text
       };
-      var url = Uri.http(Config.apiUrl, Config.userApi + "/login");
+      var url = Uri.http(Config.apiUrl, Config.medecinApi + "/login");
       var response = await http.post(url, body: rgBody);
       var jsonResponse = jsonDecode(response.body);
       if (response.statusCode == 200) {
         var mytoken = jsonResponse['token'];
         print(jsonResponse['token']);
         prefs.setString('token', mytoken);
-        Get.to(BottomNav(
+        Get.to(BottomNavPRo(
           token: mytoken,
         ));
       } else {
@@ -225,7 +227,7 @@ class _SigninproScreenState extends State<SigninproScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(SignupScreen());
+                      Get.to(SignupproScreen());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

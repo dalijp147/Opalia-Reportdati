@@ -11,12 +11,32 @@ part 'score_state.dart';
 class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
   ScoreBloc() : super(ScoreInitial()) {
     on<ScoreAddEvent>(scoreAddEvent);
+    on<ScoreAddEventPro>(scoreAddEventPro);
   }
   var client = http.Client();
   FutureOr<void> scoreAddEvent(
       ScoreAddEvent event, Emitter<ScoreState> emit) async {
     bool success = await ApiService.postScore(
       event.userID,
+      event.attempts,
+      event.points,
+      event.gagner,
+    );
+    if (success) {
+      emit(
+        ScoreAddSuccessState(),
+      );
+    } else {
+      emit(
+        ScoreAddErrorState(),
+      );
+    }
+  }
+
+  FutureOr<void> scoreAddEventPro(
+      ScoreAddEventPro event, Emitter<ScoreState> emit) async {
+    bool success = await ApiService.postScoreMedecin(
+      event.doctorID,
       event.attempts,
       event.points,
       event.gagner,

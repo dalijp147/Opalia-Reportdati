@@ -12,7 +12,7 @@ class Events {
   late DateTime? dateEvent;
   late String? eventdescription;
   late String? eventimage;
-
+  late int? nombreparticipant;
   Events({
     this.dateEvent,
     this.eventdescription,
@@ -20,6 +20,7 @@ class Events {
     this.eventname,
     this.EventId,
     this.eventLocation,
+    this.nombreparticipant,
   });
   factory Events.fromMap(Map<String, dynamic> json) {
     // List<Medecin> participantsList = [];
@@ -38,6 +39,7 @@ class Events {
       eventdescription: json['eventdescription'],
       eventimage: json['eventimage'],
       eventname: json['eventname'],
+      nombreparticipant: json['nombreparticipant'],
       eventLocation: json['eventLocalisation'] ?? 'unkown',
     );
   }
@@ -45,11 +47,11 @@ class Events {
     return {
       '_id': EventId,
       'dateEvent': dateEvent,
-
       'eventdescription': eventdescription,
       'eventimage': eventimage,
       'eventname': eventname,
-      'eventLocalisation': eventLocation
+      'eventLocalisation': eventLocation,
+      'nombreparticipant': nombreparticipant,
       //'participant': partipants!.map((doctor) => doctor.toMap()).toList(),
     };
   }

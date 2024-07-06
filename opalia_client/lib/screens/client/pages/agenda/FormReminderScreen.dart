@@ -157,23 +157,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   int selectednumber = 0; // Variable to hold the selected category
   List<String> categoryNames = [];
   List<int> nombrederappel = [0, 1, 2, 3, 4, 5, 6];
-  // Future<void> _fetchCategories() async {
-  //   try {
-  //     var categories = await ApiService.getAllCategory(); // Fetch data
-
-  //     setState(() {
-  //       categoryNames =
-  //           categories!.map((category) => category.categorienom!).toList();
-  //       if (categoryNames.isNotEmpty) {
-  //         selectedCategory =
-  //             categoryNames.first; // Set initial selected category
-  //       } // Update state
-  //     });
-  //     print('this is a = $categoryNames');
-  //   } catch (e) {
-  //     print('Failed to fetch categories: $e');
-  //   }
-  // }
 
   List list = [
     'Choisire une categorie de medicament',
@@ -201,77 +184,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
-              // Container(
-              //   width: 1000,
-              //   height: 150,
-              //   child: ListView.builder(
-              //     scrollDirection: Axis.horizontal,
-              //     itemCount: list!.length,
-              //     itemBuilder: (_, index) {
-              //       return Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: GestureDetector(
-              //           onTap: () {
-              //             setState(
-              //               () {
-              //                 if (index == 0) {
-              //                   selctedcategorie = true;
-              //                   selString = list[index];
-              //                 } else {
-              //                   selctedcategorie = false;
-              //                   selString = list[index];
-              //                 }
-              //               },
-              //             );
-              //           },
-              //           child: Container(
-              //             width: 150,
-              //             height: 150,
-              //             decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(20),
-              //               border: Border.all(width: 2, color: Colors.red),
-              //               color: selString == list[index].toString()
-              //                   ? Colors.red
-              //                   : Colors.white,
-              //             ),
-              //             child: Padding(
-              //               padding: const EdgeInsets.all(16.0),
-              //               child: Center(
-              //                 child: Text(
-              //                   list[index],
-              //                   style: TextStyle(fontWeight: FontWeight.bold),
-              //                 ),
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
 
-              // selctedcategorie
-              //     ? Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: DropdownButton<String>(
-              //           value: selectedCategory,
-              //           isExpanded: true, // Expand dropdown to full width
-              //           items: categoryNames.map((name) {
-              //             return DropdownMenuItem<String>(
-              //               value: name,
-              //               child: Text(name),
-              //             );
-              //           }).toList(),
-              //           onChanged: (value) {
-              //             setState(() {
-              //               selectedCategory = value!;
-              //               nameController.text =
-              //                   value; // Update the text controller with the selected value
-              //             });
-              //           },
-              //         ),
-              //       )
-              //     :
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -394,45 +307,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   },
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: TextFormField(
-              //     keyboardType: TextInputType.number,
-              //     validator: (value) {
-              //       if (value!.isEmpty) {
-              //         return "veullez saisire le nombre de rappel";
-              //       } else {
-              //         return null;
-              //       }
-              //     },
-              //     onChanged: (value) {
-              //       jobController.text = value;
-              //       setState(() {
-              //         attemps = int.parse(value) ?? 1;
-              //       });
-              //     },
-              //     controller: jobController,
-              //     autofocus: false,
-              //     decoration: InputDecoration(
-              //       enabledBorder: OutlineInputBorder(
-              //           borderSide: const BorderSide(
-              //             color: Colors.red,
-              //           ),
-              //           borderRadius: kBorderRadius),
-              //       focusedBorder: OutlineInputBorder(
-              //           borderSide: const BorderSide(
-              //             color: Colors.red,
-              //           ),
-              //           borderRadius: kBorderRadius),
-              //       hintStyle: const TextStyle(
-              //         color: Colors.grey,
-              //       ),
-              //       filled: true,
-              //       hintText: "ecrire nombre de rappel",
-              //       fillColor: Colors.transparent,
-              //     ),
-              //   ),
-              // ),
+
               SizedBox(
                 height: 5,
               ),

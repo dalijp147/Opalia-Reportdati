@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:opalia_client/screens/client/pages/quiz/SpinScreen.dart';
+import 'package:opalia_client/screens/pro/widgets/quiz/ListQuizPro.dart';
 
 import '../../../bloc/news/bloc/news_bloc.dart';
 import '../../../models/news.dart';
@@ -28,7 +29,7 @@ class HomeScreenAppPRo extends StatefulWidget {
 class _HomeScreenAppPRoState extends State<HomeScreenAppPRo> {
   bool verif = false;
   Future<bool> verify() async {
-    final x = await ApiService.getResultUserId(PreferenceUtils.getuserid());
+    final x = await ApiService.getResultdoctorId(PreferenceUtils.getuserid());
     if (x == true) {
       setState(() {
         verif = x;
@@ -159,7 +160,7 @@ class _HomeScreenAppPRoState extends State<HomeScreenAppPRo> {
                             style: ElevatedButton.styleFrom(
                                 fixedSize: Size(250, 20)),
                             onPressed: () {
-                              Get.to(ListQuizScreen());
+                              Get.to(ListQuizScreenPro());
                             },
                             child:
                                 Text('Jouez', style: TextStyle(fontSize: 25)),

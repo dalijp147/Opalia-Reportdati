@@ -21,3 +21,18 @@ class ScoreAddEvent extends ScoreEvent {
     this.gagner,
   );
 }
+
+class ScoreAddEventPro extends ScoreEvent {
+  final String doctorID;
+  final String attempts;
+  final String points;
+
+  final bool gagner;
+
+  ScoreAddEventPro(
+    this.doctorID,
+    this.attempts,
+    this.points,
+    this.gagner,
+  );
+}

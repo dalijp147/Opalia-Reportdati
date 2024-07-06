@@ -3,6 +3,7 @@ const router = express.Router();
 const Particpant_controller = require("../../controller/participan");
 
 router.get("/", Particpant_controller.get);
+router.get("/participant/:id", Particpant_controller.getParticipantById);
 router.get("/byid/:doctorId", Particpant_controller.getParticipantIfExist);
 router.get("/speaker/:speaker/:eventId", Particpant_controller.getspeaker);
 router.get(
@@ -11,5 +12,8 @@ router.get(
 );
 router.post("/create", Particpant_controller.create);
 router.delete("/delete/:id", Particpant_controller.delete);
-
+router.delete(
+  "/deletebydoctorid/:doctorId",
+  Particpant_controller.deletebydoctor
+);
 module.exports = router;

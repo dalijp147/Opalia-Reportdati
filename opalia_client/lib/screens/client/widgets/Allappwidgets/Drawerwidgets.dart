@@ -7,8 +7,15 @@ import '../../pages/auth/signin.dart';
 import '../../pages/menu/MenuScreen.dart';
 import '../../pages/news/FavoriteScreen.dart';
 
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
+
+  @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  String userImage = '';
   Future<void> logout(BuildContext context) async {
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
@@ -23,6 +30,19 @@ class DrawerWidget extends StatelessWidget {
         SnackBar(content: Text('Logout failed. Please try again.')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserImage();
+  }
+
+  Future<void> _loadUserImage() async {
+    String image = await PreferenceUtils.getUserImage();
+    setState(() {
+      userImage = image;
+    });
   }
 
   @override

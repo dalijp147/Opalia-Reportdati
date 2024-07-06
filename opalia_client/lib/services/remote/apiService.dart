@@ -190,7 +190,7 @@ class ApiService {
     };
     List<Question> questions = [];
 
-    var url = Uri.http(Config.apiUrl, Config.quizApi);
+    var url = Uri.http(Config.apiUrl, Config.quizApi + '/random');
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body);
@@ -363,6 +363,29 @@ class ApiService {
     }
   }
 
+  static Future<bool> postScoreMedecin(String t, String u, String i, d) async {
+    var url = Uri.http(Config.apiUrl, Config.scoreApi + '/doctor');
+    var response = await client.post(
+      url,
+      body: {
+        "doctorId": t,
+        "attempts": u,
+        "points": i,
+        "gagner": d.toString(),
+      },
+    );
+
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding score");
+      return true;
+    } else {
+      print("failed adding score");
+
+      return false;
+    }
+  }
+
   static Future<bool> getResultUserId(String id) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -377,6 +400,31 @@ class ApiService {
       print(url);
       if (data != null) {
         print('This user has a score.');
+        return true;
+      } else {
+        print('Error: Empty response body.');
+        return false;
+      }
+    } else {
+      print('Error: HTTP ${response.statusCode}');
+      return false;
+    }
+  }
+
+  static Future<bool> getResultdoctorId(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl, Config.scoreApi + '/doc/' + id);
+
+    var response = await client.get(url, headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print(url);
+      if (data != null) {
+        print('This doctor has a score.');
         return true;
       } else {
         print('Error: Empty response body.');

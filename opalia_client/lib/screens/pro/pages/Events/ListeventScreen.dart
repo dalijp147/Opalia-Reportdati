@@ -82,129 +82,155 @@ class _ListEventSceenState extends State<ListEventSceen> {
                         itemCount: sucessState.particpants.length,
                         itemBuilder: (context, index) {
                           final reminder = sucessState.particpants![index];
-                          return GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                DetailEventScreen(
-                                  event: reminder.eventId!,
-                                ),
+                          return Dismissible(
+                            background: Container(
+                              color:
+                                  Colors.red, // Background color when swiping
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 36,
+                              ),
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 20),
+                            ),
+                            key: Key(
+                              reminder.toString(),
+                            ),
+                            onDismissed: (direction) async {
+                              // Remove the item from the data source.
+                              await ApiServicePro.deleteParticipant(
+                                reminder.participantId!,
                               );
+
+                              // Then show a snackbar.
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                padding: EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border:
-                                      Border.all(width: 2, color: Colors.red),
-                                  color: Colors.white,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Image.network(
-                                      loadingBuilder: (BuildContext context,
-                                          Widget child,
-                                          ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null)
-                                          return child;
-                                        return Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          child: Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes!
-                                                  : null,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      (reminder.eventId!.eventimage == null ||
-                                              reminder.eventId!.eventimage! ==
-                                                  "")
-                                          ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
-                                          : reminder.eventId!.eventimage!,
-                                      height: 100,
-                                      fit: BoxFit.scaleDown,
-                                      errorBuilder: (BuildContext context,
-                                          Object error,
-                                          StackTrace? stackTrace) {
-                                        // You can add logging here to see what the error is
-                                        print('Error loading image: $error');
-                                        return Image.network(
-                                          height: 100,
-                                          width: 100,
-                                          "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
-                                        );
-                                      },
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              "Nom de l'évenement:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            Text(
-                                              reminder.eventId!.eventname!,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.to(
+                                  DetailEventScreen(
+                                    event: reminder.eventId!,
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border:
+                                        Border.all(width: 2, color: Colors.red),
+                                    color: Colors.white,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.network(
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Container(
+                                            height: 100,
+                                            width: double.infinity,
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                    : null,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              "Date de l'évenement:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            Text(
-                                              '${formatter.format(reminder.eventId!.dateEvent!)}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: 50,
-                                    ),
-                                    IconButton(
-                                      onPressed: () async {
-                                        await ApiServicePro.deleteParticipant(
-                                          reminder.participantId!,
-                                        );
-                                      },
-                                      icon: Icon(
-                                        Iconsax.trash,
-                                        color: Colors.red,
+                                          );
+                                        },
+                                        (reminder.eventId!.eventimage == null ||
+                                                reminder.eventId!.eventimage! ==
+                                                    "")
+                                            ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                                            : reminder.eventId!.eventimage!,
+                                        height: 100,
+                                        fit: BoxFit.scaleDown,
+                                        errorBuilder: (BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace) {
+                                          // You can add logging here to see what the error is
+                                          print('Error loading image: $error');
+                                          return Image.network(
+                                            height: 100,
+                                            width: 100,
+                                            "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                                          );
+                                        },
                                       ),
-                                    )
-                                  ],
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                "Nom de l'évenement:",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              Text(
+                                                reminder.eventId!.eventname!,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                "Date de l'évenement:",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              Text(
+                                                '${formatter.format(reminder.eventId!.dateEvent!)}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 50,
+                                      ),
+                                      IconButton(
+                                        onPressed: () async {
+                                          await ApiServicePro.deleteParticipant(
+                                            reminder.participantId!,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Iconsax.trash,
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

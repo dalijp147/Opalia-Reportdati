@@ -1,11 +1,13 @@
 import 'dart:convert';
-
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:opalia_client/config/config.dart';
 import 'package:opalia_client/screens/client/pages/auth/signin.dart';
 import 'package:opalia_client/screens/client/pages/categorie/CategorieScreen.dart';
 import 'package:http/http.dart' as http;
+import 'package:opalia_client/screens/pro/pages/auth/signinpro.dart';
 
 class SignupproScreen extends StatefulWidget {
   const SignupproScreen({super.key});
@@ -19,6 +21,9 @@ class _SignupproScreenState extends State<SignupproScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nomController = TextEditingController();
   TextEditingController prenomController = TextEditingController();
+  TextEditingController NumerotelController = TextEditingController();
+  TextEditingController SpecialiteController = TextEditingController();
+
   late FocusNode emailFocus;
   late FocusNode passwordFocus;
   late FocusNode nomFocus;
@@ -32,6 +37,21 @@ class _SignupproScreenState extends State<SignupproScreen> {
         return; // If focus is on text field, dont unfocus
       passwordFocus.canRequestFocus = false; // Prevents focus if tap on eye
     });
+  }
+
+  io.File? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = io.File(pickedFile.path);
+      });
+    } else {
+      print('No image selected.');
+    }
   }
 
   @override
@@ -60,22 +80,50 @@ class _SignupproScreenState extends State<SignupproScreen> {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         nomController.text.isNotEmpty &&
-        prenomController.text.isNotEmpty) {
+        prenomController.text.isNotEmpty &&
+        NumerotelController.text.isNotEmpty &&
+        SpecialiteController.text.isNotEmpty &&
+        _image != null) {
       var rgBody = {
         "email": emailController.text,
         "password": passwordController.text,
         "username": nomController.text,
-        "familyname": prenomController.text
+        "familyname": prenomController.text,
+        "numeroTel": NumerotelController.text,
+        "specialite": SpecialiteController.text,
+        "image": _image
       };
-      var url = Uri.http(Config.apiUrl, Config.userApi + "/registration");
-      var response = await http.post(url, body: rgBody);
-      print(response.body);
-      var jsonResponse = jsonDecode(response.body);
-      print(url);
-      if (response.statusCode == 200) {
-        Get.to(SigninScreen());
-      } else {
-        print('something went wrong in signup');
+      var url = Uri.http(Config.apiUrl, Config.medecinApi + "/registration");
+      var request = http.MultipartRequest('POST', url);
+
+      request.fields
+          .addAll(rgBody.map((key, value) => MapEntry(key, value.toString())));
+      request.files
+          .add(await http.MultipartFile.fromPath('image', _image!.path));
+      // var response = await http.post(url, body: rgBody);
+      // print(response.body);
+      // var jsonResponse = jsonDecode(response.body);
+      // print(url);
+      // if (response.statusCode == 200) {
+      //   Get.to(SigninScreen());
+      // } else {
+      //   print('something went wrong in signup');
+      // }
+      try {
+        var response = await request.send();
+        var responseBody = await http.Response.fromStream(response);
+
+        if (response.statusCode == 200) {
+          Get.to(SigninproScreen());
+        } else {
+          print('Something went wrong in signup: ${responseBody.body}');
+        }
+      } catch (e) {
+        print('Error during registration: $e');
+      } finally {
+        setState(() {
+          //isLoading = false;
+        });
       }
     } else {
       setState(() {
@@ -117,6 +165,14 @@ class _SignupproScreenState extends State<SignupproScreen> {
                   Text(
                     'Créer un nouveau compte',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  _image == null
+                      ? Text('No image selected.')
+                      : Image.file(_image!, height: 100),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    child: Text('Pick Image from Gallery'),
                   ),
                   const SizedBox(
                     height: 10,
@@ -189,6 +245,82 @@ class _SignupproScreenState extends State<SignupproScreen> {
                       // ignore: dead_code
                       errorText: isNotValide ? "Enter Proper Info" : null,
                       hintText: "Prenom",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Numero de Téléphone :',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: NumerotelController,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire votre numéro de téléphone ";
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      // ignore: dead_code
+
+                      hintText: "Numero de Téléphone",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Spécialité :',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: SpecialiteController,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire votre Spécialité ";
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      // ignore: dead_code
+
+                      hintText: "Spécialité",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(

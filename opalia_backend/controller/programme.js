@@ -68,13 +68,15 @@ exports.delete = (req, res) => {
 exports.sortbydate = (req, res) => {
   const event = req.params.event;
   Programme.find({ event })
-    .populate("prog")
-    .then((data) => {
-      var message = "";
-      if (data === undefined || data.length == 0)
-        message = "No Programme found!";
-      else message = "Programme successfully retrieved";
 
+    .then((data) => {
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "No Programme found!" });
+      }
+      // Sort each programme's 'prog' array by 'time'
+      data.forEach((programme) => {
+        programme.prog.sort((a, b) => new Date(a.time) - new Date(b.time));
+      });
       res.status(200).json(data);
     })
     .catch((err) => {

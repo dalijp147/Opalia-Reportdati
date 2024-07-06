@@ -16,7 +16,7 @@ class ProgramTab extends StatefulWidget {
 class _ProgramTabState extends State<ProgramTab> {
   List<Programme>? allProgramme;
   bool isLoading = true;
-
+  List<Programme>? allPartii;
   Future<void> _fetchProgramme() async {
     try {
       final programme =
@@ -27,6 +27,21 @@ class _ProgramTabState extends State<ProgramTab> {
       });
     } catch (e) {
       print('Failed to fetch programme: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchParticipantByid(String speakerId) async {
+    try {
+      final parti = await ApiServicePro.getAllProgramme(speakerId);
+      setState(() {
+        allPartii = parti;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Failed to fetch parti: $e');
       setState(() {
         isLoading = false;
       });
@@ -67,13 +82,15 @@ class _ProgramTabState extends State<ProgramTab> {
                                       Text(
                                         formattedTime,
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                       SizedBox(width: 10),
                                       Text(
                                         prog.title,
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -81,13 +98,7 @@ class _ProgramTabState extends State<ProgramTab> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 10.0),
                                     child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              "https://pbs.twimg.com/profile_images/1304985167476523008/QNHrwL2q_400x400.jpg"),
-                                          radius: 20,
-                                        ),
-                                      ],
+                                      children: [Text(prog.speaker.toString())],
                                     ),
                                   ),
                                   const Padding(

@@ -33,6 +33,29 @@ class PreferenceUtils {
     return userId;
   }
 
+  // static String getuserImage() {
+  //   String? token = _prefsInstance!.getString('token');
+  //   Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
+  //   var userId = jsonDecoddd['image'];
+
+  //   return userId;
+  // }
+
+  static Future<String> getUserImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null && token.isNotEmpty) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      var userImage = decodedToken[
+          'image']; // Adjust the key based on your token's structure
+
+      return userImage;
+    }
+
+    return '';
+  }
+
   static String getuserFamilyname() {
     String? token = _prefsInstance!.getString('token');
     Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);

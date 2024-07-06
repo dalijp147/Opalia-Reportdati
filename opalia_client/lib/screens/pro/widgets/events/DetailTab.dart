@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:opalia_client/services/remote/apiServicePro.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../models/events.dart';
+import '../../../../models/particpant.dart';
 
 class DetailTab extends StatefulWidget {
   final Events event;
@@ -16,7 +18,8 @@ class _DetailTabState extends State<DetailTab> {
   var formatter = new DateFormat('yyyy-MM-dd');
   bool verif = false;
   Future<bool> verify() async {
-    final x = await ApiServicePro.getParticipanttExist("");
+    final x =
+        await ApiServicePro.getParticipanttExist(PreferenceUtils.getuserid());
     if (x == true) {
       setState(() {
         verif = x;
@@ -28,6 +31,24 @@ class _DetailTabState extends State<DetailTab> {
     } else {
       print("error");
       return verif;
+    }
+  }
+
+  Future<void> _openMap(BuildContext context, String location) async {
+    String query = Uri.encodeComponent(location);
+    String googleMapsUrl =
+        "https://www.google.com/maps/search/?api=1&query=$query";
+
+    print('Attempting to launch URL: $googleMapsUrl'); // Debugging line
+
+    // ignore: deprecated_member_use
+    if (await canLaunch(googleMapsUrl)) {
+      // ignore: deprecated_member_use
+      await launch(googleMapsUrl);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not open the map. URL: $googleMapsUrl')));
+      throw 'Could not open the map. URL: $googleMapsUrl';
     }
   }
 
@@ -68,14 +89,19 @@ class _DetailTabState extends State<DetailTab> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          children: [
-            Icon(
-              Icons.location_on,
-              color: Colors.red,
-            ),
-            Text(widget.event.eventname!),
-          ],
+        GestureDetector(
+          onTap: () {
+            _openMap(context, widget.event.eventLocation ?? 'unknown');
+          },
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on,
+                color: Colors.red,
+              ),
+              Text(widget.event.eventLocation!),
+            ],
+          ),
         ),
         SizedBox(
           height: 10,
@@ -121,15 +147,24 @@ class _DetailTabState extends State<DetailTab> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text('Se Désinscrire!'),
-                          content:
-                              Text('veut tu te d é inscrire apuyer sur ok'),
+                          content: Text('veut tu te désinscrire apuyer sur ok'),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('OK'),
+                              child: Text('oui'),
                               onPressed: () async {
-                                // await ApiServicePro.deleteParticipant(
-                                //   widget.event.participantId!,
-                                // );
+                                await ApiServicePro.deleteParticipantbydoctorid(
+                                  PreferenceUtils.getuserid(),
+                                );
+                                setState(() {
+                                  verif = false;
+                                });
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                            ),
+                            TextButton(
+                              child: Text('non'),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
                               },
                             ),
                           ],
@@ -149,9 +184,12 @@ class _DetailTabState extends State<DetailTab> {
                   onPressed: () async {
                     await ApiServicePro.postParticipant(
                       true,
-                      "6675806edce8448c19dfdf3b",
+                      PreferenceUtils.getuserid(),
                       widget.event.EventId,
                     );
+                    setState(() {
+                      verif = true;
+                    });
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: Text(
@@ -159,7 +197,7 @@ class _DetailTabState extends State<DetailTab> {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-              )
+              ),
       ],
     );
   }

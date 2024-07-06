@@ -65,6 +65,20 @@ class ApiServicePro {
     }
   }
 
+  static Future<bool> deletePastEvent() async {
+    var url = Uri.http(Config.apiUrl, Config.eventApi + '/deletePastevent');
+    var response = await client.delete(url);
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess deleting All pass events");
+      return true;
+    } else {
+      print('eroor failed deleting  All pass events');
+
+      return false;
+    }
+  }
+
   ///Participant
   static Future<bool> postParticipant(
     bool participe,
@@ -133,8 +147,55 @@ class ApiServicePro {
     }
   }
 
+  static Future<List<Particpant>> fetchparticipantbyevent(bool b, event) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl,
+        Config.ParticpantApi + '/participon/' + b.toString() + '/' + event);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      print('sucess load fetchParticipantbyevent');
+      return ParticpantFromJson(data);
+    } else {
+      throw Exception('Failed to load fetchParticipantbyevent');
+    }
+  }
+
+  static Future<List<Particpant>> fetchparticipantbyId(id) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url =
+        Uri.http(Config.apiUrl, Config.ParticpantApi + '/participant/' + id);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      print('sucess load fetchparticipantbyId');
+      return ParticpantFromJson(data);
+    } else {
+      throw Exception('Failed to load fetchparticipantbyId');
+    }
+  }
+
   static Future<bool> deleteParticipant(n) async {
     var url = Uri.http(Config.apiUrl, Config.ParticpantApi + '/delete/' + n);
+    var response = await client.delete(url);
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess deleting participant");
+      return true;
+    } else {
+      print('eroor failed deleting participant');
+
+      return false;
+    }
+  }
+
+  static Future<bool> deleteParticipantbydoctorid(n) async {
+    var url = Uri.http(
+        Config.apiUrl, Config.ParticpantApi + '/deletebydoctorid/' + n);
     var response = await client.delete(url);
     print(url);
     if (response.statusCode == 200) {

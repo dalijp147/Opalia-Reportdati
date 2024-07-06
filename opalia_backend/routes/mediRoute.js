@@ -5,7 +5,7 @@ const upload = require("../middleware/upload");
 const puppetire = require("puppeteer");
 
 const URL =
-  "https://www.opaliarecordati.com/fr/produits/medical/specialite/62-dermatologie";
+  "https://www.opaliarecordati.com/fr/produits/medical/specialite/188-anti-coagulant";
 const fetchDataMedical = async () => {
   try {
     const browser = await puppetire.launch({
@@ -33,13 +33,12 @@ const fetchDataMedical = async () => {
       const medi = new Medicament({
         mediname: medietitle,
         mediImage: medieImage,
-        forme: "unkown",
-        dci: "unkown",
-        presentationmedi: "Tube de 30 g",
-        classeparamedicalemedi:
-          "bétamethasone dipropionate + acide salicylique",
-        sousclassemedi: "Pommade dermique",
-        categoriePro: "6669853eedfa936fab0444bc",
+        forme: "unkonwn",
+        dci: "unkonwn",
+        presentationmedi: "unkonwn",
+        classeparamedicalemedi: "unkonwn",
+        sousclassemedi: "unkonwn",
+        categoriePro: "66698540edfa936fab0444e6",
       });
       // console.log("Title:", medietitle);
       // console.log("Description:", newsDescription);
@@ -81,7 +80,7 @@ app.get("/:categorie", async (req, res) => {
     const getallMedicament = await Medicament.find({
       categorie,
     }).populate("categorie");
-    fetchDataMedical();
+    //fetchDataMedical();
     res.status(200).json({ data: getallMedicament });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -94,7 +93,7 @@ app.get("/cat/:categoriePro", async (req, res) => {
     const getallMedicament = await Medicament.find({
       categoriePro,
     }).populate("categoriePro");
-    fetchDataMedical();
+    //fetchDataMedical();
     res.status(200).json({ data: getallMedicament });
   } catch (err) {
     res.status(400).json({ message: err.message });

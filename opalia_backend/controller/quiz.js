@@ -61,3 +61,19 @@ exports.delete = (req, res) => {
       });
     });
 };
+exports.getRandom = async (req, res) => {
+  try {
+    const randomQuestions = await Quiz.aggregate([{ $sample: { size: 5 } }]);
+
+    const formattedQuestions = randomQuestions.map((q) => ({
+      questions: q.questions,
+      options: q.options,
+      answers: q.answers,
+    }));
+
+    res.status(200).json(formattedQuestions);
+  } catch (error) {
+    console.error("Error fetching random questions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

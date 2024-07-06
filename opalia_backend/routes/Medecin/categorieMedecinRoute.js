@@ -12,6 +12,7 @@ const fetchDataCategoriePro = async () => {
     });
     const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2" });
+
     const categorisHandles = await page.$$(".panel > li");
     for (const categoriehnadle of categorisHandles) {
       const categorietitle = await page.evaluate(
@@ -19,22 +20,16 @@ const fetchDataCategoriePro = async () => {
           el.querySelector("div.bloc_left.left > ul > li > a").textContent,
         categoriehnadle
       );
-      //   const newsDescription = await page.evaluate(
-      //     (el) => el.querySelector("div.cat_description").textContent,
-      //     newshandle
-      //   );
-      //   const newsImage = await page.evaluate(
-      //     (el) => el.querySelector("a > div.image_cat > img").getAttribute("src"),
-      //     newshandle
-      //   );
+
       let articlesSaved = 0;
       let duplicateArticles = 0;
+
       const categorie = new Categorie({
         categorienompro: categorietitle,
       });
-      //   console.log("Description:", newsDescription);
-      //   console.log("Image URL:", newsImage);
+
       console.log("scrape categorie succes");
+
       try {
         await categorie.save();
         articlesSaved++;
@@ -46,13 +41,14 @@ const fetchDataCategoriePro = async () => {
         }
       }
     }
+
     await browser.close();
     // res.status(200).json({
     //   message: "Scraping completed",
     // });
   } catch (e) {
     console.log(e);
-    //res.status(500).json({ error: "An error occurred during scraping" });
+    // res.status(500).json({ error: "An error occurred during scraping" });
   }
 };
 categoryMedecinapp.get("/", async (req, res) => {

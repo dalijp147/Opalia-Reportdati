@@ -100,7 +100,6 @@ class _DetailNewsState extends State<DetailNews> {
           const SizedBox(
             width: 10,
           ),
-          const Icon(Icons.share_outlined)
         ],
       ),
       body: SingleChildScrollView(
@@ -181,6 +180,7 @@ class _DetailNewsState extends State<DetailNews> {
                               return RelatedActualieItem(
                                 imageNews: news.newsImage!,
                                 nameNews: news.newsTitle!,
+                                desc: news.newsDetail!,
                               );
                             },
                           ),

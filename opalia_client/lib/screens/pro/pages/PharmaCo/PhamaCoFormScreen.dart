@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'FormPharma.dart';
 
 class PharmaCoVigilanceScreen extends StatefulWidget {
   const PharmaCoVigilanceScreen({super.key});
@@ -90,7 +93,9 @@ class _PharmaCoVigilanceScreenState extends State<PharmaCoVigilanceScreen> {
               "La pharmacovigilance est un domaine extrêmement réglementé dans l’industrie pharmaceutique. De nombreuses règlementations, politiques générales et recommandations existent, notamment au niveau Tunisien, Européen, International et Américain. Le respect de ces règles est la garantie du maintien des meilleurs niveaux de pratiques en matière de sécurité des patients. Au sein du département Pharmacovigilance et Épidémiologie, les responsables chargés d’évaluer la sécurité des produits ont pour mission d’analyser et de gérer tous les signaux potentiels émis par chaque produit, ainsi que de les documenter. Et ce, quelle que soit l’origine du signal",
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(FarmaFormScreen());
+              },
               child: Text(
                 'Formulaire',
                 style: TextStyle(color: Colors.white),

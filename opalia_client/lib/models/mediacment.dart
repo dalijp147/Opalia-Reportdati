@@ -26,7 +26,7 @@ class Medicament {
       mediname: json['mediname'],
       medidesc: json['medidesc'],
       mediImage: json['mediImage'],
-      sousclassemedi: json['sousclassemedi'],
+      sousclassemedi: json['sousclassemedi'] ?? "unkonwn",
     );
   }
   Map<String, dynamic> toMap() {

@@ -11,7 +11,9 @@ import '../../pages/Categorie/CategorieHomePro.dart';
 import '../../pages/HomeScreenPro.dart';
 
 class BottomNavPRo extends StatefulWidget {
-  const BottomNavPRo({super.key});
+  final token;
+
+  const BottomNavPRo({super.key, this.token});
 
   @override
   State<BottomNavPRo> createState() => _BottomNavPRoState();

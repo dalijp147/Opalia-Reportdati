@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/client/pages/quiz/QuizScreen.dart';
+import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
 
 import '../../../../models/question.dart';
 import '../../../../services/local/sharedprefutils.dart';
@@ -37,9 +38,7 @@ class _ResultScreenState extends State<ResultScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Get.to(BottomNav(
-              token: PreferenceUtils.getString('token'),
-            ));
+            Get.to(BottomNavPRo());
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -99,7 +98,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           style: const TextStyle(fontSize: 80),
                         ),
                         Text(
-                          "Désoler tu n'as pas ganer",
+                          "tu as gagné",
                           style: const TextStyle(fontSize: 20),
                         ),
                       ],
@@ -111,7 +110,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           style: const TextStyle(fontSize: 80),
                         ),
                         Text(
-                          'Bien',
+                          'desole tu na pas ganer',
                           style: const TextStyle(fontSize: 20),
                         ),
                       ],

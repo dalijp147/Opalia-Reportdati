@@ -4,6 +4,7 @@ import 'package:opalia_client/models/comment.dart';
 import 'package:opalia_client/models/discussion.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../../services/local/sharedprefutils.dart';
 import '../../../../../services/remote/apiServicePro.dart';
 import '../../../../client/widgets/Allappwidgets/constant.dart';
 
@@ -17,7 +18,7 @@ class DiscussionItem extends StatefulWidget {
 
 class _DiscussionItemState extends State<DiscussionItem> {
   List<Comment>? allComment;
-  String _userId = '66754d2525c9be414693c2e9'; // Example userId
+  String _userId = PreferenceUtils.getuserid(); // Example userId
 
   bool isLoading = true;
   late TextEditingController CommentController;
@@ -27,6 +28,7 @@ class _DiscussionItemState extends State<DiscussionItem> {
     setState(() {
       _isLiked =
           prefs.getBool('like_${widget.discu.discussionId!}_$_userId') ?? false;
+      print(_userId);
     });
   }
 
@@ -94,9 +96,11 @@ class _DiscussionItemState extends State<DiscussionItem> {
       if (_isLiked) {
         await ApiServicePro.unlikePost(
             widget.discu.discussionId!, "66754d2525c9be414693c2e9");
+        _fetchDiscussion();
       } else {
         await ApiServicePro.likePost(
             widget.discu.discussionId!, "66754d2525c9be414693c2e9");
+        _fetchDiscussion();
       }
       setState(() {
         _isLiked = !_isLiked;
@@ -191,6 +195,7 @@ class _DiscussionItemState extends State<DiscussionItem> {
                             onPressed: () async {
                               await ApiServicePro.deleteDiscussion(
                                   widget.discu.discussionId);
+                              _fetchDiscussion();
                               Navigator.of(context).pop();
                             },
                           ),
@@ -219,7 +224,7 @@ class _DiscussionItemState extends State<DiscussionItem> {
           ///coùents
           Row(
             children: [
-              //Text('Like ${widget.discu.like.toString()}'),
+              Text('Likes ${allComment?.length.toString()}'),
               SizedBox(
                 width: 15,
               ),

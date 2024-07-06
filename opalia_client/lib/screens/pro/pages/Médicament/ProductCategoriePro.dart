@@ -14,9 +14,12 @@ import 'package:http/http.dart' as http;
 
 class ProductCategorieProScreen extends StatefulWidget {
   final String name;
+  final String title;
+
   const ProductCategorieProScreen({
     super.key,
     required this.name,
+    required this.title,
   });
 
   @override
@@ -83,7 +86,7 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                     colors: [Colors.red.shade50, Colors.white])),
           ),
           title: Text(
-            'Médicament',
+            widget.title,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -93,17 +96,6 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
             SizedBox(
               height: 10,
             ),
-            // TextField(
-            //   onChanged: (value) => _runfilter(value),
-            //   decoration: InputDecoration(
-            //     constraints: BoxConstraints(maxWidth: 300),
-            //     labelText: 'Recherche',
-            //     border: OutlineInputBorder(
-            //         borderSide: BorderSide(color: Colors.red, width: 1),
-            //         borderRadius: BorderRadius.circular(50.0)),
-            //     prefixIcon: Icon(Icons.search),
-            //   ),
-            // ),
             TypeAheadField(
               textFieldConfiguration: TextFieldConfiguration(
                 autofocus: false,

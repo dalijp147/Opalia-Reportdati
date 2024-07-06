@@ -192,7 +192,13 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          'unknown',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                     Container(
@@ -207,7 +213,13 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          'unknown',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                     Container(
@@ -222,7 +234,13 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          'unknown',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                   ],
@@ -246,7 +264,11 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                           ),
                         ),
                         Text(
-                          'Boite de 20',
+                          'unknown',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )),
@@ -263,7 +285,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                           ),
                         ),
                         Text(
-                          'Boite de 20',
+                          'unknown',
                           style: TextStyle(
                               fontSize: 10.5, fontWeight: FontWeight.bold),
                         ),
@@ -284,9 +306,11 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                               ),
                             ),
                             Text(
-                              widget.sousclasse,
+                              "unknown",
                               style: TextStyle(
-                                  fontSize: 10.5, fontWeight: FontWeight.bold),
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         )),

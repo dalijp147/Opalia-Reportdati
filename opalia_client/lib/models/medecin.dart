@@ -30,7 +30,7 @@ class Medecin {
       password: json['password'],
       name: json['username'],
       familyname: json['familyname'],
-      numeroTel: json['numeroTel'],
+      numeroTel: json['numeroTel'] ?? 0,
       image: json['image'],
       identifiantMedecin: json['identifiantMedecin'],
       specialite: json['specialite'],

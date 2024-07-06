@@ -1,4 +1,5 @@
 import 'package:opalia_client/models/events.dart';
+import 'package:opalia_client/models/particpant.dart';
 
 import 'medecin.dart';
 
@@ -12,7 +13,6 @@ class Discussion {
   late Medecin? author;
 
   late DateTime? postedat;
-
   Discussion({
     this.discussionId,
     this.author,
@@ -30,7 +30,9 @@ class Discussion {
           ? Events.fromMap(json['eventId'] as Map<String, dynamic>)
           : null,
       subject: json['subject'],
-      postedat: DateTime.parse(json['createdAt'].toString()),
+      postedat: DateTime.parse(
+        json['createdAt'].toString(),
+      ),
     );
   }
   Map<String, dynamic> toMap() {

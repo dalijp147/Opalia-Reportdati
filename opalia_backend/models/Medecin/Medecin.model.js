@@ -33,8 +33,7 @@ const medecinSchema = mongoose.Schema({
   },
   identifiantMedecin: {
     type: String,
-    required: true,
-    unique: true,
+    default: "256548",
   },
 });
 

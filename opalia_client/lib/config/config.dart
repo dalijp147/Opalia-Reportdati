@@ -7,6 +7,7 @@ class Config {
   static const String newsAPI = "/news";
   static const String reminderAPI = "/reminder";
   static const String quizApi = "/quiz";
+  static const String medecinApi = "/medecin";
   static const String userApi = "/user";
   static const String dosserMedApi = "/dossier";
   static const String scoreApi = "/result";

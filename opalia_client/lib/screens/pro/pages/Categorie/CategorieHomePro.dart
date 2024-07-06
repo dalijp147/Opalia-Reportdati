@@ -189,6 +189,7 @@ class _CategorieProScreenState extends State<CategorieProScreen> {
                         return GestureDetector(
                           onTap: () {
                             Get.to(ProductCategorieProScreen(
+                              title: categorie.categorienompro! ,
                               name: categorie.id!,
                             ));
                           },
