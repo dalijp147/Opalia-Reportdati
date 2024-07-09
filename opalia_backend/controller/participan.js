@@ -110,7 +110,9 @@ exports.getparicipant = (req, res) => {
 exports.getParticipantById = async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await Partipant.findById(id); // Use findById to find by ID
+    const data = await Partipant.findById(id)
+      .populate("doctorId")
+      .populate("eventId"); // Use findById to find by ID
 
     if (!data) {
       return res.status(404).json({

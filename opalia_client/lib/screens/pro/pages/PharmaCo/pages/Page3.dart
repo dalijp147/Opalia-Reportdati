@@ -3,10 +3,14 @@ import 'package:get/get.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/PAge4.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page2.dart';
 
+import '../../../../../models/farma.dart';
+import '../../../../../services/remote/apiServicePro.dart';
 import '../../../widgets/Farma/FormText.dart';
+import 'Page5.dart';
 
 class Page3 extends StatefulWidget {
-  const Page3({super.key});
+  final Farma farma;
+  const Page3({super.key, required this.farma});
 
   @override
   State<Page3> createState() => _Page3State();
@@ -50,6 +54,39 @@ class _Page3State extends State<Page3> {
   }
 
   late List<bool> _isChecked;
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      String arret = _isChecked.indexWhere((element) => element) >= 0
+          ? text[_isChecked.indexWhere((element) => element)]
+          : "";
+      // Assuming that you're only allowing one selection for each field, otherwise you'll need to handle multiple selections
+
+      Farma newFarma = widget.farma.copyWith(
+        nomdeclarent: nameController.text, // Replace with actual value
+        prenomdeclarent: prenomController.text, // Replace with actual value
+        villedeclarent: villeController.text, // Replace with actual value
+        codepostaldeclarent: int.tryParse(codepostalController.text) ??
+            0, // Replace with actual value
+        telephonedeclarent: int.tryParse(telephoneController.text) ??
+            0, // Replace with actual value
+        qualite: arret, // Replace with actual value
+      );
+
+      bool result = await ApiServicePro.postFarma(newFarma);
+      if (result) {
+        Get.to(Page4(
+          farma: newFarma,
+        ));
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create Farma')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +111,13 @@ class _Page3State extends State<Page3> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Text(
+                'PRATICIEN DÉCLARANT',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 children: <Widget>[
                   FormText(
@@ -142,18 +186,7 @@ class _Page3State extends State<Page3> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page2());
-                    },
-                    child: Text('Précedent'),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page4());
-                    },
+                    onPressed: _submitForm,
                     child: Text('Suivant'),
                   ),
                 ],

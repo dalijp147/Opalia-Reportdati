@@ -17,6 +17,7 @@ const ProgrammeRoute = require("../routes/Medecin/programmeRoute.js");
 const DiscussionRoute = require("../routes/Medecin/discussionRoute.js");
 const CommentRoute = require("../routes/Medecin/commentRoute.js");
 const RequestAdminRoute = require("../routes/Medecin/requestadminRoute.js");
+const FarmaRoute = require("../routes/Medecin/farmaRoute.js");
 const dotenv = require("dotenv");
 const body_parser = require("body-parser");
 dotenv.config();
@@ -44,6 +45,8 @@ app.use("/discussion", DiscussionRoute);
 app.use("/participant", ParticapntRoute);
 app.use("/comment", CommentRoute);
 app.use("/RequestAdmin", RequestAdminRoute);
+app.use("/Farma", FarmaRoute);
+
 //mongoose connection
 mongoose.connect(process.env.MONGO_URL, {}).then(
   () => {

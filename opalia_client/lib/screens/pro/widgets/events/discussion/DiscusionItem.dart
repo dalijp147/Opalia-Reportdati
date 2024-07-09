@@ -62,7 +62,7 @@ class _DiscussionItemState extends State<DiscussionItem> {
       // Call your API to add the new comment
       await ApiServicePro.postComment(
         newCommentText,
-        "66754d2525c9be414693c2e9",
+        PreferenceUtils.getuserid(),
         widget.discu.discussionId,
       );
 
@@ -71,6 +71,21 @@ class _DiscussionItemState extends State<DiscussionItem> {
       CommentController.clear();
     } catch (e) {
       print('Failed to add comment: $e');
+      // Handle error if needed
+    }
+  }
+
+  Future<void> deletecomment(String newCommentText) async {
+    // Example: Adding new comment
+    try {
+      // Call your API to add the new comment
+      await ApiServicePro.deleteComment(newCommentText);
+
+      // After successfully adding, fetch the updated list
+      _fetchDiscussion(); // This will refresh the page automatically
+      CommentController.clear();
+    } catch (e) {
+      print('Failed to delete comment: $e');
       // Handle error if needed
     }
   }
@@ -326,9 +341,8 @@ class _DiscussionItemState extends State<DiscussionItem> {
                                                     isThreeLine: true,
                                                     trailing: IconButton(
                                                       onPressed: () async {
-                                                        await ApiServicePro
-                                                            .deleteComment(
-                                                                com.commentId!);
+                                                        deletecomment(
+                                                            com.commentId!);
                                                       },
                                                       icon: Icon(
                                                         Icons.delete,

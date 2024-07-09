@@ -16,6 +16,7 @@ class Config {
   static const String ParticpantApi = "/participant";
   static const String DiscussionApi = "/discussion";
   static const String CommentApi = "/comment";
+  static const String farmaApi = "/Farma";
   static const String medicaCategorieAPI = "/medicament/";
   static const String imageURL = "http://10.0.2.2:3001";
 }

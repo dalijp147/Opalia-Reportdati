@@ -2,31 +2,52 @@ const RegistrationRequest = require("../models/Medecin/requestadmin.model");
 const sendmail = require("../middleware/sendMail");
 const registerParticipant = async (req, res) => {
   try {
-    const { eventId, participantId, MedecinId } = req.body;
+    const { eventId, participantId } = req.body;
 
+    // Check if a registration request already exists for this participant and event
+    const existingRequest = await RegistrationRequest.findOne({
+      participantId,
+    });
+
+    if (existingRequest) {
+      return res
+        .status(400)
+        .send(
+          "Une demande d'inscription pour ce participant à cet événement existe déjà."
+        );
+    }
+
+    // Create and save the new registration request
     const registrationRequest = new RegistrationRequest({
       eventId,
       participantId,
-      MedecinId,
     });
     await registrationRequest.save();
 
-    const adminEmail = "dalybouderbela@gmail.com";
-    const subject = "Nouvelle demande d'inscription";
-    const text = `Un participant a demandé à s'inscrire à l'événement. ID de la demande : ${registrationRequest._id}`;
-
-    await sendmail(adminEmail, subject, text);
-
-    res
-      .status(200)
-      .send(
-        "Demande d'inscription envoyée à l'administrateur pour approbation."
-      );
+    res.status(200).send("Demande d'inscription enregistrée avec succès.");
   } catch (error) {
-    res.status(500).send(error.toString());
+    console.error(error);
+    res
+      .status(500)
+      .send("Erreur lors de l'enregistrement de la demande d'inscription.");
   }
 };
+const get = (req, res) => {
+  RegistrationRequest.find()
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0) message = "No Quiz found!";
+      else message = "Quiz successfully retrieved";
 
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while retrieving Quiz.",
+      });
+    });
+};
 const approveRequest = async (req, res) => {
   try {
     const { id } = req.params;
@@ -65,4 +86,5 @@ module.exports = {
   registerParticipant,
   approveRequest,
   rejectRequest,
+  get,
 };

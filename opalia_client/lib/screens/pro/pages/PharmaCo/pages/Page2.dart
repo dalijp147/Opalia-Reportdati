@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page1.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page3.dart';
+import 'package:opalia_client/services/remote/apiServicePro.dart';
+
+import '../../../../../models/farma.dart';
 
 class Page2 extends StatefulWidget {
-  const Page2({super.key});
+  final Farma farma;
+  const Page2({super.key, required this.farma});
 
   @override
   State<Page2> createState() => _Page2State();
@@ -15,9 +19,9 @@ class _Page2State extends State<Page2> {
   @override
   void initState() {
     _isCheckedc = List<bool>.filled(textTimestre.length, false);
-    _isCheckedc = List<bool>.filled(textTimestrea.length, false);
-    _isCheckedc = List<bool>.filled(textTimestreb.length, false);
-    _isCheckedc = List<bool>.filled(textTimestrev.length, false);
+    _isCheckeda = List<bool>.filled(textTimestrea.length, false);
+    _isCheckedd = List<bool>.filled(textTimestreb.length, false);
+    _isCheckeddd = List<bool>.filled(textTimestrev.length, false);
     super.initState();
   }
 
@@ -45,6 +49,42 @@ class _Page2State extends State<Page2> {
     "oui",
     "non",
   ];
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Collect data from checkboxes
+      String arret = _isCheckedc.indexWhere((element) => element) >= 0
+          ? textTimestre[_isCheckedc.indexWhere((element) => element)]
+          : "";
+      String disparition = _isCheckeda.indexWhere((element) => element) >= 0
+          ? textTimestrea[_isCheckeda.indexWhere((element) => element)]
+          : "";
+      String reintroduits = _isCheckedd.indexWhere((element) => element) >= 0
+          ? textTimestreb[_isCheckedd.indexWhere((element) => element)]
+          : "";
+      String reapparition = _isCheckeddd.indexWhere((element) => element) >= 0
+          ? textTimestrev[_isCheckeddd.indexWhere((element) => element)]
+          : "";
+
+      Farma updatedFarma = widget.farma.copyWith(
+        arret: arret,
+        disparition: disparition,
+        reintroduits: reintroduits,
+        reapparition: reapparition,
+      );
+
+      bool result = await ApiServicePro.postFarma(updatedFarma);
+      if (result) {
+        Get.to(Page3(
+          farma: updatedFarma,
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update Farma')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +109,13 @@ class _Page2State extends State<Page2> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Text(
+                'PRODUITS',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   Expanded(
@@ -117,14 +164,14 @@ class _Page2State extends State<Page2> {
                         height: 150,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
-                          itemCount: textTimestre.length,
+                          itemCount: textTimestrea.length,
                           itemBuilder: (context, index) {
                             return CheckboxListTile(
-                              value: _isCheckedc[index],
-                              title: Text(textTimestre[index]),
+                              value: _isCheckeda[index],
+                              title: Text(textTimestrea[index]),
                               onChanged: (val) {
                                 setState(() {
-                                  _isCheckedc[index] = val!;
+                                  _isCheckeda[index] = val!;
                                 });
                               },
                             );
@@ -150,14 +197,14 @@ class _Page2State extends State<Page2> {
                         height: 150,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
-                          itemCount: textTimestre.length,
+                          itemCount: textTimestreb.length,
                           itemBuilder: (context, index) {
                             return CheckboxListTile(
-                              value: _isCheckedc[index],
-                              title: Text(textTimestre[index]),
+                              value: _isCheckedd[index],
+                              title: Text(textTimestreb[index]),
                               onChanged: (val) {
                                 setState(() {
-                                  _isCheckedc[index] = val!;
+                                  _isCheckedd[index] = val!;
                                 });
                               },
                             );
@@ -183,14 +230,14 @@ class _Page2State extends State<Page2> {
                         height: 150,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
-                          itemCount: textTimestre.length,
+                          itemCount: textTimestrev.length,
                           itemBuilder: (context, index) {
                             return CheckboxListTile(
-                              value: _isCheckedc[index],
-                              title: Text(textTimestre[index]),
+                              value: _isCheckeddd[index],
+                              title: Text(textTimestrev[index]),
                               onChanged: (val) {
                                 setState(() {
-                                  _isCheckedc[index] = val!;
+                                  _isCheckeddd[index] = val!;
                                 });
                               },
                             );
@@ -208,18 +255,7 @@ class _Page2State extends State<Page2> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page1());
-                    },
-                    child: Text('Précedent'),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page3());
-                    },
+                    onPressed: _submitForm,
                     child: Text('Suivant'),
                   ),
                 ],

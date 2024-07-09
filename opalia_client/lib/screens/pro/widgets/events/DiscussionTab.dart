@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opalia_client/models/discussion.dart';
 import 'package:opalia_client/screens/pro/widgets/events/discussion/DiscusionItem.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 
 import '../../../../models/events.dart';
 import '../../../../services/remote/apiServicePro.dart';
@@ -44,7 +45,7 @@ class _DiscussionTabState extends State<DiscussionTab> {
       // Call your API to add the new comment
       await ApiServicePro.postDiscussion(
         newCommentText,
-        "66754d2525c9be414693c2e9",
+        PreferenceUtils.getuserid(),
         widget.event.EventId,
       );
 

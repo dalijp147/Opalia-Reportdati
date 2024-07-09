@@ -3,10 +3,14 @@ import 'package:get/get.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page3.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page5.dart';
 
+import '../../../../../models/farma.dart';
+import '../../../../../services/remote/apiServicePro.dart';
 import '../../../widgets/Farma/FormText.dart';
 
 class Page4 extends StatefulWidget {
-  const Page4({super.key});
+  final Farma farma;
+
+  const Page4({super.key, required this.farma});
 
   @override
   State<Page4> createState() => _Page4State();
@@ -15,7 +19,6 @@ class Page4 extends StatefulWidget {
 class _Page4State extends State<Page4> {
   final _formKey = GlobalKey<FormState>();
   List<String> textTimestre = [
-    "Sans information",
     "oui",
     "non",
   ];
@@ -49,6 +52,38 @@ class _Page4State extends State<Page4> {
     super.dispose();
   }
 
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      String arret = _isCheckedc.indexWhere((element) => element) >= 0
+          ? textTimestre[_isCheckedc.indexWhere((element) => element)]
+          : "";
+      // Assuming that you're only allowing one selection for each field, otherwise you'll need to handle multiple selections
+
+      Farma newFarma = widget.farma.copyWith(
+        medcineclarent: arret, // Replace with actual value
+        nomdeclarentmedecoin: nameController.text, // Replace with actual value
+        prenomdeclarentmedecoin:
+            prenomController.text, // Replace with actual value
+        telephonedeclarentmedein: int.tryParse(telephoneController.text) ??
+            0, // Replace with actual value
+        qualitemedecindeclartent:
+            adresseController.text, // Replace with actual value
+      );
+
+      bool result = await ApiServicePro.postFarma(newFarma);
+      if (result) {
+        Get.to(Page5(
+          farma: newFarma,
+        ));
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create Farma')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,12 +102,19 @@ class _Page4State extends State<Page4> {
         centerTitle: true,
         // bottom:
       ),
-      body: SingleChildScrollView(  
+      body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Text(
+                'MÉDECIN PRESCIPTEUR',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   Expanded(
@@ -121,12 +163,12 @@ class _Page4State extends State<Page4> {
               Row(
                 children: <Widget>[
                   FormText(
-                    nameController: villeController,
-                    hintText: 'Ville',
+                    nameController: adresseController,
+                    hintText: 'Qualité',
                   ),
                   FormText(
-                    nameController: adresseController,
-                    hintText: 'adresse',
+                    nameController: telephoneController,
+                    hintText: 'Telephone',
                   ),
                 ],
               ),
@@ -134,18 +176,7 @@ class _Page4State extends State<Page4> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page3());
-                    },
-                    child: Text('Précedent'),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.to(Page5());
-                    },
+                    onPressed: _submitForm,
                     child: Text('Suivant'),
                   ),
                 ],

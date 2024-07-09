@@ -55,7 +55,7 @@ categoryMedecinapp.get("/", async (req, res) => {
   try {
     const categories = await Categorie.find();
 
-    fetchDataCategoriePro();
+    //fetchDataCategoriePro();
     res.status(200).json({ data: categories });
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -8,6 +8,7 @@ import 'package:opalia_client/models/mediacment.dart';
 import '../../config/config.dart';
 import '../../models/discussion.dart';
 import '../../models/events.dart';
+import '../../models/farma.dart';
 import '../../models/particpant.dart';
 import '../../models/programme.dart';
 
@@ -163,20 +164,44 @@ class ApiServicePro {
     }
   }
 
-  static Future<List<Particpant>> fetchparticipantbyId(id) async {
+  static Future<Particpant> fetchparticipantbyId(id) async {
     Map<String, String> requestHandler = {'Content-Type': 'application/json'};
     var url =
         Uri.http(Config.apiUrl, Config.ParticpantApi + '/participant/' + id);
     print(url);
-    var response = await client.get(url, headers: requestHandler);
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
+    try {
+      final response = await client.get(url, headers: requestHandler);
+      print('API request URL: $url'); // Debugging print
+      print('API response status: ${response.statusCode}'); // Debugging print
+      print(
+          'API response body for participant ID $id: ${response.body}'); // Debugging print
 
-      print('sucess load fetchparticipantbyId');
-      return ParticpantFromJson(data);
-    } else {
-      throw Exception('Failed to load fetchparticipantbyId');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Decoded JSON for participant ID $id: $data'); // Debugging print
+
+        return Particpant.fromMap(data);
+      } else {
+        throw Exception('Failed to load participant with ID $id');
+      }
+    } catch (e) {
+      print('Error during fetchParticipantById: $e'); // Debugging print
+      throw e;
     }
+  }
+
+  static Future<List<Particpant>> fetchParticipantsByIds(
+      List<String> ids) async {
+    List<Particpant> participants = [];
+    for (var id in ids) {
+      try {
+        final participant = await fetchparticipantbyId(id);
+        participants.add(participant);
+      } catch (e) {
+        print('Error fetching participant with ID $id: $e');
+      }
+    }
+    return participants;
   }
 
   static Future<bool> deleteParticipant(n) async {
@@ -410,6 +435,49 @@ class ApiServicePro {
     } else {
       print('eroor failed deleting Comment');
 
+      return false;
+    }
+  }
+  ////FArma
+
+  static Future<bool> postFarma(Farma farma) async {
+    var url = Uri.http(Config.apiUrl, Config.farmaApi + '/farma');
+    var response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(farma.toJson()),
+    );
+
+    if (response.statusCode == 201) {
+      print("Success adding Farma");
+      print(response.body);
+      return true;
+    } else {
+      print('Error failed adding Farma');
+      print(response.body);
+      return false;
+    }
+  }
+
+  static Future<bool> putFarma(String id, Farma farma) async {
+    var url = Uri.http(Config.apiUrl, Config.farmaApi + '/farma/' + id);
+    var response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(farma.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      print("Success updating Farma");
+      print(response.body);
+      return true;
+    } else {
+      print('Error failed updating Farma');
+      print(response.body);
       return false;
     }
   }

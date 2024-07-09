@@ -12,6 +12,14 @@ app.get("/", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+app.get("/detail/:id", async (req, res) => {
+  try {
+    const allUsers = await Medecin.findById(req.params.id);
+    res.status(200).json(allUsers);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 app.post("/registration", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {

@@ -49,55 +49,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             trailing: Icon(Icons.navigate_next),
             visualDensity: VisualDensity(vertical: 4),
             onTap: () {
-              Get.to(HbA1cCalculator());
-            },
-            title: Text(
-              'Hba1c Calculator',
-              textScaleFactor: 1.5,
-            ),
-          ),
-        ),
-        Card(
-          borderOnForeground: true,
-          child: ListTile(
-            textColor: Colors.red,
-            trailing: Icon(Icons.navigate_next),
-            visualDensity: VisualDensity(vertical: 4),
-            onTap: () {
               Get.to(ACTCalculator());
             },
             title: Text(
               'ACT score',
-              textScaleFactor: 1.5,
-            ),
-          ),
-        ),
-        Card(
-          borderOnForeground: true,
-          child: ListTile(
-            textColor: Colors.red,
-            trailing: Icon(Icons.navigate_next),
-            visualDensity: VisualDensity(vertical: 4),
-            onTap: () {
-              Get.to(Bodysurfacearea());
-            },
-            title: Text(
-              'Body surface',
-              textScaleFactor: 1.5,
-            ),
-          ),
-        ),
-        Card(
-          borderOnForeground: true,
-          child: ListTile(
-            textColor: Colors.red,
-            trailing: Icon(Icons.navigate_next),
-            visualDensity: VisualDensity(vertical: 4),
-            onTap: () {
-              Get.to(CombinedCalculator());
-            },
-            title: Text(
-              'Combined Calculator',
               textScaleFactor: 1.5,
             ),
           ),

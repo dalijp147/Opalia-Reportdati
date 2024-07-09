@@ -3,6 +3,11 @@ import 'package:opalia_client/models/medecin.dart';
 
 List<Particpant> ParticpantFromJson(dynamic str) =>
     List<Particpant>.from((str).map((x) => Particpant.fromMap(x)));
+List<Particpant> ParticipantFromJson(List<dynamic> data) {
+  return data
+      .map((json) => Particpant.fromMap(json as Map<String, dynamic>))
+      .toList();
+}
 
 class Particpant {
   late String? participantId;

@@ -45,72 +45,77 @@ class _Page7State extends State<Page7> {
         centerTitle: true,
         // bottom:
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Quelle est l'évolution?",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          height: 150,
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: textTimestre.length,
-                            itemBuilder: (context, index) {
-                              return CheckboxListTile(
-                                value: _isCheckedc[index],
-                                title: Text(textTimestre[index]),
-                                onChanged: (val) {
-                                  setState(() {
-                                    _isCheckedc[index] = val!;
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'EVOLUTION',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.to(Page6());
-                        },
-                        child: Text('Précedent'),
+                      Text(
+                        "Quelle est l'évolution?",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Get.to(Page6());
-                        },
-                        child: Text('envoyer'),
-                      ),
+                      Container(
+                        height: 300,
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: textTimestre.length,
+                          itemBuilder: (context, index) {
+                            return CheckboxListTile(
+                              value: _isCheckedc[index],
+                              title: Text(textTimestre[index]),
+                              onChanged: (val) {
+                                setState(() {
+                                  _isCheckedc[index] = val!;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      )
                     ],
                   ),
                 ),
+              ],
+            ),
+            Expanded(
+              child: Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.to(Page6());
+                      },
+                      child: Text('Précedent'),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Get.to(Page6());
+                      },
+                      child: Text('envoyer'),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -21,7 +21,6 @@ exports.create = (req, res) => {
 exports.get = (req, res) => {
   Programme.find()
     .populate("event")
-    .populate("prog.speaker")
     .then((data) => {
       var message = "";
       if (data === undefined || data.length == 0)
