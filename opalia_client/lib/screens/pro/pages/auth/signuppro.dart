@@ -23,7 +23,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
   TextEditingController prenomController = TextEditingController();
   TextEditingController NumerotelController = TextEditingController();
   TextEditingController SpecialiteController = TextEditingController();
-
+  TextEditingController NumeroLicenseController = TextEditingController();
   late FocusNode emailFocus;
   late FocusNode passwordFocus;
   late FocusNode nomFocus;
@@ -83,6 +83,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         prenomController.text.isNotEmpty &&
         NumerotelController.text.isNotEmpty &&
         SpecialiteController.text.isNotEmpty &&
+        NumeroLicenseController.text.isNotEmpty &&
         _image != null) {
       var rgBody = {
         "email": emailController.text,
@@ -91,6 +92,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         "familyname": prenomController.text,
         "numeroTel": NumerotelController.text,
         "specialite": SpecialiteController.text,
+        "licenseNumber": NumeroLicenseController.text,
         "image": _image
       };
       var url = Uri.http(Config.apiUrl, Config.medecinApi + "/registration");
@@ -162,17 +164,21 @@ class _SignupproScreenState extends State<SignupproScreen> {
                     height: 200,
                     width: 200,
                   ),
+
                   Text(
                     'Créer un nouveau compte',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
+                  SizedBox(
+                    height: 30,
+                  ),
                   _image == null
-                      ? Text('No image selected.')
+                      ? Text("pas d'image sélectionner")
                       : Image.file(_image!, height: 100),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    child: Text('Pick Image from Gallery'),
+                    child: Text('choisire une image depuis la galerie'),
                   ),
                   const SizedBox(
                     height: 10,
@@ -272,7 +278,9 @@ class _SignupproScreenState extends State<SignupproScreen> {
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "veullez saisire votre numéro de téléphone ";
+                        return "veullez saisire votre numéro de téléphone";
+                      } else if (!RegExp(r'^\d{8}$').hasMatch(value)) {
+                        return "Veuillez entrer un numéro de téléphone valide (8 chiffres)";
                       } else {
                         return null;
                       }
@@ -321,6 +329,46 @@ class _SignupproScreenState extends State<SignupproScreen> {
                       // ignore: dead_code
 
                       hintText: "Spécialité",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Numero de License :',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: NumeroLicenseController,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire votre Numero de License ";
+                      } else if (!RegExp(r'^\d{1,5}$').hasMatch(value)) {
+                        return "Veuillez entrer un Numero de License valide (maximum 5 chiffres)";
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      // ignore: dead_code
+
+                      hintText: "Numero de License",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -422,47 +470,47 @@ class _SignupproScreenState extends State<SignupproScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Checkbox(
-                            value: true,
-                            onChanged: (value) {
-                              setState(() {
-                                value == false;
-                              });
-                            }),
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "je suis d'accord avec ",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                            ),
-                            TextSpan(
-                              text: "politique de confidentialité",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 11),
-                            ),
-                            TextSpan(
-                              text: "et",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                            ),
-                            TextSpan(
-                              text: "termes et conditions",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     SizedBox(
+                  //       width: 24,
+                  //       height: 24,
+                  //       child: Checkbox(
+                  //           value: true,
+                  //           onChanged: (value) {
+                  //             setState(() {
+                  //               value == false;
+                  //             });
+                  //           }),
+                  //     ),
+                  //     Text.rich(
+                  //       TextSpan(
+                  //         children: [
+                  //           TextSpan(
+                  //             text: "je suis d'accord avec ",
+                  //             style:
+                  //                 TextStyle(color: Colors.grey, fontSize: 10),
+                  //           ),
+                  //           TextSpan(
+                  //             text: "politique de confidentialité",
+                  //             style:
+                  //                 TextStyle(color: Colors.black, fontSize: 11),
+                  //           ),
+                  //           TextSpan(
+                  //             text: "et",
+                  //             style:
+                  //                 TextStyle(color: Colors.grey, fontSize: 10),
+                  //           ),
+                  //           TextSpan(
+                  //             text: "termes et conditions",
+                  //             style:
+                  //                 TextStyle(color: Colors.black, fontSize: 11),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     )
+                  //   ],
+                  //   ),
                   const SizedBox(
                     height: 20,
                   ),

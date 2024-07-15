@@ -17,13 +17,14 @@ class DetailMedicamentPro extends StatefulWidget {
   final String image;
   final String title;
   final String sousclasse;
+  final String tit;
   DetailMedicamentPro({
     super.key,
     required this.image,
     required this.title,
     required this.sousclasse,
     required this.id,
-    //required this.medi,
+    required this.tit,
   });
 
   @override
@@ -32,23 +33,6 @@ class DetailMedicamentPro extends StatefulWidget {
 
 class _DetailMedicamentProState extends State<DetailMedicamentPro> {
   List<Medicament>? allMedicament = [];
-  Future<void> _fetchMedicament() async {
-    try {
-      final medicament =
-          await ApiServicePro.getMedicamentBycategoriePro(widget.id);
-      setState(() {
-        allMedicament = medicament;
-      });
-    } catch (e) {
-      print('Failed to fetch categorie: $e');
-    }
-  }
-
-  @override
-  void initState() {
-    _fetchMedicament();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +311,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                   height: 20,
                 ),
                 FutureBuilder<List<Medicament>>(
-                  future: ApiServicePro.getMedicamentBycategoriePro(widget.id),
+                  future: ApiServicePro.getMedicamentBycategoriePro(widget.tit),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Medicament>> model) {
                     if (model.connectionState == ConnectionState.waiting) {
@@ -367,6 +351,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                                     name: news.mediname!,
                                     id: news.mediId!,
                                     souclasse: news.sousclassemedi!,
+                                    cat: widget.tit,
                                   );
                                 },
                               ),
@@ -374,92 +359,6 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                     }
                   },
                 )
-                // Container(
-                //   width: 500,
-                //   height: 250,
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: allMedicament!.length,
-                //     itemBuilder: (context, index) {
-                //       final medicament = allMedicament![index];
-                //       return GestureDetector(
-                //         onTap: () {
-                //           Get.to(DetailMedicamentPro(
-                //             image: medicament.mediImage!,
-                //             title: medicament.mediname!,
-                //             sousclasse: medicament.sousclassemedi!,
-                //             id: medicament.mediId!,
-                //           ));
-                //         },
-                //         child: Padding(
-                //           padding: const EdgeInsets.all(8.0),
-                //           child: Container(
-                //             width: 250,
-                //             height: 200,
-                //             decoration: BoxDecoration(
-                //               borderRadius: BorderRadius.circular(20),
-                //               border: Border.all(width: 2, color: Colors.red),
-                //               color: Colors.white,
-                //             ),
-                //             child: Center(
-                //               child: Column(
-                //                 mainAxisAlignment: MainAxisAlignment.center,
-                //                 children: [
-                //                   Image.network(
-                //                     loadingBuilder: (BuildContext context,
-                //                         Widget child,
-                //                         ImageChunkEvent? loadingProgress) {
-                //                       if (loadingProgress == null) return child;
-                //                       return Container(
-                //                         height: 100,
-                //                         width: 150,
-                //                         child: Center(
-                //                           child: CircularProgressIndicator(
-                //                             value: loadingProgress
-                //                                         .expectedTotalBytes !=
-                //                                     null
-                //                                 ? loadingProgress
-                //                                         .cumulativeBytesLoaded /
-                //                                     loadingProgress
-                //                                         .expectedTotalBytes!
-                //                                 : null,
-                //                           ),
-                //                         ),
-                //                       );
-                //                     },
-                //                     // categorie.categorieImage!,
-                //                     // height: 50,
-                //                     // width: 50,
-                //                     (medicament.mediImage == null ||
-                //                             medicament.mediImage == "")
-                //                         ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
-                //                         : medicament.mediImage!,
-                //                     height: 100,
-                //                     width: 100,
-                //                     fit: BoxFit.scaleDown,
-                //                     errorBuilder: (BuildContext context,
-                //                         Object error, StackTrace? stackTrace) {
-                //                       // You can add logging here to see what the error is
-                //                       print('Error loading image: $error');
-                //                       return Image.network(
-                //                         "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
-                //                       );
-                //                     },
-                //                   ),
-                //                   Text(
-                //                     medicament.mediname!,
-                //                     style: TextStyle(
-                //                         fontSize: 12, color: Colors.red),
-                //                   ),
-                //                 ],
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // )
               ],
             ),
           ),

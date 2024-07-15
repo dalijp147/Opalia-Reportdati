@@ -142,11 +142,27 @@ Newsapp.delete("/delete/:id", getNews, async (req, res) => {
 Newsapp.put("/update/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const newNews = await News.findByIdAndUpdate(id, req.body);
-    if (!newNews) {
-      res.status(404).json({ message: `cannot find news with ID ${id}` });
+    const imageUrl = req.file
+      ? `${req.protocol}://${req.get("host")}/${req.file.path}`
+      : null;
+
+    // Find the news by ID and update the fields
+    const updatedNews = await News.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+        newsImage: imageUrl || req.body.newsImage, // Update newsImage only if a new file is uploaded
+      },
+      { new: true }
+    );
+
+    if (!updatedNews) {
+      return res
+        .status(404)
+        .json({ message: `Cannot find news with ID ${id}` });
     }
-    res.status(200).json({ newNews });
+
+    res.status(200).json(updatedNews);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

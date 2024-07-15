@@ -38,7 +38,7 @@ class _ResultScreenState extends State<ResultScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Get.to(BottomNavPRo());
+            Get.to(BottomNav());
           },
           icon: Icon(Icons.arrow_back),
         ),

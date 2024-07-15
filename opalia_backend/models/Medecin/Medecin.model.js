@@ -33,8 +33,16 @@ const medecinSchema = mongoose.Schema({
   },
   identifiantMedecin: {
     type: String,
-    default: "256548",
+    default: "61891",
   },
+  licenseNumber: {
+    type: String,
+    default: "61891",
+    unique: true,
+  },
+  isVerified: { type: Boolean, default: false },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 // encryupt the password

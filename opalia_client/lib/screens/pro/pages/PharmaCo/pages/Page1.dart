@@ -97,7 +97,8 @@ class _Page1State extends State<Page1> {
         dateNaissance: DateTime.tryParse(dateController.text) ?? DateTime.now(),
         poids: 0, // Replace with actual value
         age: int.tryParse(ageController.text) ?? 0,
-        taille: 0, // Replace with actual value
+        taille: int.tryParse(tailleController.text) ??
+            0, // Replace with actual value
         sexe: sexe,
         nouveaune: nouveaune,
         produit: '', // Replace with actual value

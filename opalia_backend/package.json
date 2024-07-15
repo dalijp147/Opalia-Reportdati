@@ -17,6 +17,7 @@
     "body-parser": "^1.20.2",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "jsonwebtoken": "^9.0.2",
@@ -26,6 +27,7 @@
     "puppeteer": "^22.10.0",
     "puppeteer-cluster": "^0.24.0",
     "random-int": "^3.0.0",
+    "react-router-dom": "^6.24.1",
     "request-promise": "^4.2.6"
   },
   "devDependencies": {

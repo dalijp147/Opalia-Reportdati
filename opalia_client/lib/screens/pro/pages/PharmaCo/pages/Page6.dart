@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page5.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page7.dart';
 
+import '../../../../../models/farma.dart';
+import '../../../../../services/remote/apiServicePro.dart';
+import '../../../../client/widgets/Allappwidgets/constant.dart';
 import '../../../widgets/Farma/FormText.dart';
 
 class Page6 extends StatefulWidget {
-  const Page6({super.key});
+  final Farma farma;
+  const Page6({super.key, required this.farma});
 
   @override
   State<Page6> createState() => _Page6State();
@@ -33,6 +38,38 @@ class _Page6State extends State<Page6> {
   void dispose() {
     nameController.dispose();
     super.dispose();
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Assuming that you're only allowing one selection for each field, otherwise you'll need to handle multiple selections
+      String arret = _isCheckedc.indexWhere((element) => element) >= 0
+          ? textTimestre[_isCheckedc.indexWhere((element) => element)]
+          : "";
+      Farma newFarma = widget.farma.copyWith(
+        gravite: arret, // Replace with actual value
+        dategravite: DateTime.tryParse(nameController.text) ??
+            DateTime.now(), // Replace with actual value
+      );
+
+      Get.to(Page7(
+        farma: newFarma,
+        // farma: newFarma,
+      ));
+    }
+  }
+
+  Future<void> _selectedDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (_picked != null) {
+      setState(() {
+        nameController.text = DateFormat('yyyy-MM-dd').format(_picked);
+      });
+    }
   }
 
   @override
@@ -101,9 +138,43 @@ class _Page6State extends State<Page6> {
             SizedBox(
               height: 15,
             ),
-            FormText(
-              nameController: nameController,
-              hintText: 'Date de décés',
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "veullez saisire une date ";
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                      ),
+                      borderRadius: kBorderRadius,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: kBorderRadius),
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    hintText: "date de décés",
+                  ),
+                  readOnly: true,
+                  onTap: () {
+                    _selectedDate();
+                  },
+                ),
+              ),
             ),
             Expanded(
               child: Align(
@@ -112,18 +183,7 @@ class _Page6State extends State<Page6> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                      //  Get.to(Page5());
-                      },
-                      child: Text('Précedent'),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.to(Page7());
-                      },
+                      onPressed: _submitForm,
                       child: Text('Suivant'),
                     ),
                   ],

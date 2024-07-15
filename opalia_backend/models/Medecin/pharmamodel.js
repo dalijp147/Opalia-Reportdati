@@ -107,7 +107,10 @@ const FarmaSchema = moogoose.Schema({
   gravité: {
     type: String,
   },
-
+  dategravité: {
+    type: Date,
+    default: Date.now,
+  },
   ////
   evolution: {
     type: String,

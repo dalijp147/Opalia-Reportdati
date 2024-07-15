@@ -130,6 +130,7 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                     title: suggestion.mediname!,
                     sousclasse: suggestion.sousclassemedi!,
                     id: suggestion.mediId!,
+                    tit: widget.name,
                   ),
                 );
                 print(suggestion.mediname!);
@@ -173,6 +174,7 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                                       title: medicament.mediname!,
                                       sousclasse: medicament.sousclassemedi!,
                                       id: medicament.mediId!,
+                                      tit: widget.name,
                                     ));
                                   },
                                   child: Container(

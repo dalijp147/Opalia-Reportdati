@@ -9,27 +9,23 @@ import 'package:opalia_client/screens/pro/pages/auth/signinpro.dart';
 import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
 import 'package:opalia_client/services/local/notif_service.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await NotifiactionService.initializeNotification();
   await PreferenceUtils.init();
-
   await Hive.openBox('favoriteBox');
-  String? token = PreferenceUtils.getString('token');
 
-  // Debugging token retrieval
+  String? token = PreferenceUtils.getString('token');
   if (token == null) {
     print('No token found!');
   } else {
     print('Retrieved token: $token');
   }
-  runApp(
-    MyApp(
-      token: token,
-    ),
-  );
+
+  runApp(MyApp(token: token));
 }
 
 class MyApp extends StatelessWidget {
@@ -37,11 +33,9 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key, this.token});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     bool isTokenValid = false;
-
     if (token != null) {
       try {
         isTokenValid = !JwtDecoder.isExpired(token!);
@@ -50,6 +44,7 @@ class MyApp extends StatelessWidget {
         print('Error decoding token: $e');
       }
     }
+
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -58,10 +53,57 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 1, 1)),
         useMaterial3: true,
       ),
-
-      // home: isTokenValid ? BottomNav(token: token!) : SigninScreen(),
-      home: isTokenValid ? BottomNavPRo(token: token!) : SigninproScreen(),
-      //BottomNavPRo(),
+      home: FutureBuilder<bool>(
+        future: _isFirstTimeUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            if (snapshot.data ?? true) {
+              print('First time user: showing ProfileScreen');
+              return ProfileScreen();
+            } else {
+              return FutureBuilder<String?>(
+                future: _getUserProfile(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    print('User profile: ${snapshot.data}');
+                    if (snapshot.data == 'patient') {
+                      return isTokenValid
+                          ? BottomNav(token: token!)
+                          : SigninScreen();
+                    } else if (snapshot.data == 'doctor') {
+                      return isTokenValid
+                          ? BottomNavPRo(token: token!)
+                          : SigninproScreen();
+                    } else {
+                      return ProfileScreen(); // Default case if no profile found
+                    }
+                  }
+                },
+              );
+            }
+          }
+        },
+      ),
     );
+  }
+
+  Future<bool> _isFirstTimeUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    if (isFirstTime) {
+      await prefs.setBool('isFirstTime', false);
+    }
+    return isFirstTime;
+  }
+
+  Future<String?> _getUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userProfile = prefs.getString('userProfile');
+    print('Retrieved user profile: $userProfile');
+    return userProfile;
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:get/get.dart';
@@ -20,16 +19,18 @@ class SigninproScreen extends StatefulWidget {
 
 class _SigninproScreenState extends State<SigninproScreen> {
   TextEditingController emailController = TextEditingController();
+  TextEditingController ForgotemailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
   late FocusNode passwordFocus;
   bool _obscured = true;
   late FocusNode emailFocus;
+  String errorMessage = '';
+
   @override
   void initState() {
     passwordFocus = FocusNode();
     emailFocus = FocusNode();
-
     super.initState();
     initSharedPref();
   }
@@ -54,7 +55,6 @@ class _SigninproScreenState extends State<SigninproScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  bool isNotValide = false;
   void loginUser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var rgBody = {
@@ -72,8 +72,69 @@ class _SigninproScreenState extends State<SigninproScreen> {
           token: mytoken,
         ));
       } else {
-        print('something went wrong in login');
+        setState(() {
+          errorMessage =
+              jsonResponse['message'] ?? 'Something went wrong in login';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+    } else {
+      setState(() {
+        errorMessage = 'Please fill in all fields';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void forgotPassword() async {
+    if (ForgotemailController.text.isNotEmpty) {
+      var rgBody = {
+        "email": ForgotemailController.text,
+      };
+      var url = Uri.http(Config.apiUrl, Config.medecinApi + "/forgot-password");
+      var response = await http.post(url, body: rgBody);
+      var jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          errorMessage = 'Password reset link sent to your email';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        setState(() {
+          errorMessage = jsonResponse['message'] ?? 'Something went wrong';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      setState(() {
+        errorMessage = 'Please enter your email';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -250,40 +311,57 @@ class _SigninproScreenState extends State<SigninproScreen> {
                 SizedBox(
                   height: 15,
                 ),
-                Text('ou se connectez avec:'),
                 SizedBox(
-                  height: 15,
-                ),
-                Center(
-                  child: Container(
-                    width: 370,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(width: 3, color: Colors.grey),
-                      color: Colors.white,
+                  width: 370,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Mot de passe oublier'),
+                            content: TextField(
+                              controller: ForgotemailController,
+                              decoration: InputDecoration(hintText: "Email"),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Send'),
+                                onPressed: () {
+                                  forgotPassword();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/images/icongoogle.png',
-                            ), //NetworkImage
-                            radius: 20,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            'Se connecter avec votre compte Google',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )
-                        ],
+                    child: Text(
+                      'Mot de passe oublier ?',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -41,19 +41,12 @@ class PreferenceUtils {
   //   return userId;
   // }
 
-  static Future<String> getUserImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+  static String getUserImage() {
+    String? token = _prefsInstance!.getString('token');
+    Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
+    var userId = jsonDecoddd['image'];
 
-    if (token != null && token.isNotEmpty) {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      var userImage = decodedToken[
-          'image']; // Adjust the key based on your token's structure
-
-      return userImage;
-    }
-
-    return '';
+    return userId ?? '';
   }
 
   static String getuserFamilyname() {
@@ -62,6 +55,14 @@ class PreferenceUtils {
     var userId = jsonDecoddd['familyname'];
 
     return userId;
+  }
+
+  static String getSpecialite() {
+    String? token = _prefsInstance!.getString('token');
+    Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
+    var userId = jsonDecoddd['specialite'];
+
+    return userId ?? '';
   }
 
   static String getuserEmail() {

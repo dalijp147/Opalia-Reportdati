@@ -18,8 +18,11 @@ const DiscussionRoute = require("../routes/Medecin/discussionRoute.js");
 const CommentRoute = require("../routes/Medecin/commentRoute.js");
 const RequestAdminRoute = require("../routes/Medecin/requestadminRoute.js");
 const FarmaRoute = require("../routes/Medecin/farmaRoute.js");
+const FeedbackRoute = require("../routes/Medecin/feedbackRoute.js");
 const dotenv = require("dotenv");
 const body_parser = require("body-parser");
+const path = require("path");
+const cors = require("cors");
 dotenv.config();
 
 //middleware
@@ -27,6 +30,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(body_parser.json());
 app.use("/uploads", express.static("uploads"));
+app.use(body_parser.urlencoded({ extended: true }));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(cors());
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
 
 //routes
 app.use("/dossier", DossierRoute);
@@ -46,7 +56,7 @@ app.use("/participant", ParticapntRoute);
 app.use("/comment", CommentRoute);
 app.use("/RequestAdmin", RequestAdminRoute);
 app.use("/Farma", FarmaRoute);
-
+app.use("/feedback", FeedbackRoute);
 //mongoose connection
 mongoose.connect(process.env.MONGO_URL, {}).then(
   () => {

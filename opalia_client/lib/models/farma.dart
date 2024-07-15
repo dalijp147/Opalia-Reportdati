@@ -34,6 +34,7 @@ class Farma {
   int? duree;
   String? description;
   String? gravite;
+  DateTime? dategravite;
   String? evolution;
 
   Farma({
@@ -70,6 +71,7 @@ class Farma {
     this.duree,
     this.description,
     this.gravite,
+    this.dategravite,
     this.evolution,
   });
 
@@ -107,6 +109,7 @@ class Farma {
     int? duree,
     String? description,
     String? gravite,
+    DateTime? dategravite,
     String? evolution,
   }) {
     return Farma(
@@ -146,6 +149,7 @@ class Farma {
       duree: duree ?? this.duree,
       description: description ?? this.description,
       gravite: gravite ?? this.gravite,
+      dategravite: dategravite ?? this.dategravite,
       evolution: evolution ?? this.evolution,
     );
   }
@@ -188,6 +192,9 @@ class Farma {
       duree: json['duree'],
       description: json['description'],
       gravite: json['gravite'],
+      dategravite: json['dategravité'] != null
+          ? DateTime.parse(json['dategravité'])
+          : null,
       evolution: json['evolution'],
     );
   }
@@ -227,6 +234,7 @@ class Farma {
       'duree': duree,
       'description': description,
       'gravite': gravite,
+      'dategravité': dategravite?.toIso8601String(),
       'evolution': evolution,
     };
   }

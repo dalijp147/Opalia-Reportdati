@@ -110,9 +110,9 @@ class _ParticipantTabState extends State<ParticipantTab> {
                                         parti.doctorId!.image == "")
                                     ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
                                     : parti.doctorId!.image!,
-                                height: 100,
+                                height: double.infinity,
                                 width: 100,
-                                fit: BoxFit.scaleDown,
+                                fit: BoxFit.fitHeight,
                                 errorBuilder: (BuildContext context,
                                     Object error, StackTrace? stackTrace) {
                                   // You can add logging here to see what the error is
@@ -133,12 +133,14 @@ class _ParticipantTabState extends State<ParticipantTab> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                      width: 150,
                                       child: Text(
-                                        parti.doctorId!.name!,
+                                        'DR ' +
+                                            parti.doctorId!.name! +
+                                            ' ' +
+                                            parti.doctorId!.familyname!,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 15,
+                                          fontSize: 20,
                                         ),
                                       ),
                                     ),
@@ -146,7 +148,8 @@ class _ParticipantTabState extends State<ParticipantTab> {
                                       height: 10,
                                     ),
                                     parti.doctorId!.specialite != null
-                                        ? Text(parti.doctorId!.specialite!)
+                                        ? Text('Specialité : ' +
+                                            parti.doctorId!.specialite!)
                                         : Text('Data introuvable  ')
                                   ],
                                 ),

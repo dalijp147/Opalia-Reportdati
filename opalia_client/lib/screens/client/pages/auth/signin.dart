@@ -36,15 +36,17 @@ class _SigninScreenState extends State<SigninScreen> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController ForgotemailController = TextEditingController();
+
   late SharedPreferences prefs;
   late FocusNode passwordFocus;
   bool _obscured = true;
   late FocusNode emailFocus;
+
   @override
   void initState() {
     passwordFocus = FocusNode();
     emailFocus = FocusNode();
-
     super.initState();
     initSharedPref();
   }
@@ -70,6 +72,7 @@ class _SigninScreenState extends State<SigninScreen> {
   }
 
   bool isNotValide = false;
+
   void loginUser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var rgBody = {
@@ -88,11 +91,60 @@ class _SigninScreenState extends State<SigninScreen> {
         ));
       } else {
         print('something went wrong in login');
+        Get.snackbar(
+          "Login Failed",
+          "Incorrect email or password. Please try again.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     }
   }
+//  void forgotPassword() async {
+//     if (ForgotemailController.text.isNotEmpty) {
+//       var rgBody = {
+//         "email": ForgotemailController.text,
+//       };
+//       var url = Uri.http(Config.apiUrl, Config.medecinApi + "/forgot-password");
+//       var response = await http.post(url, body: rgBody);
+//       var jsonResponse = jsonDecode(response.body);
+//       if (response.statusCode == 200) {
+//         setState(() {
+//           errorMessage = 'Password reset link sent to your email';
+//         });
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             content: Text(errorMessage),
+//             backgroundColor: Colors.green,
+//           ),
+//         );
+//       } else {
+//         setState(() {
+//           errorMessage = jsonResponse['message'] ?? 'Something went wrong';
+//         });
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             content: Text(errorMessage),
+//             backgroundColor: Colors.red,
+//           ),
+//         );
+//       }
+//     } else {
+//       setState(() {
+//         errorMessage = 'Please enter your email';
+//       });
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text(errorMessage),
+//           backgroundColor: Colors.red,
+//         ),
+//       );
+//     }
+//   }
 
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,16 +152,10 @@ class _SigninScreenState extends State<SigninScreen> {
           child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            stops: const [
-              0.3,
-              0.5,
-            ],
+            stops: const [0.3, 0.5],
             begin: Alignment.topCenter,
             end: Alignment.center,
-            colors: [
-              Colors.red.shade50,
-              Colors.white,
-            ],
+            colors: [Colors.red.shade50, Colors.white],
           ),
         ),
         child: Padding(
@@ -141,7 +187,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   autofocus: false,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "veullez saisire email ";
+                      return "veuillez saisir l'email ";
                     } else {
                       return null;
                     }
@@ -149,8 +195,6 @@ class _SigninScreenState extends State<SigninScreen> {
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    // ignore: dead_code
-
                     hintText: "email",
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -161,9 +205,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -178,7 +220,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   keyboardType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "veullez saisire password ";
+                      return "veuillez saisir le mot de passe ";
                     } else {
                       return null;
                     }
@@ -210,9 +252,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15),
                 SizedBox(
                   width: 370,
                   height: 50,
@@ -234,9 +274,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15),
                 SizedBox(
                   width: 370,
                   height: 50,
@@ -265,10 +303,60 @@ class _SigninScreenState extends State<SigninScreen> {
                 SizedBox(
                   height: 15,
                 ),
-                Text('ou se connectez avec:'),
                 SizedBox(
-                  height: 15,
+                  width: 370,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Mot de passe oublier'),
+                            content: TextField(
+                              //  controller: ForgotemailController,
+                              decoration: InputDecoration(hintText: "Email"),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Send'),
+                                onPressed: () {
+                                  //forgotPassword();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'Mot de passe oublier ?',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
                 ),
+                SizedBox(height: 15),
+                Text('ou se connectez avec:'),
+                SizedBox(height: 15),
                 Center(
                   child: Container(
                     width: 370,
@@ -282,23 +370,20 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/images/icongoogle.png',
-                            ), //NetworkImage
+                            backgroundImage:
+                                AssetImage('assets/images/icongoogle.png'),
                             radius: 20,
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           Text(
                             'Se connecter avec votre compte Google',
                             style: TextStyle(fontWeight: FontWeight.bold),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -143,41 +143,36 @@ class _DiscussionItemState extends State<DiscussionItem> {
               SizedBox(
                 width: 5,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        widget.discu.author!.name!,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          widget.discu.author!.name!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        widget.discu.author!.familyname!,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(
+                          width: 4,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    DateFormat.yMMMEd().format(widget.discu.postedat!),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: 180,
+                        Text(
+                          widget.discu.author!.familyname!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      DateFormat.yMMMEd().format(widget.discu.postedat!),
+                    ),
+                  ],
+                ),
               ),
               IconButton(
                 onPressed: () {
@@ -239,10 +234,6 @@ class _DiscussionItemState extends State<DiscussionItem> {
           ///coùents
           Row(
             children: [
-              Text('Likes ${allComment?.length.toString()}'),
-              SizedBox(
-                width: 15,
-              ),
               Text('Commentaire ${allComment?.length.toString()}'),
             ],
           ),

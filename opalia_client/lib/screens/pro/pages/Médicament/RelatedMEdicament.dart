@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/pro/pages/M%C3%A9dicament/DetailMedicamentScreen.dart';
 
+import 'RelatedMedicamentPro.dart';
+
 class ReleatedMedicamentScreen extends StatefulWidget {
   final String name;
   final String image;
   final String id;
   final String souclasse;
+  final String cat;
   const ReleatedMedicamentScreen({
     super.key,
     required this.name,
     required this.image,
     required this.id,
     required this.souclasse,
+    required this.cat,
   });
 
   @override
@@ -25,11 +29,9 @@ class _ReleatedMedicamentScreenState extends State<ReleatedMedicamentScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(DetailMedicamentPro(
+        Get.to(RelatedMedicamentProDetail(
           image: widget.image,
-          title: widget.name,
-          id: widget.id,
-          sousclasse: widget.souclasse,
+          name: widget.name,
         ));
       },
       child: Padding(

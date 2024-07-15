@@ -82,7 +82,7 @@ class _DetailParticipantState extends State<DetailParticipant> {
                 child: const Icon(
                   Icons.arrow_back,
                   size: 30,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -94,7 +94,7 @@ class _DetailParticipantState extends State<DetailParticipant> {
 
   scroll() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.6,
+      initialChildSize: 0.7,
       maxChildSize: 1.0,
       minChildSize: 0.6,
       builder: (context, scrollController) {
@@ -144,7 +144,7 @@ class _DetailParticipantState extends State<DetailParticipant> {
                   ],
                 ),
                 Text(
-                  widget.specialite,
+                  "Spécialité: " + widget.specialite,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 const SizedBox(

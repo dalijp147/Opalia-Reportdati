@@ -21,6 +21,9 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isVerified: { type: Boolean, default: false },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 // encryupt the password

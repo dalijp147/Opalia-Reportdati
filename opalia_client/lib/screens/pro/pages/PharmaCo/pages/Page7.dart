@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:opalia_client/screens/pro/pages/PharmaCo/PhamaCoFormScreen.dart';
 import 'package:opalia_client/screens/pro/pages/PharmaCo/pages/Page6.dart';
 
+import '../../../../../models/farma.dart';
+import '../../../../../services/remote/apiServicePro.dart';
+
 class Page7 extends StatefulWidget {
-  const Page7({super.key});
+  final Farma farma;
+  const Page7({super.key, required this.farma});
 
   @override
   State<Page7> createState() => _Page7State();
@@ -25,6 +30,28 @@ class _Page7State extends State<Page7> {
   void initState() {
     _isCheckedc = List<bool>.filled(textTimestre.length, false);
     super.initState();
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Assuming that you're only allowing one selection for each field, otherwise you'll need to handle multiple selections
+      String arret = _isCheckedc.indexWhere((element) => element) >= 0
+          ? textTimestre[_isCheckedc.indexWhere((element) => element)]
+          : "";
+      Farma newFarma = widget.farma.copyWith(
+        gravite: arret, // Replace with actual value
+      );
+
+      bool result = await ApiServicePro.postFarma(newFarma);
+      if (result) {
+        Get.to(PharmaCoVigilanceScreen());
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create Farma')),
+        );
+      }
+    }
   }
 
   @override
@@ -98,7 +125,7 @@ class _Page7State extends State<Page7> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Get.to(Page6());
+                        // Get.to(Page6(farma: null,));
                       },
                       child: Text('Précedent'),
                     ),
@@ -107,7 +134,8 @@ class _Page7State extends State<Page7> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Get.to(Page6());
+                        _submitForm();
+                        Get.to(PharmaCoVigilanceScreen());
                       },
                       child: Text('envoyer'),
                     ),

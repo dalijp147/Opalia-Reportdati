@@ -59,18 +59,10 @@ class _Page5State extends State<Page5> {
             .text, // Replace with actual value// Replace with actual value
       );
 
-      bool result = await ApiServicePro.postFarma(newFarma);
-      if (result) {
-        Get.to(Page6(
-            //    farma: newFarma,
-            // farma: newFarma,
-            ));
-      } else {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create Farma')),
-        );
-      }
+      Get.to(Page6(
+        farma: newFarma,
+        // farma: newFarma,
+      ));
     }
   }
 

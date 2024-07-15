@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:opalia_client/screens/client/pages/auth/signin.dart';
 import 'package:opalia_client/screens/client/widgets/Allappwidgets/AppbarWidegts.dart';
 import 'package:opalia_client/screens/pro/pages/auth/signinpro.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,6 +14,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  Future<void> _setUserProfile(String profile) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userProfile', profile);
+    print('User profile set to: $profile');
+    if (profile == 'patient') {
+      Get.offAll(() => SigninScreen());
+    } else if (profile == 'doctor') {
+      Get.offAll(() => SigninproScreen());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,25 +46,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 100,
-          ),
           Text(
-            'Choisire votre profile',
+            'Choisir votre profil',
             style: TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.red, fontSize: 20),
           ),
-          SizedBox(
-            height: 100,
-          ),
+          SizedBox(height: 50),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () {
-                  Get.to(SigninScreen());
-                },
+                onTap: () => _setUserProfile('patient'),
                 child: Container(
                   width: 150,
                   height: 150,
@@ -63,18 +69,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 20,
-                        ),
                         Icon(
                           Icons.person_2_sharp,
                           color: Colors.red,
                           size: 50,
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
+                        SizedBox(height: 20),
                         Text(
                           "Patient",
                           style: TextStyle(
@@ -88,9 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  Get.to(SigninproScreen());
-                },
+                onTap: () => _setUserProfile('doctor'),
                 child: Container(
                   width: 150,
                   height: 150,
@@ -101,18 +101,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 20,
-                        ),
                         Icon(
                           Icons.health_and_safety_rounded,
                           color: Colors.red,
                           size: 50,
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
+                        SizedBox(height: 20),
                         Text(
                           "Doctor",
                           style: TextStyle(

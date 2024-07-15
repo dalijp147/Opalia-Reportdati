@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:opalia_client/screens/pro/pages/M%C3%A9dicament/DetailMedicamentScreen.dart';
 import 'package:opalia_client/services/remote/apiServicePro.dart';
 
 import '../../../../models/categoriePro.dart';
@@ -118,11 +119,15 @@ class _CategorieProScreenState extends State<CategorieProScreen> {
                 onSuggestionSelected: (suggestion) {
                   // Handle when a suggestion is selected.
                   _controller.text = suggestion.mediname!;
-                  // Get.to(
-                  //   DetailProduct(
-                  //       image: suggestion.mediImage!,
-                  //       title: suggestion.mediname!),
-                  // );
+                  Get.to(
+                    DetailMedicamentPro(
+                      image: suggestion.mediImage!,
+                      title: suggestion.mediname!,
+                      id: suggestion.mediId!,
+                      sousclasse: suggestion.sousclassemedi!,
+                      tit: suggestion.mediId!,
+                    ),
+                  );
                   print(suggestion.mediname!);
                 },
               ),
@@ -189,7 +194,7 @@ class _CategorieProScreenState extends State<CategorieProScreen> {
                         return GestureDetector(
                           onTap: () {
                             Get.to(ProductCategorieProScreen(
-                              title: categorie.categorienompro! ,
+                              title: categorie.categorienompro!,
                               name: categorie.id!,
                             ));
                           },

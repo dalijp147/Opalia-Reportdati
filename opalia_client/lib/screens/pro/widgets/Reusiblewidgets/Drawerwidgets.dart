@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/pro/pages/Events/ListeventScreen.dart';
+import 'package:opalia_client/screens/pro/pages/MenuScreenPro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../services/local/sharedprefutils.dart';
@@ -66,7 +67,7 @@ class DrawerWidgetPro extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Get.to(const MenuScreen());
+              Get.to(MenuScreenPro());
             },
           ),
           SizedBox(

@@ -10,7 +10,7 @@ import '../../pages/quiz/QuizScreen.dart';
 
 class BottomNav extends StatefulWidget {
   final token;
-  const BottomNav({super.key, required this.token});
+  const BottomNav({super.key, this.token});
 
   @override
   State<BottomNav> createState() => _BottomNavState();

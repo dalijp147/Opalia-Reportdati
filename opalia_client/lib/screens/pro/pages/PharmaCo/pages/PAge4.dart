@@ -70,17 +70,9 @@ class _Page4State extends State<Page4> {
             adresseController.text, // Replace with actual value
       );
 
-      bool result = await ApiServicePro.postFarma(newFarma);
-      if (result) {
-        Get.to(Page5(
-          farma: newFarma,
-        ));
-      } else {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create Farma')),
-        );
-      }
+      Get.to(Page5(
+        farma: newFarma,
+      ));
     }
   }
 

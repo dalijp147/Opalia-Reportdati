@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:opalia_client/models/categoriePro.dart';
 import 'package:opalia_client/models/comment.dart';
@@ -42,11 +43,11 @@ class ApiServicePro {
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var dataprod = jsonDecode(response.body);
-      print('sucess load medicament');
+      print('sucess load medicament categoriePro');
 
       return mediFromJson(dataprod["data"]);
     } else {
-      throw Exception('Failed to load medicament');
+      throw Exception('Failed to load medicament categoriePro');
     }
   }
 
@@ -478,6 +479,38 @@ class ApiServicePro {
     } else {
       print('Error failed updating Farma');
       print(response.body);
+      return false;
+    }
+  }
+
+  ////Feedback
+  static Future<bool> postFeedback(
+    String subject,
+    String etoile,
+    participant,
+    event,
+  ) async {
+    var url = Uri.http(
+      Config.apiUrl,
+      Config.FeedbackApi + '/',
+    );
+    var response = await client.post(
+      url,
+      body: {
+        "eventId": event,
+        "participantId": participant,
+        "comment": subject,
+        "etoile": etoile,
+      },
+    );
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding Feedback");
+      print(response.body);
+      return true;
+    } else {
+      print(Error().toString());
+      print('eroor failed adding Feedback');
       return false;
     }
   }

@@ -97,7 +97,7 @@ class _ProgramTabState extends State<ProgramTab> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 10),
+                                  SizedBox(height: 15),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 5.0),
                                     child: Row(
@@ -135,52 +135,69 @@ class _ProgramTabState extends State<ProgramTab> {
                                             } else {
                                               return Expanded(
                                                 child: Container(
-                                                  height: 100,
+                                                  height: 120,
                                                   child: ListView.builder(
                                                     itemCount:
                                                         snapshot.data!.length,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
                                                     itemBuilder:
                                                         (context, index) {
                                                       final participant =
                                                           snapshot.data![index];
                                                       return GestureDetector(
                                                         onTap: () {
-                                                          Get.to(DetailParticipant(
-                                                              description:
-                                                                  participant
-                                                                      .description!,
-                                                              image: participant
-                                                                  .doctorId!
-                                                                  .image!,
-                                                              nom: participant
-                                                                  .doctorId!
-                                                                  .name!,
-                                                              specialite:
-                                                                  participant
-                                                                      .doctorId!
-                                                                      .specialite!,
-                                                              prenom: participant
-                                                                  .doctorId!
-                                                                  .familyname!));
+                                                          Get.to(
+                                                            DetailParticipant(
+                                                                description:
+                                                                    participant
+                                                                        .description!,
+                                                                image: participant
+                                                                    .doctorId!
+                                                                    .image!,
+                                                                nom: participant
+                                                                    .doctorId!
+                                                                    .name!,
+                                                                specialite:
+                                                                    participant
+                                                                        .doctorId!
+                                                                        .specialite!,
+                                                                prenom: participant
+                                                                    .doctorId!
+                                                                    .familyname!),
+                                                          );
                                                         },
-                                                        child: CircleAvatar(
-                                                          radius: 50,
-                                                          backgroundColor:
-                                                              Colors.grey[300],
-                                                          backgroundImage: participant
+                                                        child: Column(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 50,
+                                                              backgroundColor:
+                                                                  Colors.grey[
+                                                                      300],
+                                                              backgroundImage: participant
+                                                                              .doctorId!
+                                                                              .image !=
+                                                                          null &&
+                                                                      participant
                                                                           .doctorId!
-                                                                          .image !=
-                                                                      null &&
-                                                                  participant
-                                                                      .doctorId!
-                                                                      .image!
-                                                                      .isNotEmpty
-                                                              ? NetworkImage(
-                                                                  participant
-                                                                      .doctorId!
-                                                                      .image!)
-                                                              : NetworkImage(
-                                                                  "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"),
+                                                                          .image!
+                                                                          .isNotEmpty
+                                                                  ? NetworkImage(
+                                                                      participant
+                                                                          .doctorId!
+                                                                          .image!)
+                                                                  : NetworkImage(
+                                                                      "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                                                                    ),
+                                                            ),
+                                                            Text(participant
+                                                                    .doctorId!
+                                                                    .name! +
+                                                                ' ' +
+                                                                participant
+                                                                    .doctorId!
+                                                                    .familyname!)
+                                                          ],
                                                         ),
                                                       );
                                                     },

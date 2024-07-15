@@ -72,16 +72,11 @@ class _Page2State extends State<Page2> {
         reapparition: reapparition,
       );
 
-      bool result = await ApiServicePro.postFarma(updatedFarma);
-      if (result) {
-        Get.to(Page3(
-          farma: updatedFarma,
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update Farma')),
-        );
-      }
+     // bool result = await ApiServicePro.postFarma(updatedFarma);
+
+      Get.to(Page3(
+        farma: updatedFarma,
+      ));
     }
   }
 

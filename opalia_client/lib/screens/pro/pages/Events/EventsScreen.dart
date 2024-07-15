@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:opalia_client/screens/pro/pages/Events/DetailEventScreen.dart';
+import 'package:opalia_client/screens/pro/pages/Events/feedback/FeedbackPopup.dart';
 import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/Drawerwidgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -142,7 +145,32 @@ class _EventCardState extends State<EventCard> {
   @override
   void initState() {
     _fetchParticipants();
+    _scheduleFeedbackPopup();
     super.initState();
+  }
+
+  bool verif = false;
+  void _scheduleFeedbackPopup() {
+    DateTime eventEndTime = widget.event.dateEvent!;
+    DateTime feedbackPopupTime = eventEndTime.subtract(Duration(minutes: 30));
+
+    Duration timeDifference = feedbackPopupTime.difference(DateTime.now());
+
+    if (timeDifference.isNegative) {
+      // If the feedbackPopupTime has already passed, show the popup immediately
+
+      showFeedbackPopup(context, widget.event.EventId!);
+      setState(() {
+        verif == true;
+      });
+    } else {
+      Timer(timeDifference, () {
+        showFeedbackPopup(context, widget.event.EventId!);
+      });
+      setState(() {
+        verif == false;
+      });
+    }
   }
 
   @override
@@ -250,6 +278,7 @@ class _EventCardState extends State<EventCard> {
                       '${widget.formatter.format(widget.event.dateEvent!)}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(width: 5),
                   ],
                 ),
                 ElevatedButton(
@@ -262,10 +291,33 @@ class _EventCardState extends State<EventCard> {
                   child: Text('Découvrir'),
                 )
               ],
-            )
+            ),
+            verif
+                ? IconButton(
+                    onPressed: () {
+                      showFeedbackPopup(
+                        context,
+                        widget.event.EventId!,
+                      );
+                    },
+                    icon: Icon(Icons.feed),
+                  )
+                : Text('vous recevrez un feedback sur l évenement')
           ],
         ),
       ),
     );
   }
+}
+
+void showFeedbackPopup(BuildContext context, String event) {
+  showDialog(
+    context: context,
+    builder: (context) => FeedbackPopup(event: event),
+  ).then((newFeedback) {
+    if (newFeedback != null) {
+      // Handle the new feedback
+      print('Feedback submitted: $newFeedback');
+    }
+  });
 }

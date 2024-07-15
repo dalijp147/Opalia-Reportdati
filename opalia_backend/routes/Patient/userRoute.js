@@ -3,7 +3,12 @@ const app = express.Router();
 const User = require("../../models/Patient/user.model");
 const USerService = require("../../middleware/service");
 const upload = require("../../middleware/upload");
-
+const path = require("path");
+const bodyParser = require("body-parser");
+const UserController = require("../../controller/user");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 app.get("/", async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -86,5 +91,56 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ status: true, token: token });
   } catch (err) {}
 });
+/////
+app.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await USerService.checkuser(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    const token = await USerService.generateResetToken();
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    await USerService.sendResetEmailUser(email, token);
+    res.status(200).json({ message: "Password reset email sent" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Route to reset password
+app.post("/reset/:token", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Password reset token is invalid or has expired" });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password has been reset" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+////
+app.get("/reset", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "resetuser.html"));
+});
+
+////
+app.delete("/delete/:id", UserController.delete);
 module.exports = app;

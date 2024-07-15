@@ -1,0 +1,46 @@
+/*Main*/
+
+.header {
+  padding-top: 12px;
+  background: #fff;
+}
+.content {
+  padding: 20px;
+  background-color: #fff;
+}
+.custom-red-button:hover {
+  background-color: red;
+  border-color: red;
+}
+.trigger-btn {
+  font-size: 16px;
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+/*sider*/
+.sider {
+  height: 100vh;
+  position: sticky !important;
+  left: 0;
+  bottom: 0;
+  top: 0;
+}
+.logo {
+  color: #fa7979;
+  margin: 30px 0;
+  font-size: 1.5rem;
+}
+
+.menu-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+}
+.ant-menu-item-selected {
+  background-color: #fa7979 !important;
+  color: #fff !important;
+}

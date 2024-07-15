@@ -34,6 +34,7 @@ class _HomeScreenAppState extends State<HomeScreenApp> {
 
       print("ok");
       print(verif);
+
       return verif;
     } else {
       print("error");
@@ -49,6 +50,7 @@ class _HomeScreenAppState extends State<HomeScreenApp> {
   void initState() {
     newsbloc.add(NewsInitialFetchEvent());
     verify();
+
     getWebsiteData();
     super.initState();
   }
@@ -157,6 +159,7 @@ class _HomeScreenAppState extends State<HomeScreenApp> {
                             style: ElevatedButton.styleFrom(
                                 fixedSize: Size(250, 20)),
                             onPressed: () {
+                              verify();
                               Get.to(ListQuizScreen());
                             },
                             child:

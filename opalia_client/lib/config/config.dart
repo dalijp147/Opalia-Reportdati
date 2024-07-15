@@ -15,6 +15,7 @@ class Config {
   static const String ProgramApi = "/programme";
   static const String ParticpantApi = "/participant";
   static const String DiscussionApi = "/discussion";
+  static const String FeedbackApi = "/feedback";
   static const String CommentApi = "/comment";
   static const String farmaApi = "/Farma";
   static const String medicaCategorieAPI = "/medicament/";
