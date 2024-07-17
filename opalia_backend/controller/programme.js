@@ -1,26 +1,58 @@
 const Programme = require("../models/Medecin/programe.model");
-exports.create = (req, res) => {
-  var programme = new Programme({
-    prog: req.body.prog,
 
-    event: req.body.event,
-  });
-  programme
-    .save()
+exports.create = async (req, res) => {
+  try {
+    const { prog, event } = req.body;
+
+    // Check if feedback already exists
+    const existingProgramme = await Programme.findOne({ event });
+
+    if (existingProgramme) {
+      return res.status(400).json({
+        success: false,
+        message: "Programme for this event  already exists.",
+      });
+    }
+
+    // Create new feedback
+    const programme = new Programme({
+      prog,
+      event,
+    });
+
+    const data = await programme.save();
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).send({
+      success: false,
+      message:
+        err.message || "Some error occurred while creating the programme.",
+    });
+  }
+};
+exports.get = (req, res) => {
+  Programme.find()
+    .populate("event")
     .then((data) => {
-      res.status(200).json({ data });
+      var message = "";
+      if (data === undefined || data.length == 0)
+        message = "No Programme found!";
+      else message = "Programme successfully retrieved";
+
+      res.status(200).json(data);
     })
     .catch((err) => {
       res.status(500).send({
         success: false,
         message:
-          err.message || "Some error occurred while creating the programme.",
+          err.message || "Some error occurred while retrieving Programme.",
       });
     });
 };
-exports.get = (req, res) => {
+exports.getweb = (req, res) => {
   Programme.find()
     .populate("event")
+    .populate("prog.speaker")
     .then((data) => {
       var message = "";
       if (data === undefined || data.length == 0)
@@ -66,16 +98,42 @@ exports.delete = (req, res) => {
 };
 exports.sortbydate = (req, res) => {
   const event = req.params.event;
-  Programme.find({ event })
 
+  Programme.find({ event })
     .then((data) => {
       if (!data || data.length === 0) {
         return res.status(404).json({ message: "No Programme found!" });
       }
-      // Sort each programme's 'prog' array by 'time'
+
+      // Sort each programme's 'prog' array by time only
       data.forEach((programme) => {
-        programme.prog.sort((a, b) => new Date(a.time) - new Date(b.time));
+        programme.prog.sort((a, b) => {
+          const getTimeValue = (timeObj) => {
+            if (typeof timeObj === "string") {
+              return new Date("1970-01-01T" + timeObj.split("T")[1] || timeObj);
+            } else if (timeObj instanceof Date) {
+              return new Date(
+                "1970-01-01T" + timeObj.toISOString().split("T")[1]
+              );
+            } else {
+              // If it's neither string nor Date, return the original value
+              // This will cause such entries to be sorted to the end
+              return timeObj;
+            }
+          };
+
+          const timeA = getTimeValue(a.time);
+          const timeB = getTimeValue(b.time);
+
+          // If both are Date objects, compare them
+          if (timeA instanceof Date && timeB instanceof Date) {
+            return timeA - timeB;
+          }
+          // If either is not a Date, sort the non-Date to the end
+          return timeA instanceof Date ? -1 : 1;
+        });
       });
+
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -83,6 +141,49 @@ exports.sortbydate = (req, res) => {
         success: false,
         message:
           err.message || "Some error occurred while retrieving Programme.",
+      });
+    });
+};
+
+exports.updateProgramme = (req, res) => {
+  const programmeId = req.params.programmeId;
+
+  // Check if the programme ID is provided
+  if (!programmeId) {
+    return res.status(400).json({ message: "programmeId is required" });
+  }
+
+  // Find the programme by ID and update the fields
+  Programme.findById(programmeId)
+    .then((programme) => {
+      if (!programme) {
+        return res.status(404).json({ message: "Programme not found" });
+      }
+
+      // Update programme fields
+      programme.event = req.body.event || programme.event;
+
+      // Update nested prog items
+      if (req.body.prog && Array.isArray(req.body.prog)) {
+        programme.prog = req.body.prog.map((progItem) => {
+          return {
+            time: progItem.time || Date.now(),
+            title: progItem.title || "",
+            speaker: progItem.speaker || [],
+          };
+        });
+      }
+
+      return programme.save();
+    })
+    .then((updatedProgramme) => {
+      res.status(200).json({ data: updatedProgramme });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message:
+          err.message || "Some error occurred while updating the programme.",
       });
     });
 };

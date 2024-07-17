@@ -139,33 +139,50 @@ Newsapp.delete("/delete/:id", getNews, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-Newsapp.put("/update/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const imageUrl = req.file
-      ? `${req.protocol}://${req.get("host")}/${req.file.path}`
-      : null;
+Newsapp.put("/update/:newsId", upload.single("newsImage"), async (req, res) => {
+  const newsId = req.params.newsId;
 
-    // Find the news by ID and update the fields
-    const updatedNews = await News.findByIdAndUpdate(
-      id,
-      {
-        ...req.body,
-        newsImage: imageUrl || req.body.newsImage, // Update newsImage only if a new file is uploaded
-      },
-      { new: true }
-    );
-
-    if (!updatedNews) {
-      return res
-        .status(404)
-        .json({ message: `Cannot find news with ID ${id}` });
-    }
-
-    res.status(200).json(updatedNews);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  // Check if the event ID is provided
+  if (!newsId) {
+    return res.status(400).json({ message: "newsId is required" });
   }
+
+  // Check if a file is uploaded and update the image URL
+  let imageUrl = null;
+  if (req.file) {
+    const path = req.file.path.replace(/\\/g, "/");
+    imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+  }
+
+  // Find the event by ID and update the fields
+  News.findById(newsId)
+    .then((event) => {
+      if (!event) {
+        return res.status(404).json({ message: "newsId not found" });
+      }
+
+      event.newsTitle = req.body.newsTitle || event.newsTitle;
+      event.newsAuthor = req.body.newsAuthor || event.newsAuthor;
+      event.newsDetail = req.body.newsDetail || event.newsDetail;
+      event.newsPublication = req.body.newsPublication || event.newsPublication;
+      event.categorienews = req.body.categorienews || event.categorienews;
+
+      // Update the image URL if a new file is uploaded
+      if (imageUrl) {
+        event.newsImage = imageUrl;
+      }
+
+      return event.save();
+    })
+    .then((updatedEvent) => {
+      res.status(200).json(updatedEvent);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while updating the news.",
+      });
+    });
 });
 //middleware
 async function getNews(req, res, next) {

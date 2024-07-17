@@ -54,7 +54,7 @@ exports.get = (req, res) => {
     });
 };
 exports.delete = (req, res) => {
-  Event.findByIdAndDelete(req.params.id)
+  Feedback.findByIdAndDelete(req.params.id)
     .then((data) => {
       if (!data) {
         return res.status(404).send({

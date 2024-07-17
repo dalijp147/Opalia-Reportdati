@@ -92,7 +92,7 @@ const ParticipantsPage = () => {
     try {
       if (isUpdate && currentParticipant) {
         await axios.put(
-          `http://localhost:3001/participant/${currentParticipant._id}`,
+          `http://localhost:3001/participant/update/${currentParticipant._id}`,
           values
         );
         message.success("Participant successfully updated!");
@@ -116,28 +116,28 @@ const ParticipantsPage = () => {
         icon={<PlusOutlined />}
         onClick={handleAddParticipant}
       >
-        Add Participant
+        Ajouter Participant
       </Button>
 
       <Table
         loading={loading}
         columns={[
           {
-            title: "Doctor ",
+            title: "Docteur",
             dataIndex: ["doctorId", "username"],
           },
-          { title: "Evenement", dataIndex: ["eventId", "eventname"] },
+          { title: "Événement", dataIndex: ["eventId", "eventname"] },
           {
             title: "Speaker",
             dataIndex: "speaker",
             render: (text) => (text ? "Oui" : "non"),
           },
           {
-            title: "Participating",
+            title: "Participant ordinaire",
             dataIndex: "participon",
             render: (text) => (text ? "Oui" : "non"),
           },
-          { title: "Description", dataIndex: "description" },
+          { title: "Déscription", dataIndex: "description" },
           {
             title: "Action",
             key: "action",
@@ -169,7 +169,7 @@ const ParticipantsPage = () => {
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Form.Item
             name="doctorId"
-            label="Doctor"
+            label="Docteur"
             rules={[{ required: true, message: "Please select a doctor" }]}
           >
             <Select placeholder="Select a doctor">
@@ -182,7 +182,7 @@ const ParticipantsPage = () => {
           </Form.Item>
           <Form.Item
             name="eventId"
-            label="Event"
+            label="Événement"
             rules={[{ required: true, message: "Please select an event" }]}
           >
             <Select placeholder="Select an event">
@@ -194,21 +194,21 @@ const ParticipantsPage = () => {
             </Select>
           </Form.Item>
           <Form.Item name="speaker" valuePropName="checked">
-            <Checkbox>Speaker</Checkbox>
+            <Checkbox>Speaker à l'évenement</Checkbox>
           </Form.Item>
-          <Form.Item name="participon" valuePropName="checked">
-            <Checkbox>Participating</Checkbox>
+          <Form.Item name="Participant ordinaire" valuePropName="checked">
+            <Checkbox>Participe à l'évenemnet</Checkbox>
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
+            label="Déscription"
             rules={[{ required: true, message: "Please enter description" }]}
           >
             <Input.TextArea />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {isUpdate ? "Update" : "Add"}
+            <Button type="primary" htmlType="submit" danger>
+              {isUpdate ? "Modifier" : "Ajouter"}
             </Button>
           </Form.Item>
         </Form>

@@ -185,3 +185,35 @@ exports.deletebydoctor = (req, res) => {
       });
     });
 };
+exports.update = (req, res) => {
+  const participantId = req.params.participantId;
+
+  if (!participantId) {
+    return res.status(400).json({ message: "participantId is required" });
+  }
+  Partipant.findById(participantId)
+    .then((event) => {
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      event.doctorId = req.body.doctorId || event.doctorId;
+      event.eventId = req.body.eventId || event.eventId;
+      event.speaker = req.body.speaker || event.speaker;
+      event.participon = req.body.participon || event.participon;
+      event.description = req.body.description || event.description;
+
+    
+     
+      return event.save();
+    })
+    .then((updatedEvent) => {
+      res.status(200).json({ data: updatedEvent });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while updating the event.",
+      });
+    });
+};

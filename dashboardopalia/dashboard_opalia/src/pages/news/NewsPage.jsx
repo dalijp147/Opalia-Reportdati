@@ -9,6 +9,7 @@ import {
   Input,
   DatePicker,
   InputNumber,
+  Select,
   Upload,
   message,
 } from "antd";
@@ -21,13 +22,14 @@ const NewsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [cat, setCat] = useState([]);
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   useEffect(() => {
     fetchNews();
+    fetchCat();
   }, []);
   const baseUrl = "http://localhost:3001";
   const fetchNews = async () => {
@@ -41,7 +43,14 @@ const NewsPage = () => {
       setLoading(false);
     }
   };
-
+  const fetchCat = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/catNews/");
+      setCat(response.data);
+    } catch (error) {
+      setError(error);
+    }
+  };
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -82,6 +91,14 @@ const NewsPage = () => {
   };
   const handleFormSubmit = async (values) => {
     const formData = new FormData();
+    const existingCat = news.find(
+      (category) => category.newsTitle === values.newsTitle
+    );
+
+    if (existingCat && (!isUpdate || existingCat._id !== currentEvent._id)) {
+      message.error("Titre existe déja");
+      return;
+    }
     Object.keys(values).forEach((key) => {
       if (key !== "newsImage") {
         formData.append(key, values[key]);
@@ -93,15 +110,7 @@ const NewsPage = () => {
 
     try {
       if (isUpdate && currentEvent) {
-        await axios.put(
-          `${baseUrl}/news/update/${currentEvent._id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.put(`${baseUrl}/news/update/${currentEvent._id}`, formData);
         message.success("News successfully updated!");
       } else {
         await axios.post(`${baseUrl}/news/new`, formData);
@@ -146,6 +155,7 @@ const NewsPage = () => {
             },
           },
           { title: "Titre", dataIndex: "newsTitle" },
+
           { title: "Autheur", dataIndex: "newsAuthor" },
           {
             title: "Date de Publication",
@@ -154,7 +164,7 @@ const NewsPage = () => {
           },
 
           {
-            title: "Nom de Categorie ",
+            title: "Nom de Catégorie",
             dataIndex: "categorienews",
           },
           {
@@ -162,9 +172,9 @@ const NewsPage = () => {
             key: "action",
             render: (text, record) => (
               <Space size="middle">
-                <Button onClick={() => handleEditNews(record)}>Edit</Button>
+                <Button onClick={() => handleEditNews(record)}>Modifier</Button>
                 <Button onClick={() => handleDeleteNews(record._id)} danger>
-                  Delete
+                  Supprimer
                 </Button>
               </Space>
             ),
@@ -198,8 +208,8 @@ const NewsPage = () => {
           </Form.Item>
           <Form.Item
             name="newsDetail"
-            label="Détaille de l'évenement"
-            rules={[{ required: true, message: "Please enter event Détaille" }]}
+            label="Détail de l'évenement"
+            rules={[{ required: true, message: "Please enter event Détail" }]}
           >
             <Input.TextArea />
           </Form.Item>
@@ -217,15 +227,16 @@ const NewsPage = () => {
           </Form.Item>
           <Form.Item
             name="categorienews"
-            label="categorie d'actualité"
-            rules={[
-              {
-                required: true,
-                message: "Please enter categorie d'actualité",
-              },
-            ]}
+            label="Docteur"
+            rules={[{ required: true, message: "Please select a doctor" }]}
           >
-            <Input />
+            <Select placeholder="Select a doctor">
+              {cat.map((doctor) => (
+                <Option key={doctor._id} value={doctor.categorienewsnom}>
+                  {doctor.categorienewsnom} {/* Ensure your schema matches */}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item name="newsImage" label="News Image">
             <Upload
@@ -239,7 +250,7 @@ const NewsPage = () => {
             </Upload>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" danger>
               {isUpdate ? "Modifier" : "Ajouter"}
             </Button>
           </Form.Item>

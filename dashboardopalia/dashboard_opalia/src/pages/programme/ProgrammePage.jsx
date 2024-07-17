@@ -19,17 +19,43 @@ const { Option } = Select;
 
 const ProgrammesPage = () => {
   const [programmes, setProgrammes] = useState([]);
+  const [partipants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentProgramme, setCurrentProgramme] = useState(null);
   const [form] = Form.useForm();
-
+  const [events, setEvents] = useState([]);
+  const [speakers, setSpeakers] = useState([]);
   useEffect(() => {
     fetchProgrammes();
+    fetchParticipantById();
+    fetchEvents();
   }, []);
 
+  const fetchSpeakersByEvent = async (eventId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/participant/speaker/true/${eventId}`
+      );
+      setSpeakers(response.data);
+    } catch (error) {
+      console.error("Failed to fetch speakers:", error);
+    }
+  };
+  const handleEventChange = (eventId) => {
+    fetchSpeakersByEvent(eventId);
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/event/");
+      setEvents(response.data.data);
+    } catch (error) {
+      setError(error);
+    }
+  };
   const fetchProgrammes = async () => {
     setLoading(true);
     try {
@@ -63,12 +89,13 @@ const ProgrammesPage = () => {
         time: moment(item.time),
       })),
     });
+    fetchSpeakersByEvent(record.event._id); // Fetch speakers for the selected event
     setIsModalVisible(true);
   };
 
   const handleDeleteProgramme = async (id) => {
     try {
-      await axios.delete(`http://localhost:3001/programmes/${id}`);
+      await axios.delete(`http://localhost:3001/programme/delete/${id}`);
       message.success("Programme successfully deleted!");
       fetchProgrammes();
     } catch (error) {
@@ -88,12 +115,12 @@ const ProgrammesPage = () => {
     try {
       if (isUpdate && currentProgramme) {
         await axios.put(
-          `http://localhost:3001/programmes/${currentProgramme._id}`,
+          `http://localhost:3001/programme/update/${currentProgramme._id}`,
           data
         );
         message.success("Programme successfully updated!");
       } else {
-        await axios.post("http://localhost:3001/programmes", data);
+        await axios.post("http://localhost:3001/programme/create", data);
         message.success("Programme successfully created!");
       }
       setIsModalVisible(false);
@@ -101,6 +128,49 @@ const ProgrammesPage = () => {
     } catch (error) {
       message.error("Failed to save programme!");
     }
+  };
+  const fetchParticipantById = async (id) => {
+    if (!id) return "Unknown";
+    if (partipants[id]) {
+      return partipants[id];
+    }
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/participant/participant/${id}`
+      );
+      const participant = response.data;
+      setParticipants((prev) => ({ ...prev, [id]: participant }));
+      return participant;
+    } catch (error) {
+      console.error("Failed to fetch participant:", error);
+      return null;
+    }
+  };
+
+  const renderSpeakers = (speakerIds) => {
+    const [speakerDetails, setSpeakerDetails] = useState({});
+
+    useEffect(() => {
+      const fetchAllSpeakers = async () => {
+        const details = {};
+        for (const id of speakerIds) {
+          const participant = await fetchParticipantById(id);
+          details[id] = participant ? participant.username : "Unknown";
+        }
+        setSpeakerDetails(details);
+      };
+      fetchAllSpeakers();
+    }, [speakerIds]);
+    if (!Array.isArray(speakerIds)) {
+      return "No speakers";
+    }
+
+    return speakerIds
+      .map((id) => {
+        const participant = speakerDetails[id];
+        return participant ? participant.username : "Loading...";
+      })
+      .join(", ");
   };
 
   return (
@@ -116,6 +186,7 @@ const ProgrammesPage = () => {
         Ajouter Programme
       </Button>
       <Table
+        key={programmes._id}
         loading={loading}
         columns={[
           {
@@ -131,9 +202,7 @@ const ProgrammesPage = () => {
                 <div key={prog._id}>
                   <p>Time: {moment(prog.time).format("HH:mm")}</p>
                   <p>Title: {prog.title}</p>
-                  <p>
-                    Speakers: {prog.speaker.map((sp) => sp.name).join(", ")}
-                  </p>
+                  {/* //  <p>Speakers: {renderSpeakers(prog.speaker)}</p> */}
                 </div>
               )),
           },
@@ -171,10 +240,12 @@ const ProgrammesPage = () => {
             label="Event"
             rules={[{ required: true, message: "Please select an event" }]}
           >
-            <Select>
-              {/* You would need to fetch events and populate the options here */}
-              <Option value="event1">Event 1</Option>
-              <Option value="event2">Event 2</Option>
+            <Select onChange={handleEventChange}>
+              {events.map((event) => (
+                <Option key={event._id} value={event._id}>
+                  {event.eventname}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.List name="prog">
@@ -215,9 +286,11 @@ const ProgrammesPage = () => {
                       ]}
                     >
                       <Select mode="multiple">
-                        {/* You would need to fetch speakers and populate the options here */}
-                        <Option value="speaker1">Speaker 1</Option>
-                        <Option value="speaker2">Speaker 2</Option>
+                        {speakers.map((speaker) => (
+                          <Option key={speaker._id} value={speaker._id}>
+                            {speaker.doctorId.username}
+                          </Option>
+                        ))}
                       </Select>
                     </Form.Item>
                     <Button type="danger" onClick={() => remove(field.name)}>

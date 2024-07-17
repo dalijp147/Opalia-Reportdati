@@ -13,8 +13,14 @@ import { MdOutlineGamepad } from "react-icons/md";
 import { TfiAgenda } from "react-icons/tfi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import Diamond from "../../src/assets/opalia.png";
+import { useLogout } from "../hooks/useLogout";
 const SideBar = () => {
   const navigate = useNavigate();
+  const { logout } = useLogout();
+
+  const handleClick = () => {
+    logout();
+  };
   return (
     <>
       <Flex align="center" justify="center">
@@ -24,7 +30,11 @@ const SideBar = () => {
       </Flex>
       <Menu
         onClick={(item) => {
-          navigate(item.key);
+          if (item.key === "/logout") {
+            handleClick();
+          } else {
+            navigate(item.key);
+          }
         }}
         className="menu-bar"
         items={[
@@ -41,7 +51,17 @@ const SideBar = () => {
           {
             key: "/doc",
             icon: <FaUserDoctor />,
-            label: "Doctor",
+            label: "Docteur",
+          },
+
+          {
+            key: "/e",
+            icon: <ContactsOutlined />,
+            label: "Événement",
+            children: [
+              { key: "/events", label: "Liste des Événement" },
+              { key: "/feedback", label: "Les retours sur l'évenement" },
+            ],
           },
           {
             key: "/Participant",
@@ -49,24 +69,25 @@ const SideBar = () => {
             label: "Participant",
           },
           {
-            key: "/events",
-            icon: <ContactsOutlined />,
-            label: "Events",
+            key: "/Programme",
+            icon: <TfiAgenda />,
+            label: "Programme",
           },
+
           {
-            key: "/news",
+            key: "/n",
             icon: <IoNewspaperOutline />,
-            label: "News",
+            label: "Actualité",
+
+            children: [
+              { key: "/news", label: "Liste des Actualités" },
+              { key: "/categorie", label: "Liste des categories d'actualités" },
+            ],
           },
           {
             key: "/quiz",
             icon: <MdOutlineGamepad />,
             label: "Quiz",
-          },
-          {
-            key: "/Programme",
-            icon: <TfiAgenda />,
-            label: "Programme",
           },
 
           {

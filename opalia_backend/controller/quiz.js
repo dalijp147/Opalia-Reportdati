@@ -1,4 +1,6 @@
 const Quiz = require("../models/quiz.model");
+
+const Result = require("../models/Patient/result.model");
 exports.create = (req, res) => {
   var quiz = new Quiz({
     questions: req.body.questions,
@@ -76,4 +78,23 @@ exports.getRandom = async (req, res) => {
     console.error("Error fetching random questions:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+};
+exports.getwinner = (req, res) => {
+  const gagner = req.params.gagner;
+  Result.find({ gagner })
+    .populate("userid")
+    .populate("doctorId")
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0) message = "No winner found!";
+      else message = "winner successfully retrieved";
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while retrieving winnner.",
+      });
+    });
 };

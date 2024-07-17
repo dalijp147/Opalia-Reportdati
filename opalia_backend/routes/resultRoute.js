@@ -3,7 +3,7 @@ const Scoreapp = express.Router();
 const Result = require("../models/Patient/result.model");
 const sendmail = require("../middleware/sendMail");
 const User = require("../models/Patient/user.model");
-
+const Quiz_Controller = require("../controller/quiz");
 Scoreapp.get("/", async (req, res) => {
   try {
     const result = await Result.find();
@@ -141,51 +141,7 @@ Scoreapp.get("/doc/:doctorId", async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-// Scoreapp.get("/:userid", async (req, res) => {
-//   const userid = req.params.userid;
-//   try {
-//     const result = await Result.findOne({ userid });
-//     if (!result) {
-//       return res
-//         .status(404)
-//         .json({ message: "result not found for this user." });
-//     }
-//     res.status(200).json(result);
-//     // Function to be executed every Monday
-//     function scheduledMethod() {
-//       console.log("This method is executed every Monday at 3:30 PM");
-//       // Add your code here to perform the desired action
-//     }
 
-//     // Function to calculate the delay until the next Monday at 3:30 PM
-//     function getNextMondayAtTime(hour, minute) {
-//       const now = new Date();
-//       const nextMonday = new Date(
-//         now.getFullYear(),
-//         now.getMonth(),
-//         now.getDate() + ((1 + 7 - now.getDay()) % 7), // Get the next Monday
-//         hour,
-//         minute
-//       );
-
-//       if (nextMonday <= now) {
-//         nextMonday.setDate(nextMonday.getDate() + 7); // Ensure the time is in the future
-//       }
-
-//       return nextMonday.getTime() - now.getTime();
-//     }
-
-//     // Schedule the first execution
-//     const initialDelay = getNextMondayAtTime(15, 30); // 3:30 PM
-
-//     setTimeout(function run() {
-//       scheduledMethod();
-//       setInterval(scheduledMethod, 7 * 24 * 60 * 60 * 1000); // Schedule subsequent executions every week
-//     }, initialDelay);
-//   } catch (err) {
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// });
 Scoreapp.delete("/delete/:id", geREsult, async (req, res) => {
   try {
     await res.result.deleteOne();
@@ -206,4 +162,5 @@ async function geREsult(req, res, next) {
   res.result = result;
   next();
 }
+Scoreapp.get("/winner/:gagner", Quiz_Controller.getwinner);
 module.exports = Scoreapp;

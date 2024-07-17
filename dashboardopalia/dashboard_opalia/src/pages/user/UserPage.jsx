@@ -74,7 +74,7 @@ const UserPage = () => {
             },
           },
           { title: "Nom", dataIndex: "familyname" },
-          { title: "Prenom", dataIndex: "username" },
+          { title: "Prénom", dataIndex: "username" },
           { title: "Email", dataIndex: "email" },
           {
             title: "Action",

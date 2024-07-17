@@ -98,10 +98,10 @@ const EventsPage = () => {
           `${baseUrl}/event/events/${currentEvent._id}`,
           formData
         );
-        message.success("Event successfully updated!");
+        message.success("Événement modifier avec succés");
       } else {
         await axios.post(`${baseUrl}/event/create`, formData);
-        message.success("Event successfully created!");
+        message.success("Événement ajouter avec succés");
       }
       setIsModalVisible(false);
       fetchEvents();
@@ -114,14 +114,14 @@ const EventsPage = () => {
   };
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Typography.Title>Evenement</Typography.Title>
+      <Typography.Title>Événement</Typography.Title>
       <Button
         type="primary"
         danger
         icon={<PlusOutlined />}
         onClick={handleAddEvent}
       >
-        Ajouter une évenement
+        Ajouter un évenement
       </Button>
 
       <Table
@@ -142,13 +142,13 @@ const EventsPage = () => {
           },
           { title: "Nom de l'évenement", dataIndex: "eventname" },
           {
-            title: "Date",
+            title: "Date de l'événemnet",
             dataIndex: "dateEvent",
             render: (text) => moment(text).format("YYYY-MM-DD HH:mm:ss"),
           },
           { title: "Emplacement", dataIndex: "eventLocalisation" },
           {
-            title: "Numero de particiapant maximal",
+            title: "Numéro de particiapant maximal",
             dataIndex: "nombreparticipant",
           },
           {
@@ -156,9 +156,11 @@ const EventsPage = () => {
             key: "action",
             render: (text, record) => (
               <Space size="middle">
-                <Button onClick={() => handleEditEvent(record)}>Edit</Button>
+                <Button onClick={() => handleEditEvent(record)}>
+                  Modifier
+                </Button>
                 <Button onClick={() => handleDeleteEvent(record._id)} danger>
-                  Delete
+                  Supprimer
                 </Button>
               </Space>
             ),
@@ -170,7 +172,7 @@ const EventsPage = () => {
         }}
       ></Table>
       <Modal
-        title={isUpdate ? "Update Event" : "Create Event"}
+        title={isUpdate ? "Modifier Événement" : "Ajouter Événement"}
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
@@ -178,14 +180,14 @@ const EventsPage = () => {
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Form.Item
             name="eventname"
-            label="Event Name"
+            label="Nom de l'évenement"
             rules={[{ required: true, message: "Please enter event name" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="eventdescription"
-            label="Event Description"
+            label="Déscription"
             rules={[
               { required: true, message: "Please enter event description" },
             ]}
@@ -194,21 +196,21 @@ const EventsPage = () => {
           </Form.Item>
           <Form.Item
             name="eventLocalisation"
-            label="Event Location"
+            label="Emplacement"
             rules={[{ required: true, message: "Please enter event location" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="dateEvent"
-            label="Event Date"
+            label="Date de l'évenement"
             rules={[{ required: true, message: "Please select event date" }]}
           >
             <DatePicker showTime />
           </Form.Item>
           <Form.Item
             name="nombreparticipant"
-            label="Number of Participants"
+            label="Nombre maximal de Participants"
             rules={[
               {
                 required: true,
@@ -218,7 +220,7 @@ const EventsPage = () => {
           >
             <InputNumber min={1} />
           </Form.Item>
-          <Form.Item name="eventimage" label="Event Image">
+          <Form.Item name="eventimage" label="Image">
             <Upload
               listType="picture"
               beforeUpload={() => false}
@@ -230,8 +232,8 @@ const EventsPage = () => {
             </Upload>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {isUpdate ? "Update" : "Create"}
+            <Button type="primary" htmlType="submit" danger>
+              {isUpdate ? "Mofifier" : "Ajouter"}
             </Button>
           </Form.Item>
         </Form>

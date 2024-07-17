@@ -16,4 +16,9 @@ router.delete(
   "/deletebydoctorid/:doctorId",
   Particpant_controller.deletebydoctor
 );
+router.put(
+  "/update/:participantId",
+
+  Particpant_controller.update
+);
 module.exports = router;
