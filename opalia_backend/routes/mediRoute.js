@@ -4,6 +4,7 @@ const Medicament = require("../models/Medi.model");
 const upload = require("../middleware/upload");
 const puppetire = require("puppeteer");
 
+const { getIo } = require("../middleware/Socket");
 const URL =
   "https://www.opaliarecordati.com/fr/produits/medical/specialite/188-anti-coagulant";
 const fetchDataMedical = async () => {
@@ -66,7 +67,9 @@ const fetchDataMedical = async () => {
 };
 app.get("/", async (req, res) => {
   try {
-    const medicaments = await Medicament.find().populate("categorie");
+    const medicaments = await Medicament.find()
+      .populate("categorie")
+      .populate("categoriePro");
 
     res.json({ data: medicaments });
   } catch (err) {
@@ -115,27 +118,70 @@ app.post("/", upload.single("mediImage"), async (req, res) => {
       medidesc: req.body.medidesc,
       mediImage: imageUrl,
       categorie: req.body.categorie,
+      forme: req.body.forme,
+      dci: req.body.dci,
+      presentationmedi: req.body.presentationmedi,
+      classeparamedicalemedi: req.body.classeparamedicalemedi,
+      sousclassemedi: req.body.sousclassemedi,
+      categoriePro: req.body.categoriePro,
     });
     const newMedicaments = await medicaments.save();
+    const io = getIo();
+    io.emit("new_medicament", newMedicaments);
     res.status(201).json(newMedicaments);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 //update
-app.put("/update/:id", getProduct, async (req, res) => {
-  if (req.body.mediname != null) {
-    res.medicament.mediname = req.body.mediname;
+app.put("/update/:id", upload.single("mediImage"), async (req, res) => {
+  const id = req.params.id;
+
+  // Check if the event ID is provided
+  if (!id) {
+    return res.status(400).json({ message: "MedicamentId is required" });
   }
-  if (req.body.medidesc != null) {
-    res.medicament.medidesc = req.body.medidesc;
+
+  // Check if a file is uploaded and update the image URL
+  let imageUrl = null;
+  if (req.file) {
+    const path = req.file.path.replace(/\\/g, "/");
+    imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
   }
-  try {
-    const updateMedi = await res.medicament.save();
-    res.json(updateMedi);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+
+  // Find the event by ID and update the fields
+  Medicament.findById(id)
+    .then((event) => {
+      if (!event) {
+        return res.status(404).json({ message: "MedicamentId not found" });
+      }
+
+      event.mediname = req.body.mediname || event.mediname;
+      event.forme = req.body.forme || event.forme;
+      event.dci = req.body.dci || event.dci;
+      event.presentationmedi =
+        req.body.presentationmedi || event.presentationmedi;
+      event.classeparamedicalemedi =
+        req.body.classeparamedicalemedi || event.classeparamedicalemedi;
+      event.sousclassemedi = req.body.sousclassemedi || event.sousclassemedi;
+      event.categoriePro = req.body.categoriePro || event.categoriePro;
+
+      // Update the image URL if a new file is uploaded
+      if (imageUrl) {
+        event.mediImage = imageUrl;
+      }
+
+      return event.save();
+    })
+    .then((updatedEvent) => {
+      res.status(200).json(updatedEvent);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while updating the news.",
+      });
+    });
 });
 //delete
 app.delete("/delete/:id", getProduct, async (req, res) => {

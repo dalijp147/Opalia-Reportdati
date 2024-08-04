@@ -9,7 +9,11 @@ const EventSchema = moogoose.Schema({
   dateEvent: {
     type: Date,
 
-    default: Date.now(),
+    default: Date.now,
+  },
+  datefinEvent: {
+    type: Date,
+    default: Date.now,
   },
   eventLocalisation: {
     type: String,

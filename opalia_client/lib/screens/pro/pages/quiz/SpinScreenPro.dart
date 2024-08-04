@@ -32,23 +32,24 @@ class _SpinWheelProState extends State<SpinWheelPro> {
   @override
   void dispose() {
     controller.close();
-
     super.dispose();
   }
 
   final ScoreBloc scoreBloc = ScoreBloc();
+
   void spinWheel() {
     final random = Random();
     final selected = random.nextInt(items.length);
     controller.add(selected);
 
     Future.delayed(Duration(seconds: 4), () {
-      if (items[selected] == 'Won') {
+      String selectedItem = items[selected];
+      if (selectedItem == 'Won') {
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Félicitaion!'),
+              title: Text('Félicitation!'),
               content: Text('Tu as gagné un produit de la gamme Hosper'),
               actions: <Widget>[
                 TextButton(
@@ -60,6 +61,7 @@ class _SpinWheelProState extends State<SpinWheelPro> {
                           '1',
                           widget.score.toString(),
                           true,
+                          selectedItem,
                         ),
                       );
                       Navigator.of(context).pushReplacement(
@@ -86,12 +88,8 @@ class _SpinWheelProState extends State<SpinWheelPro> {
                   child: Text('OK'),
                   onPressed: () {
                     scoreBloc.add(
-                      ScoreAddEventPro(
-                        PreferenceUtils.getuserid(),
-                        '1',
-                        widget.score.toString(),
-                        false,
-                      ),
+                      ScoreAddEventPro(PreferenceUtils.getuserid(), '1',
+                          widget.score.toString(), false, "pas de cadeau"),
                     );
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
@@ -111,11 +109,12 @@ class _SpinWheelProState extends State<SpinWheelPro> {
   }
 
   final selected = BehaviorSubject<int>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tourné pour gagner'),
+        title: Text('Niveau 2'),
       ),
       body: Column(
         children: [
@@ -123,10 +122,38 @@ class _SpinWheelProState extends State<SpinWheelPro> {
             child: FortuneWheel(
               animateFirst: false,
               selected: controller.stream,
-              // duration: const Duration(seconds: 3),
               items: [
-                for (var item in items) FortuneItem(child: Text(item)),
+                for (var item in items)
+                  FortuneItem(
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: FortuneItemStyle(
+                      color: const Color.fromARGB(
+                          255, 216, 50, 38), // Background color
+                      borderColor: Colors.white, // Border color
+                      borderWidth: 3.0, // Border width
+                    ),
+                  ),
               ],
+              indicators: <FortuneIndicator>[
+                FortuneIndicator(
+                  alignment: Alignment
+                      .topCenter, // Change alignment to desired position
+                  child: TriangleIndicator(
+                    color: Colors.white, // Indicator color
+                  ),
+                ),
+              ],
+              physics: CircularPanPhysics(
+                duration: Duration(seconds: 1),
+                curve: Curves.decelerate,
+              ),
             ),
           ),
           Container(

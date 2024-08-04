@@ -10,6 +10,8 @@ import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.d
 import 'package:opalia_client/services/local/notif_service.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +19,7 @@ void main() async {
   await NotifiactionService.initializeNotification();
   await PreferenceUtils.init();
   await Hive.openBox('favoriteBox');
-
+  await initializeDateFormatting('fr_FR', null);
   String? token = PreferenceUtils.getString('token');
   if (token == null) {
     print('No token found!');

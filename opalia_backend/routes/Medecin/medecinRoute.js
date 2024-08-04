@@ -5,6 +5,8 @@ const USerService = require("../../middleware/service");
 const upload = require("../../middleware/upload");
 const path = require("path");
 const bodyParser = require("body-parser");
+const socketIo = require("socket.io");
+const { getIo } = require("../../middleware/Socket");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,6 +38,20 @@ app.get("/detail/:id", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+app.get("/patients/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const patient = await Medecin.findById(patientId);
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.json(patient);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 app.post("/registration", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
@@ -51,12 +67,14 @@ app.post("/registration", upload.single("image"), async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      identifiantMedecin: req.body.identifiantMedecin,
       licenseNumber: req.body.licenseNumber,
-      isVerified: false, // Initially set to false
+      isVerified: false,
+      isApproved: false, // Initially set to false
     });
 
     const newmedecin = await medecin.save();
+    const io = getIo();
+    io.emit("new doctor", newmedecin);
     res.status(200).json(newmedecin);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -66,6 +84,33 @@ app.patch("/update/:id", async (req, res) => {
   try {
     const updateMedecin = await res.Medecin.save();
     res.json(updateMedecin);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+app.patch("/approve/:id", async (req, res) => {
+  try {
+    const medecin = await Medecin.findById(req.params.id);
+    if (!medecin) {
+      return res.status(404).json({ message: "Medecin not found" });
+    }
+    medecin.isApproved = true;
+    await medecin.save();
+    res.status(200).json({ message: "Médecin approuvé" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+// New disapprove route
+app.patch("/disapprove/:id", async (req, res) => {
+  try {
+    const medecin = await Medecin.findById(req.params.id);
+    if (!medecin) {
+      return res.status(404).json({ message: "Médecin pas trouvé" });
+    }
+    medecin.isApproved = false;
+    await medecin.save();
+    res.status(200).json({ message: "Médecin pas encore approuvé" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -80,9 +125,12 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Medecin dont exist");
     }
+    if (!user.isApproved) {
+      throw new Error("Medecin is not approved");
+    }
     const isMatch = await user.comparePassword(password);
     if (isMatch === false) {
-      throw new Error("Password Invalid");
+      throw new Error("Mot de passe incorrect");
     }
     let tokenData = {
       _id: user._id,
@@ -93,7 +141,6 @@ app.post("/login", async (req, res) => {
       familyname: user.familyname,
       specialite: user.specialite,
       licenseNumber: user.licenseNumber,
-      identifiantMedecin: user.identifiantMedecin,
     };
     const token = await USerService.generateAccessToken(
       tokenData,

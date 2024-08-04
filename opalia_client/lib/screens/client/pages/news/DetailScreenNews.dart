@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:opalia_client/models/news.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import '../../../../services/local/hive_Service.dart';
 import '../../../../services/remote/apiService.dart';
 import 'ReleatedActualié.dart';
@@ -53,6 +54,7 @@ class _DetailNewsState extends State<DetailNews> {
   Widget build(BuildContext context) {
     int randomNumber = random.nextInt(1000);
     // var isFavorite = boxFavorite.get("isnews") != null;
+    var formatter = DateFormat('EEEE, d MMMM yyyy à HH:mm', 'fr_FR');
 
     return Scaffold(
       appBar: AppBar(
@@ -122,9 +124,14 @@ class _DetailNewsState extends State<DetailNews> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.news.newsTitle!,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
               ),
             ),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'poster le ${formatter.format(widget.news.newsPublication!)}',
+                )),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

@@ -190,18 +190,18 @@ const ProgrammesPage = () => {
         loading={loading}
         columns={[
           {
-            title: "Event",
+            title: "Événement",
             dataIndex: ["event", "eventname"], // Ensure this matches your event's schema
             key: "event",
           },
           {
-            title: "Programme Details",
+            title: "Détail du Programme",
             key: "prog",
             render: (text, record) =>
               record.prog.map((prog) => (
                 <div key={prog._id}>
-                  <p>Time: {moment(prog.time).format("HH:mm")}</p>
-                  <p>Title: {prog.title}</p>
+                  <p>heur: {moment(prog.time).format("HH:mm")}</p>
+                  <p>titre: {prog.title}</p>
                   {/* //  <p>Speakers: {renderSpeakers(prog.speaker)}</p> */}
                 </div>
               )),
@@ -212,13 +212,13 @@ const ProgrammesPage = () => {
             render: (text, record) => (
               <Space size="middle">
                 <Button onClick={() => handleEditProgramme(record)}>
-                  Edit
+                  Modifier
                 </Button>
                 <Button
                   onClick={() => handleDeleteProgramme(record._id)}
                   danger
                 >
-                  Delete
+                  Supprimer
                 </Button>
               </Space>
             ),
@@ -229,7 +229,7 @@ const ProgrammesPage = () => {
         rowKey="_id"
       ></Table>
       <Modal
-        title={isUpdate ? "Edit Programme" : "Add Programme"}
+        title={isUpdate ? "Modifier Programme" : "Ajouter Programme"}
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
@@ -237,7 +237,7 @@ const ProgrammesPage = () => {
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Form.Item
             name="event"
-            label="Event"
+            label="Événement"
             rules={[{ required: true, message: "Please select an event" }]}
           >
             <Select onChange={handleEventChange}>
@@ -284,6 +284,7 @@ const ProgrammesPage = () => {
                       rules={[
                         { required: true, message: "Please select speakers" },
                       ]}
+                      style={{ width: 150 }}
                     >
                       <Select mode="multiple">
                         {speakers.map((speaker) => (
@@ -293,8 +294,12 @@ const ProgrammesPage = () => {
                         ))}
                       </Select>
                     </Form.Item>
-                    <Button type="danger" onClick={() => remove(field.name)}>
-                      Remove
+                    <Button
+                      type="danger"
+                      onClick={() => remove(field.name)}
+                      style={{ width: 60 }}
+                    >
+                      supprimer
                     </Button>
                   </Space>
                 ))}
@@ -304,14 +309,14 @@ const ProgrammesPage = () => {
                   block
                   icon={<PlusOutlined />}
                 >
-                  Add Programme
+                  Ajouter un Programme
                 </Button>
               </>
             )}
           </Form.List>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {isUpdate ? "Update" : "Add"}
+            <Button type="primary" htmlType="submit" danger>
+              {isUpdate ? "Modifier" : "Ajouter"}
             </Button>
           </Form.Item>
         </Form>

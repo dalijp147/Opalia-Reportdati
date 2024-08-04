@@ -78,7 +78,7 @@ class ApiService {
       'Accept': 'application/json',
     };
     var url = Uri.http(Config.apiUrl, Config.newsAPI + '/' + categoriname);
-    print(url);
+    print(url); 
     var response = await client.get(url, headers: requestHandler);
     if (response.statusCode == 200) {
       var dataprod = jsonDecode(response.body);
@@ -340,7 +340,8 @@ class ApiService {
   }
 
 //// SCore
-  static Future<bool> postScore(String t, String u, String i, d) async {
+  static Future<bool> postScore(
+      String t, String u, String i, d, String gift) async {
     var url = Uri.http(Config.apiUrl, Config.scoreApi);
     var response = await client.post(
       url,
@@ -349,6 +350,7 @@ class ApiService {
         "attempts": u,
         "points": i,
         "gagner": d.toString(),
+        "cadeau": gift,
       },
     );
 
@@ -363,7 +365,8 @@ class ApiService {
     }
   }
 
-  static Future<bool> postScoreMedecin(String t, String u, String i, d) async {
+  static Future<bool> postScoreMedecin(
+      String t, String u, String i, d, String gift) async {
     var url = Uri.http(Config.apiUrl, Config.scoreApi + '/doctor');
     var response = await client.post(
       url,
@@ -372,6 +375,7 @@ class ApiService {
         "attempts": u,
         "points": i,
         "gagner": d.toString(),
+        "cadeau": gift,
       },
     );
 

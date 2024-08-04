@@ -283,7 +283,7 @@ class _ACTPageState extends State<ACTPage> {
                       Text(
                         'Question ${index + 1}: ${currentQuestions[index]}${isParentQuestion ? ' ' : ''}',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: isParentQuestion && !isSpecialAdultQuestion
                               ? Colors.blue

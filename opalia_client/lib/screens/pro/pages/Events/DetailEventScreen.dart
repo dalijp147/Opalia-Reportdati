@@ -34,7 +34,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
               ),
             ),
           ),
-          title: Text('Evenement Détail'),
+          title: Text("Détail de l'événement" + ' ' + widget.event.eventname!),
           centerTitle: true,
           // bottom:
         ),

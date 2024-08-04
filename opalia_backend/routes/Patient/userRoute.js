@@ -74,7 +74,7 @@ app.post("/login", async (req, res) => {
     }
     const isMatch = await user.comparePassword(password);
     if (isMatch === false) {
-      throw new Error("Password Invalid");
+      throw new Error("Mot de passe incorrect");
     }
     let tokenData = {
       _id: user._id,
@@ -111,7 +111,20 @@ app.post("/forgot-password", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+app.get("/patients/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const patient = await User.findById(patientId);
 
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.json(patient);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // Route to reset password
 app.post("/reset/:token", async (req, res) => {
   try {

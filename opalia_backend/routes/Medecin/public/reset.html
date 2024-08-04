@@ -1,19 +1,73 @@
-<!-- public/reset.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Password Reset</title>
+    <title>Réinitialisation du mot de passe pour medecin</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background-color: #ffffff;
+        padding: 2em;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .container h1 {
+        color: #e61919;
+        margin-bottom: 1em;
+      }
+      .form-group {
+        margin-bottom: 1em;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5em;
+        color: #333333;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 0.5em;
+        border: 1px solid #dddddd;
+        border-radius: 4px;
+      }
+      .form-group button {
+        background-color: #e61919;
+        color: #ffffff;
+        padding: 0.75em 1.5em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+      }
+      .form-group button:hover {
+        background-color: #004b7a;
+      }
+    </style>
   </head>
   <body>
-    <h1>Password Reset</h1>
-    <form id="resetForm">
-      <input type="hidden" id="token" name="token" value="" />
-      <label for="password">New Password:</label>
-      <input type="password" id="password" name="password" required />
-      <button type="submit">Reset Password</button>
-    </form>
+    <div class="container">
+      <h1>Réinitialisation du mot de passe pour medecin</h1>
+      <form id="resetForm">
+        <input type="hidden" id="token" name="token" value="" />
+        <div class="form-group">
+          <label for="password">Nouveau mot de passe:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-group">
+          <button type="submit">réinitialiser mot de passe</button>
+        </div>
+      </form>
+    </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", (event) => {
@@ -40,6 +94,7 @@
           if (response.ok) {
             const result = await response.json();
             alert(result.message);
+            window.close();
           } else {
             const errorResult = await response.json();
             alert(errorResult.message);

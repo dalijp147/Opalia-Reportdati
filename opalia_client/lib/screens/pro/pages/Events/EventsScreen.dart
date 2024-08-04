@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -7,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:opalia_client/screens/pro/pages/Events/DetailEventScreen.dart';
 import 'package:opalia_client/screens/pro/pages/Events/feedback/FeedbackPopup.dart';
 import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/Drawerwidgets.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../models/events.dart';
@@ -41,9 +41,13 @@ class _EventsScreenState extends State<EventsScreen> {
     await ApiServicePro.deletePastEvent();
   }
 
+  void _refreshEvents() {
+    _fetchEvents();
+  }
+
   @override
   void initState() {
-    _deletePastEventsOnStart();
+    // _deletePastEventsOnStart();
     _fetchEvents();
     super.initState();
   }
@@ -80,12 +84,19 @@ class _EventsScreenState extends State<EventsScreen> {
                 ? Center(
                     child: Text('evenement en atente'),
                   )
-                : ListView.builder(
-                    itemCount: allEvents!.length,
-                    itemBuilder: (context, index) {
-                      final event = allEvents![index];
-                      return EventCard(event: event, formatter: formatter);
-                    },
+                : RefreshIndicator(
+                    onRefresh: _fetchEvents,
+                    child: ListView.builder(
+                      itemCount: allEvents!.length,
+                      itemBuilder: (context, index) {
+                        final event = allEvents![index];
+                        return EventCard(
+                          event: event,
+                          formatter: formatter,
+                          onRefresh: _refreshEvents,
+                        );
+                      },
+                    ),
                   ),
           ),
         ],
@@ -97,14 +108,40 @@ class _EventsScreenState extends State<EventsScreen> {
 class EventCard extends StatefulWidget {
   final Events event;
   final DateFormat formatter;
-
-  const EventCard({required this.event, required this.formatter});
+  final VoidCallback onRefresh;
+  const EventCard(
+      {required this.event, required this.formatter, required this.onRefresh});
 
   @override
   _EventCardState createState() => _EventCardState();
 }
 
 class _EventCardState extends State<EventCard> {
+  List<Particpant>? allParticpant;
+  bool isLoading = true;
+  bool isFeedbackLoading = true;
+  bool showFeedbackButton = false;
+  bool hasFeedback = false;
+  bool isParticipant = false;
+  Future<void> _checkParticipation() async {
+    try {
+      final userId = await PreferenceUtils.getuserid();
+      print('User ID: $userId'); // Debug print
+      final participantStatus =
+          await ApiServicePro.isParticipant(userId, widget.event.EventId!);
+      print('Participant Status: $participantStatus'); // Debug print
+      setState(() {
+        isParticipant = participantStatus;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Failed to check participant status: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Future<void> _openMap(BuildContext context, String location) async {
     String query = Uri.encodeComponent(location);
     String googleMapsUrl =
@@ -122,9 +159,6 @@ class _EventCardState extends State<EventCard> {
       throw 'Could not open the map. URL: $googleMapsUrl';
     }
   }
-
-  List<Particpant>? allParticpant;
-  bool isLoading = true;
 
   Future<void> _fetchParticipants() async {
     try {
@@ -145,32 +179,59 @@ class _EventCardState extends State<EventCard> {
   @override
   void initState() {
     _fetchParticipants();
+    _checkFeedback();
     _scheduleFeedbackPopup();
+    _checkParticipation();
     super.initState();
   }
 
-  bool verif = false;
+  Future<void> _checkFeedback() async {
+    final userId = PreferenceUtils.getuserid();
+    if (userId != null) {
+      final x =
+          await ApiServicePro.doesFeedbackExist(userId, widget.event.EventId!);
+      setState(() {
+        hasFeedback = x;
+        isFeedbackLoading = false;
+      });
+      widget.onRefresh();
+    } else {
+      print('User ID is null');
+      setState(() {
+        isFeedbackLoading = false;
+      });
+    }
+  }
+
   void _scheduleFeedbackPopup() {
     DateTime eventEndTime = widget.event.dateEvent!;
-    DateTime feedbackPopupTime = eventEndTime.subtract(Duration(minutes: 30));
+    DateTime feedbackPopupTime = eventEndTime.add(Duration(minutes: 5));
 
     Duration timeDifference = feedbackPopupTime.difference(DateTime.now());
 
     if (timeDifference.isNegative) {
-      // If the feedbackPopupTime has already passed, show the popup immediately
-
-      showFeedbackPopup(context, widget.event.EventId!);
+      // If the feedbackPopupTime has already passed, show the feedback button immediately
       setState(() {
-        verif == true;
+        showFeedbackButton = true;
       });
+      print('Feedback button should appear immediately.');
     } else {
       Timer(timeDifference, () {
-        showFeedbackPopup(context, widget.event.EventId!);
-      });
-      setState(() {
-        verif == false;
+        setState(() {
+          showFeedbackButton = true;
+        });
+        print('Feedback button should appear after $timeDifference.');
+        showFeedbackPopup(context, widget.event.EventId!, _hideFeedbackButton);
       });
     }
+  }
+
+  void _hideFeedbackButton() {
+    setState(() {
+      showFeedbackButton = false;
+    });
+    widget.onRefresh();
+    print('Feedback button hidden.');
   }
 
   @override
@@ -181,7 +242,7 @@ class _EventCardState extends State<EventCard> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 280,
+        height: 390,
         padding: EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -196,8 +257,8 @@ class _EventCardState extends State<EventCard> {
                   ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
                   : widget.event.eventimage!,
               height: 100,
-              width: 250,
-              fit: BoxFit.scaleDown,
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
               loadingBuilder: (BuildContext context, Widget child,
                   ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
@@ -224,15 +285,17 @@ class _EventCardState extends State<EventCard> {
                 );
               },
             ),
+            SizedBox(height: 10),
             Text(
               widget.event.eventname!,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
             ),
             SizedBox(height: 10),
             Text(
               'nombre maximal de participant : ${widget.event.nombreparticipant}',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 10),
             Row(
               children: [
                 Row(
@@ -282,27 +345,43 @@ class _EventCardState extends State<EventCard> {
                   ],
                 ),
                 ElevatedButton(
-                  //  onPressed: isEventFull ? null : () {
+                  onPressed: isEventFull && !isParticipant
+                      ? null
+                      : () {
+                          Get.to(DetailEventScreen(event: widget.event));
+                        },
+                  // onPressed: () {
                   //   Get.to(DetailEventScreen(event: widget.event));
                   // },
-                  onPressed: () {
-                    Get.to(DetailEventScreen(event: widget.event));
-                  },
                   child: Text('Découvrir'),
                 )
               ],
             ),
-            verif
-                ? IconButton(
-                    onPressed: () {
-                      showFeedbackPopup(
-                        context,
-                        widget.event.EventId!,
-                      );
-                    },
-                    icon: Icon(Icons.feed),
-                  )
-                : Text('vous recevrez un feedback sur l évenement')
+            isFeedbackLoading
+                ? CircularProgressIndicator()
+                : hasFeedback
+                    ? Text('Tu a deja donner un feedback',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ))
+                    : Text('vous recevrez un  formulaire prochainement',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        )),
+            if (showFeedbackButton && !hasFeedback)
+              ElevatedButton(
+                onPressed: () {
+                  showFeedbackPopup(
+                      context, widget.event.EventId!, _hideFeedbackButton);
+                },
+                child: Text('Feedback'),
+              ),
+            if (isEventFull)
+              Text('Événement Plein',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  )),
           ],
         ),
       ),
@@ -310,7 +389,8 @@ class _EventCardState extends State<EventCard> {
   }
 }
 
-void showFeedbackPopup(BuildContext context, String event) {
+void showFeedbackPopup(
+    BuildContext context, String event, VoidCallback onFeedbackSubmitted) {
   showDialog(
     context: context,
     builder: (context) => FeedbackPopup(event: event),
@@ -318,6 +398,7 @@ void showFeedbackPopup(BuildContext context, String event) {
     if (newFeedback != null) {
       // Handle the new feedback
       print('Feedback submitted: $newFeedback');
+      Future.delayed(Duration(milliseconds: 100), onFeedbackSubmitted);
     }
   });
 }

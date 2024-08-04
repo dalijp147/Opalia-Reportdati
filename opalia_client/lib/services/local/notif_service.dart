@@ -14,7 +14,6 @@ class NotifiactionService {
           channelDescription: 'norification chanel for basic tests',
           importance: NotificationImportance.Max,
           defaultColor: Colors.red,
-          ledColor: Colors.white,
           channelShowBadge: true,
           onlyAlertOnce: true,
           //playSound: true,

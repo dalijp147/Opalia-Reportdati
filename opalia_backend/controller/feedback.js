@@ -95,3 +95,25 @@ exports.updateFeedback = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+exports.getfeedbypartiandevent = (req, res) => {
+  const participantId = req.params.participantId;
+  const eventId = req.params.eventId;
+  Feedback.find({ participantId, eventId })
+    .populate("participantId")
+    .populate("eventId")
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0)
+        message = "No Feedback found!";
+      else message = "Feedback successfully retrieved";
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message:
+          err.message || "Some error occurred while retrieving Feedback.",
+      });
+    });
+};

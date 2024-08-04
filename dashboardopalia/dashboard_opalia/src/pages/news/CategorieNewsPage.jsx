@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-
+const { Search } = Input;
 const CategorieNewsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,6 +26,7 @@ const CategorieNewsPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [form] = Form.useForm();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const baseUrl = "http://localhost:3001";
 
@@ -73,7 +74,13 @@ const CategorieNewsPage = () => {
       message.error("Failed to delete category!");
     }
   };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
 
+  const filteredSearch = cat.filter((user) =>
+    user.categorienewsnom.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   const handleFormSubmit = async (values) => {
     try {
       const existingCat = cat.find(
@@ -104,6 +111,12 @@ const CategorieNewsPage = () => {
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Liste des categories d'actualité</Typography.Title>
+      <Search
+        placeholder="Rechercher un categories d'actualité"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -126,21 +139,21 @@ const CategorieNewsPage = () => {
             render: (text, record) => (
               <Space size="middle">
                 <Button onClick={() => handleEditCategorie(record)}>
-                  Edit
+                  Modifier
                 </Button>
                 <Button
                   onClick={() => handleDeleteCategorie(record._id)}
                   danger
                 >
-                  Delete
+                  Supprimer
                 </Button>
               </Space>
             ),
           },
         ]}
-        dataSource={cat}
-        pagination={{ pageSize: 5 }}
+        dataSource={filteredSearch}
         rowKey="_id"
+        pagination={{ pageSize: 5 }}
       />
       <Modal
         title={isUpdate ? "Edit Category" : "Add Category"}

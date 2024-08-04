@@ -11,17 +11,20 @@ class Score {
   late int? attempts;
   late int? points;
   late bool? gagner;
+  late String? cadeau;
   Score({
     this.scoreId,
     this.userID,
     this.attempts,
     this.points,
     this.gagner,
+    this.cadeau,
   });
 
   factory Score.fromMap(Map<String, dynamic> json) {
     return Score(
       scoreId: json['_id'] ?? "",
+      cadeau: json['cadeau'] ?? "no cadeau",
       userID: json['userid'],
       attempts: json['attempts'],
       points: json['points'] ?? 0,
@@ -35,6 +38,7 @@ class Score {
       'attempts': attempts,
       'points': points,
       'gagner': gagner,
+      'cadeau': cadeau,
     };
   }
 

@@ -63,7 +63,6 @@ class USerService {
     return transporter.sendMail(mailOptions);
   }
 
-
   static async sendResetEmailUser(email, token) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -79,13 +78,13 @@ class USerService {
     const mailOptions = {
       from: process.env.MAIL,
       to: email,
-      subject: "Password Reset",
+      subject: "Réinitialisation du mot de passe",
       html: `
-      <h1>Password Reset Request</h1>
-      <p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>
-      <p>Please click on the following link, or paste this into your browser to complete the process:</p>
-      <a href="${resetUrl}">Reset password</a>
-      <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+      <h1>Demande de réinitialisation du mot de passe</h1>
+      <p>Vous recevez ceci parce que vous  avez demandé la réinitialisation du mot de passe de votre compte..</p>
+      <p>Veuillez cliquer sur le lien suivant ou collez-le dans votre navigateur pour terminer le processus :</p>
+      <a href="${resetUrl}">Réinitialiser le mot de passe</a>
+      <p>Si vous ne l'avez pas demandé, veuillez ignorer cet e-mail et votre mot de passe restera inchangé.</p>
     `,
     };
 

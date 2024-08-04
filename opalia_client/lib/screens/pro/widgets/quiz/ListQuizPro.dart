@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:opalia_client/models/question.dart';
 import 'package:opalia_client/screens/client/pages/quiz/QuizScreen.dart';
 import 'package:opalia_client/screens/client/pages/quiz/SpinScreen.dart';
@@ -25,34 +24,17 @@ class ListQuizScreenPro extends StatefulWidget {
 }
 
 class _ListQuizScreenProState extends State<ListQuizScreenPro> {
-  late int index;
-  final QuizBloc quizbloc = QuizBloc();
-  List<Question> ques = [];
   late PageController _controller;
-  int questionNumber = 0;
+  List<Question> ques = [];
+  int questionIndex = 0;
+  int score = 0;
+  int? selectedAnswerIndex;
+
   @override
   void initState() {
-    quizbloc.add(QuizInitailFetchEvent());
-    _fetchQuestion();
     super.initState();
     _controller = PageController(initialPage: 0);
-  }
-
-  void pickAnswer(int value) {
-    selectedAnswerIndex = value;
-    final question = ques[0];
-    if (selectedAnswerIndex == question.answer) {
-      score++;
-    }
-    setState(() {});
-  }
-
-  void goToNextQuestion() {
-    if (questionIndex < ques.length - 1) {
-      questionIndex++;
-      selectedAnswerIndex = null;
-    }
-    setState(() {});
+    _fetchQuestion();
   }
 
   Future<void> _fetchQuestion() async {
@@ -66,104 +48,176 @@ class _ListQuizScreenProState extends State<ListQuizScreenPro> {
     }
   }
 
-  int? selectedAnswerIndex;
-  int questionIndex = 0;
-  int score = 0;
+  void pickAnswer(int value) {
+    selectedAnswerIndex = value;
+    final question = ques[questionIndex];
+    if (selectedAnswerIndex == question.answer) {
+      score++;
+    }
+    setState(() {});
+  }
+
+  void goToNextQuestion() {
+    if (questionIndex < ques.length - 1) {
+      setState(() {
+        questionIndex++;
+        selectedAnswerIndex = null;
+      });
+      _controller.nextPage(
+          duration: Duration(milliseconds: 2), curve: Curves.ease);
+    }
+  }
+
   final ScoreBloc scoreBloc = ScoreBloc();
   @override
   Widget build(BuildContext context) {
-    List<Question> questions = [];
-    final question = ques?[questionIndex];
+    if (ques.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Niveau 1')),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final question = ques[questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
+
     return Scaffold(
-      body: PageView.builder(
-        controller: _controller,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: question?.question?.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(title: Text('Niveau 1')),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Row(
               children: [
-                const SizedBox(
-                  height: 100,
-                ),
                 Text(
-                  question!.question!,
-                  style: TextStyle(fontSize: 20),
+                  'Bonjour' + " " + "Dr" + " " + PreferenceUtils.getuserName(),
+                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25),
                 ),
-                const SizedBox(
-                  height: 32,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: question.options!.length,
-                    itemBuilder: ((context, index) {
-                      return GestureDetector(
-                        onTap: selectedAnswerIndex == null
-                            ? () => pickAnswer(index)
-                            : null,
-                        child: AnswerCardPro(
-                          currentIndex: index,
-                          question: question!.options![index],
-                          isSelected: selectedAnswerIndex == index,
-                          selectedAnswerIndex: selectedAnswerIndex,
-                          correctAnswerIndex: question.answer!,
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-                isLastQuestion
-                    ? RectangularButton(
-                        onPressed: () async {
-                          score == 5
-                              ? Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => SpinWheelPro(
-                                      score: score,
-                                    ),
-                                  ),
-                                )
-                              : scoreBloc.add(
-                                  ScoreAddEventPro(
-                                    PreferenceUtils.getuserid(),
-                                    '1',
-                                    score.toString(),
-                                    false,
-                                  ),
-                                );
-                          score == 5
-                              ? Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => SpinWheelPro(
-                                      score: score,
-                                    ),
-                                  ),
-                                )
-                              : Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => ResultScreenPro(
-                                      score: score,
-                                    ),
-                                  ),
-                                );
-                        },
-                        label: 'Terminer',
-                      )
-                    : RectangularButton(
-                        onPressed: selectedAnswerIndex != null
-                            ? goToNextQuestion
-                            : null,
-                        label: 'Suivant',
-                      ),
               ],
             ),
-          );
-          ;
-        },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              'Quiz du jour',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            ),
+          ),
+          // Progress Bar
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 15,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.grey[300],
+                    ),
+                    child: LinearProgressIndicator(
+                      value: (questionIndex + 1) / ques.length,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      minHeight: 20,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  '${questionIndex + 1}/${ques.length}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: PageView.builder(
+              controller: _controller,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: ques.length,
+              itemBuilder: (context, index) {
+                final question = ques[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 50),
+                      Text(
+                        question.question!,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 32),
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: question.options!.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: selectedAnswerIndex == null
+                                  ? () => pickAnswer(index)
+                                  : null,
+                              child: AnswerCardPro(
+                                currentIndex: index,
+                                question: question.options![index],
+                                isSelected: selectedAnswerIndex == index,
+                                selectedAnswerIndex: selectedAnswerIndex,
+                                correctAnswerIndex: question.answer!,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      isLastQuestion
+                          ? RectangularButton(
+                              onPressed: () async {
+                                if (score == 5) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          SpinWheelPro(score: score),
+                                    ),
+                                  );
+                                } else {
+                                  scoreBloc.add(
+                                    ScoreAddEventPro(
+                                      PreferenceUtils.getuserid(),
+                                      '1',
+                                      score.toString(),
+                                      false,
+                                      "pas de cadeau",
+                                    ),
+                                  );
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ResultScreenPro(score: score),
+                                    ),
+                                  );
+                                }
+                              },
+                              label: 'Terminer',
+                            )
+                          : RectangularButton(
+                              onPressed: selectedAnswerIndex != null
+                                  ? goToNextQuestion
+                                  : null,
+                              label: 'Suivant',
+                            ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

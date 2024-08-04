@@ -5,7 +5,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:opalia_client/bloc/news/bloc/news_bloc.dart';
 import 'package:opalia_client/models/news.dart';
 
-
 import '../../widgets/Allappwidgets/AppbarWidegts.dart';
 import '../../widgets/Allappwidgets/Drawerwidgets.dart';
 import '../../widgets/News/NewsList.dart';

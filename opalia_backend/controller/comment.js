@@ -1,4 +1,5 @@
 const Comment = require("../models/Medecin/Comments.model");
+const { getIo } = require("../middleware/Socket");
 
 exports.get = (req, res) => {
   Comment.find()
@@ -50,6 +51,8 @@ exports.create = (req, res) => {
   comment
     .save()
     .then((data) => {
+      const io = getIo();
+      io.emit("new_dicucomment", data);
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -69,6 +72,8 @@ exports.delete = (req, res) => {
           message: "Comment not found with id " + req.params.id,
         });
       }
+     
+
       res.send({
         success: true,
         message: "Comment successfully deleted!",

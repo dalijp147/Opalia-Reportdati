@@ -1,6 +1,31 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+
+const dotenv = require("dotenv");
+const body_parser = require("body-parser");
+const path = require("path");
+const cors = require("cors");
+const http = require("http");
+const server = http.createServer(app);
+const { initializeSocket } = require("../middleware/Socket.js");
+initializeSocket(server);
+dotenv.config();
+
+//middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(body_parser.json());
+app.use("/uploads", express.static("uploads"));
+app.use(body_parser.urlencoded({ extended: true }));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(cors());
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
+
+////routes import
 const categorieRoute = require("../routes/Patient/categorieRoute.js");
 const mediRoute = require("../routes/mediRoute.js");
 const newsRoute = require("../routes/newsRoute.js");
@@ -21,24 +46,9 @@ const FarmaRoute = require("../routes/Medecin/farmaRoute.js");
 const FeedbackRoute = require("../routes/Medecin/feedbackRoute.js");
 const CategorieNewsRoute = require("../routes/categorienewsRoute.js");
 const AdminRoute = require("../routes/adminRoute.js");
-const dotenv = require("dotenv");
-const body_parser = require("body-parser");
-const path = require("path");
-const cors = require("cors");
-dotenv.config();
-
-//middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(body_parser.json());
-app.use("/uploads", express.static("uploads"));
-app.use(body_parser.urlencoded({ extended: true }));
-
-// Serve static files
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use(cors());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
+const questionRoute = require("../routes/Patient/questionRoute.js");
+const answerRoute = require("../routes/Medecin/AnswerRoute.js");
+const AnswerToQuestionRoute = require("../routes/AnswerToQuestionRoute.js");
 
 //routes
 app.use("/dossier", DossierRoute);
@@ -61,6 +71,10 @@ app.use("/Farma", FarmaRoute);
 app.use("/feedback", FeedbackRoute);
 app.use("/catNews", CategorieNewsRoute);
 app.use("/admin", AdminRoute);
+app.use("/question", questionRoute);
+app.use("/answer", answerRoute);
+app.use("/answerToQuestion", AnswerToQuestionRoute);
+
 //mongoose connection
 mongoose.connect(process.env.MONGO_URL, {}).then(
   () => {
@@ -70,8 +84,9 @@ mongoose.connect(process.env.MONGO_URL, {}).then(
     console.log("Database can't be connected :" + error);
   }
 );
+module.exports = { app, server };
 
 ///run server
-app.listen(process.env.PORT, () =>
+server.listen(process.env.PORT, () =>
   console.log(`Running Express Server on Port  ${process.env.PORT} `)
 );

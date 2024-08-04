@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bycrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const medecinSchema = mongoose.Schema({
   username: {
     type: String,
@@ -31,14 +31,14 @@ const medecinSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  identifiantMedecin: {
-    type: String,
-    default: "61891",
-  },
   licenseNumber: {
     type: String,
-    default: "61891",
+    default: "000000",
     unique: true,
+  },
+  isApproved: {
+    type: Boolean,
+    default: false,
   },
   isVerified: { type: Boolean, default: false },
   resetPasswordToken: String,
@@ -46,25 +46,29 @@ const medecinSchema = mongoose.Schema({
 });
 
 // encryupt the password
-medecinSchema.pre("save", async function () {
+medecinSchema.pre("save", async function (next) {
   try {
-    var user = this;
-    const salt = await bycrypt.genSalt(10);
-    const hashpass = await bycrypt.hash(user.password, salt);
+    if (!this.isModified("password")) {
+      return next();
+    }
 
-    user.password = hashpass;
+    const salt = await bcrypt.genSalt(10);
+    const hashpass = await bcrypt.hash(this.password, salt);
+    this.password = hashpass;
+    next();
   } catch (err) {
-    throw err;
+    next(err);
   }
 });
 
 //compare password
 medecinSchema.methods.comparePassword = async function (userPassword) {
   try {
-    const isMatch = await bycrypt.compare(userPassword, this.password);
+    const isMatch = await bcrypt.compare(userPassword, this.password);
     return isMatch;
   } catch (err) {
     throw err;
   }
 };
+
 module.exports = mongoose.model("Medecin", medecinSchema);

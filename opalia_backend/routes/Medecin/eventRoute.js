@@ -12,5 +12,5 @@ router.put(
   upload.single("eventimage"),
   Event_controller.update
 );
-
+router.get("/:id", Event_controller.getbyid);
 module.exports = router;

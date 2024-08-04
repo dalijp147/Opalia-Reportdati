@@ -1,5 +1,5 @@
 const Event = require("../models/Medecin/Event.model");
-
+const { getIo } = require("../middleware/Socket");
 exports.create = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
@@ -19,6 +19,8 @@ exports.create = (req, res) => {
   event
     .save()
     .then((data) => {
+      const io = getIo();
+      io.emit("newEvent", data);
       res.status(200).json({ data });
     })
     .catch((err) => {
@@ -129,4 +131,28 @@ exports.deletePastEvents = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error deleting past events", error });
   }
+};
+exports.getbyid = (req, res) => {
+  const id = req.params.id;
+
+  Event.findById(id)
+    .then((data) => {
+      if (!data) {
+        const message = "Event not found.";
+        console.log(message);
+        return res.status(404).json({ success: false, message });
+      }
+
+      const message = "Event successfully retrieved";
+      console.log(message, data);
+      return res.status(200).json({ success: true, message, data });
+    })
+    .catch((err) => {
+      console.error("Error occurred while retrieving event:", err);
+      return res.status(500).json({
+        success: false,
+        message:
+          err.message || "Some error occurred while retrieving the event.",
+      });
+    });
 };

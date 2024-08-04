@@ -8,6 +8,7 @@ import '../../../../services/local/sharedprefutils.dart';
 import '../../../client/pages/menu/MenuScreen.dart';
 import '../../../client/pages/news/FavoriteScreen.dart';
 import '../../pages/PharmaCo/PhamaCoFormScreen.dart';
+import '../../pages/answer/DicusssionDocPro.dart';
 import '../../pages/auth/signinpro.dart';
 import '../../pages/calculator/CalculatorScreen.dart';
 
@@ -33,31 +34,30 @@ class DrawerWidgetPro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: const EdgeInsets.all(0),
+        padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          UserAccountsDrawerHeader(
             decoration: BoxDecoration(
               color: Color.fromARGB(255, 241, 159, 159),
-            ), //BoxDecoration
-            child: UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 241, 159, 159),
-              ),
-              accountName: Text(
-                PreferenceUtils.getuserName().capitalizeFirst!,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+            ),
+            accountName: Text(
+              PreferenceUtils.getuserName().capitalizeFirst!,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            accountEmail: Text(
+              PreferenceUtils.getuserFamilyname().capitalizeFirst!,
+              style: TextStyle(fontSize: 20),
+            ),
+            currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.network(
+                  PreferenceUtils.getUserImage(),
+                  fit: BoxFit.fill,
                 ),
               ),
-              accountEmail: Text(
-                PreferenceUtils.getuserFamilyname().capitalizeFirst!,
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-            ), //UserAccountDrawerHeader
-          ),
+            ),
+          ), //UserAccountDrawerHeader
+
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text(
@@ -85,29 +85,8 @@ class DrawerWidgetPro extends StatelessWidget {
               Get.to(const FavoriteScreen());
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.medical_services),
-            title: const Text(
-              'Pharmacovigilance',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onTap: () {
-              Get.to(const PharmaCoVigilanceScreen());
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.calculate),
-            title: const Text(
-              'Calculator',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onTap: () {
-              Get.to(const CalculatorScreen());
-            },
+          SizedBox(
+            height: 10,
           ),
           ListTile(
             leading: const Icon(Icons.book),
@@ -121,6 +100,52 @@ class DrawerWidgetPro extends StatelessWidget {
               Get.to(const ListEventSceen());
             },
           ),
+          SizedBox(
+            height: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.medical_services),
+            title: const Text(
+              'Pharmacovigilance',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Get.to(const PharmaCoVigilanceScreen());
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.mark_unread_chat_alt_outlined),
+            title: const Text(
+              'Donner un conseille',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Get.to(const DicusssionDocPro());
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.calculate),
+            title: const Text(
+              'Calculator',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Get.to(const CalculatorScreen());
+            },
+          ),
+
           SizedBox(
             height: 10,
           ),

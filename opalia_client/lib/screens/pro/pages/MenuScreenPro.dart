@@ -40,63 +40,64 @@ class _MenuScreenProState extends State<MenuScreenPro> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Compte",
+              "Mon Profil",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
           ),
-          Row(
+          Column(
             children: [
-              Image.network(
-                PreferenceUtils.getUserImage() == null ||
-                        PreferenceUtils.getUserImage().isEmpty
-                    ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
-                    : PreferenceUtils.getUserImage(),
-                width: 70,
-                height: 70,
-                fit: BoxFit.scaleDown,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 100,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
+              ClipOval(
+                child: Image.network(
+                  PreferenceUtils.getUserImage() == null ||
+                          PreferenceUtils.getUserImage().isEmpty
+                      ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                      : PreferenceUtils.getUserImage(),
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 70,
+                      width: 70,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                errorBuilder: (BuildContext context, Object error,
-                    StackTrace? stackTrace) {
-                  print('Error loading image: $error');
-                  return Image.network(
-                    "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
-                    width: 70,
-                    height: 70,
-                  );
-                },
+                    );
+                  },
+                  errorBuilder: (BuildContext context, Object error,
+                      StackTrace? stackTrace) {
+                    print('Error loading image: $error');
+                    return ClipOval(
+                      child: Image.network(
+                        "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
               ),
-              // Image.asset(
-              //   "assets/images/daly.png",
-              //   width: 70,
-              //   height: 70,
-              // ),
               SizedBox(
-                width: 10,
+                height: 10,
               ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Docteur ${PreferenceUtils.getuserName()}',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
+                            fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                       SizedBox(
                         width: 5,

@@ -13,12 +13,13 @@ class ScoreAddEvent extends ScoreEvent {
   final String points;
 
   final bool gagner;
-
+  final String cadeau;
   ScoreAddEvent(
     this.userID,
     this.attempts,
     this.points,
     this.gagner,
+    this.cadeau,
   );
 }
 
@@ -28,11 +29,12 @@ class ScoreAddEventPro extends ScoreEvent {
   final String points;
 
   final bool gagner;
-
+  final String cadeau;
   ScoreAddEventPro(
     this.doctorID,
     this.attempts,
     this.points,
     this.gagner,
+    this.cadeau,
   );
 }

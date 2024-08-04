@@ -7,3 +7,9 @@
 body {
   background-color: #dde6ed;
 }
+.App{
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}

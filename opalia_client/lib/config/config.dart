@@ -3,6 +3,7 @@ class Config {
   static const String apiUrl = "10.0.2.2:3001";
   static const String categorieAPI = "/catgorie";
   static const String categorieProAPI = "/categoriePro";
+  static const String categorieNewsAPI = "/catNews";
   static const String medicaAPI = "/medicament";
   static const String newsAPI = "/news";
   static const String reminderAPI = "/reminder";
@@ -19,5 +20,8 @@ class Config {
   static const String CommentApi = "/comment";
   static const String farmaApi = "/Farma";
   static const String medicaCategorieAPI = "/medicament/";
+  static const String questionAPI = "/question";
+  static const String anwserAPI = "/answer";
+  static const String AnswerToQuestionApi = "/answerToQuestion";
   static const String imageURL = "http://10.0.2.2:3001";
 }

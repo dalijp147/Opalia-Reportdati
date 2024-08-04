@@ -184,8 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: nomController,
                     keyboardType: TextInputType.text,
                     validator: (value) {
-                      if (value!.isEmpty ||
-                          !RegExp(r'^[a-z A-Z]+$').hasMatch(value!)) {
+                      if (value!.isEmpty) {
                         return "veullez saisire nom ";
                       } else {
                         return null;
@@ -195,8 +194,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       // ignore: dead_code
-                      errorText: isNotValide ? "Enter Proper Info" : null,
-                      hintText: "Nom",
+
+                      hintText: "email",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -224,8 +223,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: prenomController,
                     keyboardType: TextInputType.text,
                     validator: (value) {
-                      if (value!.isEmpty ||
-                          !RegExp(r'^[a-z A-Z]+$').hasMatch(value!)) {
+                      if (value!.isEmpty) {
                         return "veullez saisire Prenom ";
                       } else {
                         return null;
@@ -235,8 +233,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       // ignore: dead_code
-                      errorText: isNotValide ? "Enter Proper Info" : null,
-                      hintText: "Prenom",
+
+                      hintText: "email",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -305,6 +303,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "veullez saisire password ";
+                      } else if (!RegExp(
+                              r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                          .hasMatch(value)) {
+                        return "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial";
                       } else {
                         return null;
                       }

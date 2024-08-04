@@ -11,6 +11,7 @@ import 'package:opalia_client/config/Utils.dart';
 import 'package:opalia_client/services/remote/apiService.dart';
 import '../../../../bloc/reminder/reminder_bloc.dart';
 import '../../../../models/categories.dart';
+import '../../../../models/mediacment.dart';
 import '../../../../services/local/notif_service.dart';
 import '../../../../services/local/sharedprefutils.dart';
 import '../../widgets/Allappwidgets/constant.dart';
@@ -50,7 +51,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   void initState() {
     super.initState();
     //_fetchCategories();
-
+    _fetchMedicament();
     initializeControllers();
     descriptionFocus = FocusNode();
     timeFocus = FocusNode();
@@ -152,6 +153,17 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   late final FocusNode focusNode;
   final ReminderBloc reminderBloc = ReminderBloc();
   int attemps = 1;
+  List<Medicament>? allMedicament = [];
+  Future<void> _fetchMedicament() async {
+    try {
+      final medicament = await ApiService.getAllMedicament();
+      setState(() {
+        allMedicament = medicament;
+      });
+    } catch (e) {
+      print('Failed to fetch medicament: $e');
+    }
+  }
 
   Random random = new Random();
   int selectednumber = 0; // Variable to hold the selected category
@@ -162,9 +174,18 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
     'Choisire une categorie de medicament',
     'Choisire un rappel',
   ];
-
+  // List of reminder types
+  List<String> reminderTypes = [
+    'rappel boire aux',
+    'medicament',
+    'rendez vous',
+    'ecrire un rappel'
+  ];
+  String selectedReminderType = 'rappel boire aux'; // Default selection
   bool selctedcategorie = false;
   String selString = '';
+  String? selectedMedicament;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,40 +206,144 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                 ),
               ),
 
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: TextFormField(
+              //     validator: (value) {
+              //       if (value!.isEmpty) {
+              //         return "veullez saisire un titre du medicament ";
+              //       } else {
+              //         return null;
+              //       }
+              //     },
+              //     controller: nameController,
+              //     autofocus: false,
+              //     decoration: InputDecoration(
+              //       enabledBorder: OutlineInputBorder(
+              //           borderSide: const BorderSide(
+              //             color: Colors.red,
+              //           ),
+              //           borderRadius: kBorderRadius),
+              //       focusedBorder: OutlineInputBorder(
+              //         borderSide: const BorderSide(
+              //           color: Colors.red,
+              //         ),
+              //         borderRadius: kBorderRadius,
+              //       ),
+              //       hintStyle: const TextStyle(
+              //         color: Colors.grey,
+              //       ),
+              //       filled: true,
+              //       hintText: "ecrire un titre",
+              //       fillColor: Colors.transparent,
+              //     ),
+              //   ),
+              // ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "veullez saisire un titre du medicament ";
-                    } else {
-                      return null;
-                    }
-                  },
-                  controller: nameController,
-                  autofocus: false,
+                child: DropdownButtonFormField<String>(
+                  value: selectedReminderType,
+                  icon: Icon(Icons.arrow_downward),
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: kBorderRadius),
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(
                         color: Colors.red,
                       ),
-                      borderRadius: kBorderRadius,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
-                    hintText: "ecrire un titre",
                     fillColor: Colors.transparent,
                   ),
+                  items: reminderTypes.map((String type) {
+                    return DropdownMenuItem<String>(
+                      value: type,
+                      child: Text(type),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedReminderType = newValue!;
+                      nameController.text = selectedReminderType;
+                    });
+                  },
                 ),
               ),
-
+              if (selectedReminderType == 'medicament')
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedMedicament,
+                    icon: Icon(Icons.arrow_downward),
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                    ),
+                    items: allMedicament?.map((Medicament medicament) {
+                      return DropdownMenuItem<String>(
+                        value: medicament
+                            .mediname, // Assuming Medicament has a `name` property
+                        child: Text(medicament.mediname!),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedMedicament = newValue!;
+                        nameController.text = selectedMedicament!;
+                      });
+                    },
+                  ),
+                ),
+              if (selectedReminderType == 'ecrire un rappel')
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "veullez saisire un rappel";
+                      } else {
+                        return null;
+                      }
+                    },
+                    controller: nameController,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                          ),
+                          borderRadius: kBorderRadius),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                          ),
+                          borderRadius: kBorderRadius),
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                      filled: true,
+                      hintText: "ecrire rappel",
+                      fillColor: Colors.transparent,
+                    ),
+                  ),
+                ),
               SizedBox(
                 height: 5,
               ),

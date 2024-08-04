@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Layout } from "antd";
 import SideBar from "./components/SideBar";
 import CustomHeader from "./components/Header";
+import AppFooter from "./components/Footer";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 const { Sider, Header, Content } = Layout;
 import "./App.css";
@@ -32,8 +33,8 @@ const App = () => {
         </Header>
         <Content className="content">
           <AppRoute />
-        </Content>
-      </Layout>
+        </Content>{" "}
+      </Layout>{" "}
     </Layout>
   );
 };

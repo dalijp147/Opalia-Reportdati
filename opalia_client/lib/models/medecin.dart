@@ -8,7 +8,7 @@ class Medecin {
   late String? name;
   late String? familyname;
   late int? numeroTel;
-  late String? identifiantMedecin;
+
   late String? image;
   late String? specialite;
   Medecin({
@@ -17,7 +17,6 @@ class Medecin {
     this.password,
     this.name,
     this.familyname,
-    this.identifiantMedecin,
     this.numeroTel,
     this.image,
     this.specialite,
@@ -32,7 +31,6 @@ class Medecin {
       familyname: json['familyname'],
       numeroTel: json['numeroTel'] ?? 0,
       image: json['image'],
-      identifiantMedecin: json['identifiantMedecin'],
       specialite: json['specialite'],
     );
   }
@@ -45,7 +43,6 @@ class Medecin {
       'username': name,
       'image': image,
       'numeroTel': numeroTel,
-      'identifiantMedecin': identifiantMedecin,
       'specialite': specialite,
     };
   }

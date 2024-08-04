@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../pages/BadgSocketpATIENT.dart';
 
 class AppbarWidgets extends StatelessWidget implements PreferredSizeWidget {
   const AppbarWidgets({super.key});
@@ -21,6 +24,7 @@ class AppbarWidgets extends StatelessWidget implements PreferredSizeWidget {
         'My OPALIA',
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       ),
+      actions: [BadgesSocketPatient()],
     );
   }
 

@@ -1,4 +1,5 @@
 const Partipant = require("../models/Medecin/participan.model");
+const { getIo } = require("../middleware/Socket");
 exports.create = (req, res) => {
   var particpant = new Partipant({
     doctorId: req.body.doctorId,
@@ -10,6 +11,8 @@ exports.create = (req, res) => {
   particpant
     .save()
     .then((data) => {
+      const io = getIo();
+      io.emit("newParticipant", data);
       res.status(200).json({ data });
     })
     .catch((err) => {
@@ -64,6 +67,31 @@ exports.getParticipantIfExist = (req, res) => {
       });
     });
 };
+exports.getParticipantPartipeaevenement = (req, res) => {
+  const doctorId = req.params.doctorId;
+  const eventId = req.params.eventId;
+  Partipant.findOne({ doctorId, eventId })
+    .then((data) => {
+      let message = "";
+      if (!data) {
+        message = "Participant not found for this user.";
+        console.log(message);
+        return res.status(404).json({ message });
+      } else {
+        message = "Participant successfully retrieved";
+        console.log(message, data);
+        return res.status(200).json(data);
+      }
+    })
+    .catch((err) => {
+      console.error("Error occurred while retrieving participant:", err);
+      res.status(500).send({
+        success: false,
+        message:
+          err.message || "Some error occurred while retrieving Participant.",
+      });
+    });
+};
 exports.getspeaker = (req, res) => {
   const speaker = req.params.speaker;
   const eventId = req.params.eventId;
@@ -89,6 +117,28 @@ exports.getparicipant = (req, res) => {
   const eventId = req.params.eventId;
 
   Partipant.find({ participon, eventId })
+    .populate("doctorId")
+    .populate("eventId")
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0)
+        message = "No Partipant found!";
+      else message = "Partipant successfully retrieved";
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message:
+          err.message || "Some error occurred while retrieving Partipant.",
+      });
+    });
+};
+exports.getparicipantandspeakertoevent = (req, res) => {
+  const eventId = req.params.eventId;
+
+  Partipant.find({ eventId })
     .populate("doctorId")
     .populate("eventId")
     .then((data) => {
@@ -203,8 +253,6 @@ exports.update = (req, res) => {
       event.participon = req.body.participon || event.participon;
       event.description = req.body.description || event.description;
 
-    
-     
       return event.save();
     })
     .then((updatedEvent) => {

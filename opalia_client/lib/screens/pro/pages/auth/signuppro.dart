@@ -75,6 +75,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
   }
 
   bool isNotValide = false;
+  String? selectedSpecialite;
 
   void registerUSer() async {
     if (emailController.text.isNotEmpty &&
@@ -82,7 +83,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         nomController.text.isNotEmpty &&
         prenomController.text.isNotEmpty &&
         NumerotelController.text.isNotEmpty &&
-        SpecialiteController.text.isNotEmpty &&
+        selectedSpecialite != null &&
         NumeroLicenseController.text.isNotEmpty &&
         _image != null) {
       var rgBody = {
@@ -91,7 +92,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         "username": nomController.text,
         "familyname": prenomController.text,
         "numeroTel": NumerotelController.text,
-        "specialite": SpecialiteController.text,
+        "specialite": selectedSpecialite!,
         "licenseNumber": NumeroLicenseController.text,
         "image": _image
       };
@@ -135,6 +136,58 @@ class _SignupproScreenState extends State<SignupproScreen> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  List<String> item = [
+    "Médecine interne",
+    "Maladies infectieuses",
+    "Réanimation médicale",
+    "Carcinologie médicale",
+    "Nutrition et maladies nutritionnelles",
+    "Hématologie clinique",
+    "Endocrinologie",
+    "Cardiologie",
+    "Néphrologie",
+    "Neurologie",
+    "Pneumologie",
+    "Rhumatologie",
+    "Gastro-entérologie",
+    "Médecine physique",
+    "rééducation et réadaptation fonctionnelle",
+    "Dermatologie",
+    "Pédiatrie",
+    "Psychiatrie",
+    "Pédopsychiatrie",
+    "Imagerie médicale",
+    "Radiothérapie carcinologique",
+    "Médecine légale",
+    "Médecine du travail",
+    "Médecine préventive et communautaire",
+    "Anesthésie – réanimation",
+    "Anatomie et cytologie pathologique",
+    "Médecine d’urgence,Chirurgie générale",
+    "Chirurgie carcinologique",
+    "Chirurgie thoracique",
+    "Chirurgie vasculaire périphérique",
+    "Chirurgie neurologique",
+    "Chirurgie urologique",
+    "Chirurgie plastique",
+    "réparatrice et esthétique- Chirurgie orthopédique et traumatologique- Chirurgie pédiatrique",
+    "Chirurgie cardio-vasculaire",
+    "Ophtalmologie",
+    "O.R.L",
+    "Stomatologie et chirurgie maxillo-faciale,Gynécologie-obstétrique,Biologie médicale",
+    "Biologie médicale (option : biochimie)",
+    "Biologie médicale (option : microbiologie)- Biologie médicale (option : parasitologie)- Biologie médicale (option: immunologie)- Biologie médicale (option: hématologie)"
+        "Histo-embryologie",
+    "Physiologie et exploration fonctionnelle",
+    "Biophysique et médecine nucléaire",
+    "Pharmacologie",
+    "Génétique",
+    "Anatomie",
+    "Direction et logistique médico-militaire",
+    "Médecine de la plongée sous-marine",
+    "Médecine aéronautique et spatiale",
+    "Hygiène nucléaire",
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -313,22 +366,24 @@ class _SignupproScreenState extends State<SignupproScreen> {
                       ),
                     ),
                   ),
-                  TextFormField(
-                    controller: SpecialiteController,
-                    keyboardType: TextInputType.text,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "veullez saisire votre Spécialité ";
-                      } else {
-                        return null;
-                      }
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: selectedSpecialite,
+                    items: item.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedSpecialite = newValue;
+                      });
                     },
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      // ignore: dead_code
-
-                      hintText: "Spécialité",
+                      hintText: "Sélectionnez une spécialité",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -337,6 +392,12 @@ class _SignupproScreenState extends State<SignupproScreen> {
                         ),
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Veuillez sélectionner une spécialité";
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(
                     height: 10,
@@ -346,7 +407,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Numero de License :',
+                        "Numero d'Ordre National des Médecins de Tunisie :",
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -356,9 +417,9 @@ class _SignupproScreenState extends State<SignupproScreen> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "veullez saisire votre Numero de License ";
-                      } else if (!RegExp(r'^\d{1,5}$').hasMatch(value)) {
-                        return "Veuillez entrer un Numero de License valide (maximum 5 chiffres)";
+                        return "veullez saisire votre Numero d'Ordre National des Médecins de Tunisie ";
+                      } else if (!RegExp(r'^\d{1,6}$').hasMatch(value)) {
+                        return "Veuillez entrer un Numero de License valide";
                       } else {
                         return null;
                       }
@@ -437,6 +498,10 @@ class _SignupproScreenState extends State<SignupproScreen> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "veullez saisire password ";
+                      } else if (!RegExp(
+                              r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                          .hasMatch(value)) {
+                        return "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial";
                       } else {
                         return null;
                       }

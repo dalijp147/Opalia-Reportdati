@@ -1,22 +1,5 @@
 import 'package:flutter/material.dart';
 
-// void main() {
-//   runApp(PANSSApp());
-// }
-
-class PANSSApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Calculateur de Score PANSS',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: PANSSCalculator(),
-    );
-  }
-}
-
 class PANSSCalculator extends StatefulWidget {
   @override
   _PANSSCalculatorState createState() => _PANSSCalculatorState();

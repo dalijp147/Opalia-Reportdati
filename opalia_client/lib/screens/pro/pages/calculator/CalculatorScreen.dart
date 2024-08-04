@@ -109,7 +109,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             trailing: Icon(Icons.navigate_next),
             visualDensity: VisualDensity(vertical: 4),
             onTap: () {
-              Get.to(PANSSApp());
+              Get.to(PANSSCalculator());
             },
             title: Text(
               'PANSS score',

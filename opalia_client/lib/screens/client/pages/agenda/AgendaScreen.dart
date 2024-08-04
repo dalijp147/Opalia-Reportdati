@@ -219,6 +219,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
               remind!.isEmpty
                   ? Column(
                       children: [
+                        Lottie.asset(
+                          'assets/animation/reminderempty.json',
+                          filterQuality: FilterQuality.high,
+                        ),
                         SizedBox(
                           height: 20,
                         ),
@@ -226,7 +230,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'votre liste de rappel est vide veillez ajouter un rappel',
+                              'Votre liste de rappel est vide veuillez ajouter un rappel',
                               style: TextStyle(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 20,
@@ -272,6 +276,18 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                       //       )
                                       //     :
                                       Dismissible(
+                                    background: Container(
+                                      height: 50,
+                                      color: Colors
+                                          .red, // Background color when swiping
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                        size: 36,
+                                      ),
+                                      alignment: Alignment.centerRight,
+                                      padding: EdgeInsets.only(right: 20),
+                                    ),
                                     key: Key(
                                       reminder.toString(),
                                     ),
@@ -283,12 +299,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                         id: reminder.notifiid!,
                                       );
                                       // Then show a snackbar.
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(' dismissed'),
-                                        ),
-                                      );
                                     },
                                     child: GestureDetector(
                                       onTap: () {

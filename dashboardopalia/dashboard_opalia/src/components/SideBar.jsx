@@ -14,6 +14,8 @@ import { TfiAgenda } from "react-icons/tfi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import Diamond from "../../src/assets/opalia.png";
 import { useLogout } from "../hooks/useLogout";
+import { CiMedicalCase } from "react-icons/ci";
+
 const SideBar = () => {
   const navigate = useNavigate();
   const { logout } = useLogout();
@@ -89,7 +91,11 @@ const SideBar = () => {
             icon: <MdOutlineGamepad />,
             label: "Quiz",
           },
-
+          {
+            key: "/medicament",
+            icon: <CiMedicalCase />,
+            label: "Medicament",
+          },
           {
             key: "/logout",
             icon: <LoginOutlined />,

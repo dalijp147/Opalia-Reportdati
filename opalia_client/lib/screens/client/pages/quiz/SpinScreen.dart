@@ -25,25 +25,26 @@ class _SpinWheelState extends State<SpinWheel> {
   StreamController<int> controller = StreamController<int>();
   List<String> items = [
     'Won',
-    'Won',
+    'Lost',
     'Won',
   ];
 
   @override
   void dispose() {
     controller.close();
-
     super.dispose();
   }
 
   final ScoreBloc scoreBloc = ScoreBloc();
+
   void spinWheel() {
     final random = Random();
     final selected = random.nextInt(items.length);
     controller.add(selected);
 
     Future.delayed(Duration(seconds: 4), () {
-      if (items[selected] == 'Won') {
+      String selectedItem = items[selected];
+      if (selectedItem == 'Won') {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -60,6 +61,7 @@ class _SpinWheelState extends State<SpinWheel> {
                           '1',
                           widget.score.toString(),
                           true,
+                          selectedItem,
                         ),
                       );
                       Navigator.of(context).pushReplacement(
@@ -86,12 +88,8 @@ class _SpinWheelState extends State<SpinWheel> {
                   child: Text('OK'),
                   onPressed: () {
                     scoreBloc.add(
-                      ScoreAddEvent(
-                        PreferenceUtils.getuserid(),
-                        '1',
-                        widget.score.toString(),
-                        false,
-                      ),
+                      ScoreAddEvent(PreferenceUtils.getuserid(), '1',
+                          widget.score.toString(), false, 'pas de cadeau'),
                     );
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
@@ -111,6 +109,7 @@ class _SpinWheelState extends State<SpinWheel> {
   }
 
   final selected = BehaviorSubject<int>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,7 +122,6 @@ class _SpinWheelState extends State<SpinWheel> {
             child: FortuneWheel(
               animateFirst: false,
               selected: controller.stream,
-              // duration: const Duration(seconds: 3),
               items: [
                 for (var item in items) FortuneItem(child: Text(item)),
               ],

@@ -22,18 +22,17 @@ class Discussion {
   });
   factory Discussion.fromMap(Map<String, dynamic> json) {
     return Discussion(
-      discussionId: json['_id'],
-      author: json['author'] != null
-          ? Medecin.fromMap(json['author'] as Map<String, dynamic>)
-          : null,
-      eventId: json['eventId'] != null
-          ? Events.fromMap(json['eventId'] as Map<String, dynamic>)
-          : null,
-      subject: json['subject'],
-      postedat: DateTime.parse(
-        json['createdAt'].toString(),
-      ),
-    );
+        discussionId: json['_id'],
+        author: json['author'] != null
+            ? Medecin.fromMap(json['author'] as Map<String, dynamic>)
+            : null,
+        eventId: json['eventId'] != null
+            ? Events.fromMap(json['eventId'] as Map<String, dynamic>)
+            : null,
+        subject: json['subject'] ?? '',
+        postedat: DateTime.parse(
+          json['createdAt'].toString(),
+        ));
   }
   Map<String, dynamic> toMap() {
     return {

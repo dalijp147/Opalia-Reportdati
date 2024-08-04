@@ -357,33 +357,6 @@ class _SigninScreenState extends State<SigninScreen> {
                 SizedBox(height: 15),
                 Text('ou se connectez avec:'),
                 SizedBox(height: 15),
-                Center(
-                  child: Container(
-                    width: 370,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(width: 3, color: Colors.grey),
-                      color: Colors.white,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                AssetImage('assets/images/icongoogle.png'),
-                            radius: 20,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            'Se connecter avec votre compte Google',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

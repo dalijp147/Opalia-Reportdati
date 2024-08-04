@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../models/reminder.dart';
@@ -31,29 +32,22 @@ class _AgendaItemState extends State<AgendaItem> {
   }
 
   Widget build(BuildContext context) {
+    var formatter = DateFormat('EEEE, d MMMM yyyy', 'fr_FR');
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              DateFormat('MMMMEEEEd')
-                  .format(widget.reminder.datedebutReminder!),
-            ),
-          ),
+        Text(
+          formatter.format(widget.reminder.datedebutReminder!).capitalizeFirst!,
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Color(widget.reminder.color!)),
         ),
         Container(
           height: 100,
-          width: 360,
-          decoration: BoxDecoration(
-            border:
-                Border.all(width: 1, color: Color.fromARGB(255, 255, 255, 255)),
-            borderRadius: BorderRadius.circular(20),
-            color: widget.reminder.color! != null
-                ? Color(widget.reminder.color!)
-                : Colors.red,
-          ),
+          width: double.infinity,
+          color: widget.reminder.color! != null
+              ? Color(widget.reminder.color!)
+              : Colors.red,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

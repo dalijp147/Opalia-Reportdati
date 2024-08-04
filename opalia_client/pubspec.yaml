@@ -49,9 +49,12 @@ dependencies:
   blurrycontainer: ^1.0.2
   flutter_typeahead: any
   image_picker: any
+  hidden_drawer_menu: ^3.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  socket_io_client: ^2.0.3+1
+  badges: ^3.1.2
   rxdart: any
   smooth_page_indicator: ^1.1.0
   google_generative_ai: ^0.3.2
@@ -68,6 +71,7 @@ dependencies:
   api_cache_manager: ^1.0.2
   url_launcher: ^6.0.20
   flutter_rating_bar: ^4.0.1
+  web_socket_channel: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -60,7 +60,7 @@ class _NewsItemState extends State<NewsItem> {
             ),
             Padding(
               padding: const EdgeInsets.only(
-                top: 45,
+                top: 30,
                 left: 10,
               ),
               child: Column(
@@ -72,7 +72,7 @@ class _NewsItemState extends State<NewsItem> {
                       widget.model.newsTitle!,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 13,
                       ),
                     ),
                   ),

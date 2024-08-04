@@ -36,7 +36,7 @@ const ParticipantsPage = () => {
   const fetchParticipants = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/participant");
+      const response = await axios.get("http://localhost:3001/participant/");
       setParticipants(response.data);
       setLoading(false);
     } catch (error) {
@@ -44,6 +44,7 @@ const ParticipantsPage = () => {
       setLoading(false);
     }
   };
+
   const fetchDoctors = async () => {
     try {
       const response = await axios.get("http://localhost:3001/medecin/");
@@ -61,9 +62,6 @@ const ParticipantsPage = () => {
       setError(error);
     }
   };
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
 
   const handleAddParticipant = () => {
     form.resetFields();
@@ -74,7 +72,11 @@ const ParticipantsPage = () => {
   const handleEditParticipant = (record) => {
     setIsUpdate(true);
     setCurrentParticipant(record);
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      ...record,
+      speaker: record.speaker,
+      participon: record.participon,
+    });
     setIsModalVisible(true);
   };
 
@@ -107,9 +109,16 @@ const ParticipantsPage = () => {
     }
   };
 
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+  const getEventName = (eventId) => {
+    const event = events.find((event) => event._id === eventId);
+    return event ? event.eventname : "";
+  };
   return (
-    <Space size={20} direction="vertical">
-      <Typography.Title>Participant</Typography.Title>
+    <Space size={20} direction="vertical" style={{ width: "100%" }}>
+      <Typography.Title>Participants</Typography.Title>
       <Button
         type="primary"
         danger
@@ -130,12 +139,12 @@ const ParticipantsPage = () => {
           {
             title: "Speaker",
             dataIndex: "speaker",
-            render: (text) => (text ? "Oui" : "non"),
+            render: (text) => (text ? "Oui" : "Non"),
           },
           {
             title: "Participant ordinaire",
             dataIndex: "participon",
-            render: (text) => (text ? "Oui" : "non"),
+            render: (text) => (text ? "Oui" : "Non"),
           },
           { title: "Déscription", dataIndex: "description" },
           {
@@ -196,7 +205,7 @@ const ParticipantsPage = () => {
           <Form.Item name="speaker" valuePropName="checked">
             <Checkbox>Speaker à l'évenement</Checkbox>
           </Form.Item>
-          <Form.Item name="Participant ordinaire" valuePropName="checked">
+          <Form.Item name="participon" valuePropName="checked">
             <Checkbox>Participe à l'évenemnet</Checkbox>
           </Form.Item>
           <Form.Item

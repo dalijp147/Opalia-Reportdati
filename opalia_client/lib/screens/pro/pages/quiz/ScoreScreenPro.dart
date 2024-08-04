@@ -50,7 +50,7 @@ class _ResultScreenProState extends State<ResultScreenPro> {
             ),
           ),
         ),
-        title: Text('Ton Score'),
+        title: Text('Ton Score' + ' ' + 'est' + ' ' + widget.score.toString()),
         centerTitle: true,
       ),
       body: ListView(
@@ -58,63 +58,72 @@ class _ResultScreenProState extends State<ResultScreenPro> {
           SizedBox(
             height: 50,
           ),
-          widget.score == 5
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Félicitaion ${PreferenceUtils.getuserName()} vous venez de gagnez un produit .',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                )
-              : Text(''),
+
           SizedBox(
             height: 100,
           ),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                height: 300,
-                width: 300,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3.0,
-                  value: widget.score / 3.0,
-                  color: Colors.green,
-                  backgroundColor: Colors.white,
-                ),
-              ),
-              widget.score == 5
-                  ? Column(
-                      children: [
-                        Text(
-                          widget.score.toString(),
-                          style: const TextStyle(fontSize: 80),
-                        ),
-                        Text(
-                          "tu as gagné",
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        Text(
-                          widget.score.toString(),
-                          style: const TextStyle(fontSize: 80),
-                        ),
-                        Text(
-                          'desole tu na pas ganer',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    )
-            ],
-          ),
+          // Stack(
+          //   alignment: Alignment.center,
+          //   children: [
+          //     SizedBox(
+          //       height: 300,
+          //       width: 300,
+          //       child: CircularProgressIndicator(
+          //         strokeWidth: 3.0,
+          //         value: widget.score / 3.0,
+          //         color: Colors.green,
+          //         backgroundColor: Colors.white,
+          //       ),
+          //     ),
+          //     widget.score == 5
+          //         ? Column(
+          //             children: [
+          //               Text(
+          //                 widget.score.toString(),
+          //                 style: const TextStyle(fontSize: 80),
+          //               ),
+          //               Text(
+          //                 "tu as gagné",
+          //                 style: const TextStyle(fontSize: 20),
+          //               ),
+          //             ],
+          //           )
+          //         : Column(
+          //             children: [
+          //               Text(
+          //                 widget.score.toString(),
+          //                 style: const TextStyle(fontSize: 80),
+          //               ),
+          //               Text(
+          //                 'desole tu na pas ganer',
+          //                 style: const TextStyle(fontSize: 20),
+          //               ),
+          //             ],
+          //           )
+          //   ],
+          // ),
+
+          widget.score == 5
+              ? Column(
+                  children: [
+                    Image.asset('assets/images/grop.png', scale: 0.5),
+                    Text(
+                      "Tu as gagné vérifie votre boîte mail",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Image.asset('assets/images/image.png'),
+                    Text(
+                      'Désole-vous avez perdu',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )
         ],
       ),
     );

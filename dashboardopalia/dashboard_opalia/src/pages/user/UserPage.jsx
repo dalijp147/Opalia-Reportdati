@@ -2,19 +2,21 @@ import {
   Typography,
   Card,
   Space,
-  Statistic,
+  message,
   Table,
   Button,
   Avatar,
+  Input,
 } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+const { Search } = Input;
 const UserPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [fileList, setFileList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     fetchMedecin();
   }, []);
@@ -54,9 +56,25 @@ const UserPage = () => {
   const handleFileChange = ({ fileList }) => {
     setFileList(fileList);
   };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.familyname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Patient</Typography.Title>
+      <Search
+        placeholder="Rechercher un docteur"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
       <Table
         loading={loading}
         columns={[
@@ -88,7 +106,8 @@ const UserPage = () => {
             ),
           },
         ]}
-        dataSource={users}
+        dataSource={filteredUsers}
+        rowKey="_id"
         pagination={{
           pageSize: 6,
         }}

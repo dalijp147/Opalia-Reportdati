@@ -14,6 +14,8 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
 import { useAuthContext } from "./hooks/useAuthContext";
+import MedicamentsByCategory from "./components/MedicamentbyCategorie";
+import EventDetailsPage from "./pages/events/EventDetailpage";
 const AppRoute = () => {
   const { user } = useAuthContext();
   return (
@@ -28,12 +30,16 @@ const AppRoute = () => {
       ></Route>{" "}
       <Route
         path="/signup"
-        element={user ? <Signup /> : <Navigate to="/" />}
+        element={!user ? <Signup /> : <Navigate to="/" />}
       ></Route>{" "}
       <Route
         path="/events"
         element={user ? <EventsPage /> : <Navigate to="/login" />}
       ></Route>{" "}
+      <Route
+        path="/event/:eventId"
+        element={user ? <EventDetailsPage /> : <Navigate to="/login" />}
+      />
       <Route
         path="/feedback"
         element={user ? <FeedbackPage /> : <Navigate to="/login" />}
@@ -41,6 +47,10 @@ const AppRoute = () => {
       <Route
         path="/news"
         element={user ? <NewsPage /> : <Navigate to="/login" />}
+      ></Route>{" "}
+      <Route
+        path="/medicament"
+        element={user ? <MedicamentsByCategory /> : <Navigate to="/login" />}
       ></Route>{" "}
       <Route
         path="/categorie"

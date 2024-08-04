@@ -5,6 +5,7 @@ const resultSchema = moogoose.Schema({
   doctorId: { type: moogoose.Schema.Types.ObjectId, ref: "Medecin" },
   attempts: { type: Number, default: 0 },
   points: { type: Number, default: 0 },
+  cadeau: { type: String, default: "pas de cadeau" },
   gagner: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });

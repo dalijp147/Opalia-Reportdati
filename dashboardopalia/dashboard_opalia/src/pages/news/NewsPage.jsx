@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+const { Search } = Input;
 const NewsPage = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ const NewsPage = () => {
   const [currentEvent, setCurrentEvent] = useState(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     fetchNews();
     fetchCat();
@@ -126,9 +128,25 @@ const NewsPage = () => {
   const handleFileChange = ({ fileList }) => {
     setFileList(fileList);
   };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredSearch = news.filter(
+    (user) =>
+      user.newsTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.categorienews.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.newsAuthor.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Actualité</Typography.Title>
+      <Search
+        placeholder="Rechercher Actualité"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
       <Button
         type="primary"
         danger
@@ -180,7 +198,8 @@ const NewsPage = () => {
             ),
           },
         ]}
-        dataSource={news}
+        dataSource={filteredSearch}
+        rowKey="_id"
         pagination={{
           pageSize: 5,
         }}

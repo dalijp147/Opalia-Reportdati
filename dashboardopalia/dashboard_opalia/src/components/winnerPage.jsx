@@ -25,12 +25,16 @@ const WinnerComponent = () => {
 
   const columns = [
     {
+      title: "Patient",
+      dataIndex: ["userid", "username"],
+    },
+    {
       title: "Doctor",
       dataIndex: ["doctorId", "username"],
     },
     {
       title: "Prize",
-      dataIndex: "prize",
+      dataIndex: "cadeau",
     },
   ];
 

@@ -21,6 +21,7 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
       event.attempts,
       event.points,
       event.gagner,
+      event.cadeau,
     );
     if (success) {
       emit(
@@ -40,6 +41,7 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
       event.attempts,
       event.points,
       event.gagner,
+      event.cadeau,
     );
     if (success) {
       emit(

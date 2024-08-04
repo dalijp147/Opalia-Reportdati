@@ -24,7 +24,7 @@ class _FeedbackPopupState extends State<FeedbackPopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Feedback'),
+      title: Text('Ajouter votre Feedback'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -32,7 +32,7 @@ class _FeedbackPopupState extends State<FeedbackPopup> {
           children: [
             TextFormField(
               decoration: InputDecoration(
-                labelText: 'Comment',
+                labelText: 'Commentaire',
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -70,7 +70,7 @@ class _FeedbackPopupState extends State<FeedbackPopup> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel'),
+          child: Text('Annuler'),
         ),
         TextButton(
           onPressed: _isSubmitting
@@ -100,7 +100,7 @@ class _FeedbackPopupState extends State<FeedbackPopup> {
                     }
                   }
                 },
-          child: Text('Submit'),
+          child: Text('Ajouter'),
         ),
       ],
     );

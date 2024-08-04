@@ -7,17 +7,22 @@ import {
   Modal,
   Form,
   Input,
+  Select,
   message,
 } from "antd";
 import axios from "axios";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-const QuizPapge = () => {
+
+const { Option } = Select;
+
+const QuizPage = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState(null);
+  const [options, setOptions] = useState([]);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -41,6 +46,7 @@ const QuizPapge = () => {
   const handleAddQuiz = () => {
     form.resetFields();
     setIsUpdate(false);
+    setOptions([]);
     setIsModalVisible(true);
   };
 
@@ -69,10 +75,17 @@ const QuizPapge = () => {
       message.error("Failed to save quiz!");
     }
   };
-
+  const getAnswerText = (quiz) => {
+    return quiz.options[quiz.answers] || "";
+  };
   const columns = [
     { title: "Questions", dataIndex: "questions", key: "questions" },
-    { title: "Answers", dataIndex: "answers", key: "answers" },
+    {
+      title: "Answers",
+      dataIndex: "answers",
+      key: "answers",
+      render: (text, record) => getAnswerText(record),
+    },
     {
       title: "Options",
       dataIndex: "options",
@@ -96,6 +109,7 @@ const QuizPapge = () => {
   const handleEditQuiz = (record) => {
     setIsUpdate(true);
     setCurrentQuiz(record);
+    setOptions(record.options || []);
     form.setFieldsValue(record);
     setIsModalVisible(true);
   };
@@ -124,7 +138,16 @@ const QuizPapge = () => {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
-        <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleFormSubmit}
+          onValuesChange={(changedValues, allValues) => {
+            if (changedValues.options) {
+              setOptions(allValues.options);
+            }
+          }}
+        >
           <Form.Item
             name="questions"
             label="Questions"
@@ -132,18 +155,7 @@ const QuizPapge = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            name="answers"
-            label="Answers"
-            rules={[
-              {
-                required: true,
-                message: "Please enter the correct answer index",
-              },
-            ]}
-          >
-            <Input type="number" />
-          </Form.Item>
+
           <Form.List name="options">
             {(fields, { add, remove }) => (
               <>
@@ -151,15 +163,20 @@ const QuizPapge = () => {
                   <Form.Item key={key} label={`Option ${name + 1}`} required>
                     <Form.Item
                       {...restField}
-                      name={name}
-                      fieldKey={fieldKey}
+                      name={[name]}
+                      fieldKey={[fieldKey]}
                       noStyle
                       rules={[{ required: true, message: "Missing option" }]}
                     >
                       <Input style={{ width: "85%" }} />
                     </Form.Item>
                     <MinusCircleOutlined
-                      onClick={() => remove(name)}
+                      onClick={() => {
+                        remove(name);
+                        const newOptions = [...options];
+                        newOptions.splice(name, 1);
+                        setOptions(newOptions);
+                      }}
                       style={{ marginLeft: "10px", color: "red" }}
                     />
                   </Form.Item>
@@ -171,14 +188,34 @@ const QuizPapge = () => {
                     block
                     icon={<PlusOutlined />}
                   >
-                    Add Option
+                    Ajouter des options
                   </Button>
                 </Form.Item>
               </>
             )}
           </Form.List>
+
+          <Form.Item
+            name="answers"
+            label="Answers"
+            rules={[
+              {
+                required: true,
+                message: "Please select the correct answer",
+              },
+            ]}
+          >
+            <Select>
+              {options.map((option, index) => (
+                <Option key={index} value={index}>
+                  {option}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" danger>
               {isUpdate ? "Modifier" : "Ajouter"}
             </Button>
           </Form.Item>
@@ -188,4 +225,4 @@ const QuizPapge = () => {
   );
 };
 
-export default QuizPapge;
+export default QuizPage;

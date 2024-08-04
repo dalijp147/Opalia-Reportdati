@@ -12,6 +12,7 @@ import '../../../../bloc/reminder/reminder_bloc.dart';
 import '../../../../bloc/score/score_bloc.dart';
 import '../../../../services/local/sharedprefutils.dart';
 import '../../../../services/remote/apiService.dart';
+import '../../../pro/widgets/quiz/anwserCardPro.dart';
 import 'RectangularButton.dart';
 import 'anwserCard.dart';
 import '../../pages/quiz/ScoreScreen.dart';
@@ -24,34 +25,17 @@ class ListQuizScreen extends StatefulWidget {
 }
 
 class _ListQuizScreenState extends State<ListQuizScreen> {
-  late int index;
-  final QuizBloc quizbloc = QuizBloc();
-  List<Question> ques = [];
   late PageController _controller;
-  int questionNumber = 0;
+  List<Question> ques = [];
+  int questionIndex = 0;
+  int score = 0;
+  int? selectedAnswerIndex;
+
   @override
   void initState() {
-    quizbloc.add(QuizInitailFetchEvent());
-    _fetchQuestion();
     super.initState();
     _controller = PageController(initialPage: 0);
-  }
-
-  void pickAnswer(int value) {
-    selectedAnswerIndex = value;
-    final question = ques[0];
-    if (selectedAnswerIndex == question.answer) {
-      score++;
-    }
-    setState(() {});
-  }
-
-  void goToNextQuestion() {
-    if (questionIndex < ques.length - 1) {
-      questionIndex++;
-      selectedAnswerIndex = null;
-    }
-    setState(() {});
+    _fetchQuestion();
   }
 
   Future<void> _fetchQuestion() async {
@@ -65,91 +49,103 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
     }
   }
 
-  int? selectedAnswerIndex;
-  int questionIndex = 0;
-  int score = 0;
+  void pickAnswer(int value) {
+    selectedAnswerIndex = value;
+    final question = ques[questionIndex];
+    if (selectedAnswerIndex == question.answer) {
+      score++;
+    }
+    setState(() {});
+  }
+
+  void goToNextQuestion() {
+    if (questionIndex < ques.length - 1) {
+      setState(() {
+        questionIndex++;
+        selectedAnswerIndex = null;
+      });
+      _controller.nextPage(
+          duration: Duration(milliseconds: 2), curve: Curves.ease);
+    }
+  }
+
   final ScoreBloc scoreBloc = ScoreBloc();
   @override
   Widget build(BuildContext context) {
-    List<Question> questions = [];
-    final question = ques?[questionIndex];
+    if (ques.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Niveau 1')),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final question = ques[questionIndex];
     bool isLastQuestion = questionIndex == ques.length - 1;
+
     return Scaffold(
+      appBar: AppBar(title: Text('Niveau 1')),
       body: PageView.builder(
         controller: _controller,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: question?.question?.length,
+        itemCount: ques.length,
         itemBuilder: (context, index) {
+          final question = ques[index];
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 100,
-                ),
+                const SizedBox(height: 100),
                 Text(
-                  question!.question!,
-                  style: TextStyle(fontSize: 20),
+                  question.question!,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(
-                  height: 32,
-                ),
+                const SizedBox(height: 32),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: question.options!.length,
-                    itemBuilder: ((context, index) {
+                    itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: selectedAnswerIndex == null
                             ? () => pickAnswer(index)
                             : null,
-                        child: AnswerCard(
+                        child: AnswerCardPro(
                           currentIndex: index,
-                          question: question!.options![index],
+                          question: question.options![index],
                           isSelected: selectedAnswerIndex == index,
                           selectedAnswerIndex: selectedAnswerIndex,
                           correctAnswerIndex: question.answer!,
                         ),
                       );
-                    }),
+                    },
                   ),
                 ),
                 isLastQuestion
                     ? RectangularButton(
                         onPressed: () async {
-                          score == 5
-                              ? Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => SpinWheel(
-                                      score: score,
-                                    ),
-                                  ),
-                                )
-                              : scoreBloc.add(
-                                  ScoreAddEvent(
-                                    // PreferenceUtils.getuserid(),
-                                    PreferenceUtils.getuserid(),
-                                    '1',
-                                    score.toString(),
-                                    false,
-                                  ),
-                                );
-                          score == 5
-                              ? Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => SpinWheel(
-                                      score: score,
-                                    ),
-                                  ),
-                                )
-                              : Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => ResultScreen(
-                                      score: score,
-                                    ),
-                                  ),
-                                );
+                          if (score == 5) {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => SpinWheel(score: score),
+                              ),
+                            );
+                          } else {
+                            scoreBloc.add(
+                              ScoreAddEvent(
+                                PreferenceUtils.getuserid(),
+                                '1',
+                                score.toString(),
+                                false,
+                                "pas de cadeau",
+                              ),
+                            );
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => ResultScreen(score: score),
+                              ),
+                            );
+                          }
                         },
                         label: 'Terminer',
                       )
@@ -162,7 +158,6 @@ class _ListQuizScreenState extends State<ListQuizScreen> {
               ],
             ),
           );
-          ;
         },
       ),
     );

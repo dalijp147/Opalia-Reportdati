@@ -1,5 +1,6 @@
 const Discussion = require("../models/Medecin/Discusion.model");
 const LikeModel = require("../models/Medecin/Like.model");
+const { getIo } = require("../middleware/Socket");
 exports.create = (req, res) => {
   var discussion = new Discussion({
     subject: req.body.subject,
@@ -10,6 +11,8 @@ exports.create = (req, res) => {
   discussion
     .save()
     .then((data) => {
+      const io = getIo();
+      io.emit("new_discussion", data);
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -49,6 +52,7 @@ exports.delete = (req, res) => {
           message: "Discussion not found with id " + req.params.id,
         });
       }
+      io.emit("delete_dicucomment", { id: req.params.id });
       res.send({
         success: true,
         message: "Discussion successfully deleted!",

@@ -14,42 +14,53 @@ Scoreapp.get("/", async (req, res) => {
 });
 
 Scoreapp.post("/", async (req, res) => {
-  const { userid, attempts, points, gagner } = req.body;
+  const { userid, attempts, points, gagner, cadeau } = req.body;
   try {
-    const result = new Result({ userid, attempts, points, gagner });
+    const result = new Result({ userid, attempts, points, gagner, cadeau });
     await result.save();
-    req.body.resultId = Result._id;
-    //sendWinnerEmail(result._id);
-    res.json({ msg: "sucess result" });
+    req.body.resultId = result._id;
+
+    const emailSendResult = await sendWinnerEmail(result._id);
+
+    if (emailSendResult.error) {
+      return res
+        .status(emailSendResult.status)
+        .json({ message: emailSendResult.message });
+    }
+
+    res.json({ msg: "success result" });
   } catch (error) {
     res.json({ error });
   }
 });
 Scoreapp.post("/doctor", async (req, res) => {
-  const { doctorId, attempts, points, gagner } = req.body;
+  const { doctorId, attempts, points, gagner, cadeau } = req.body;
   try {
-    const result = new Result({ doctorId, attempts, points, gagner });
+    const result = new Result({ doctorId, attempts, points, gagner, cadeau });
     await result.save();
-    req.body.resultId = Result._id;
-    // sendWinnerEmail(result._id);
-    res.json({ msg: "sucess result" });
+    req.body.resultId = result._id;
+
+    const emailSendResult = await sendWinnerEmailPro(result._id);
+
+    if (emailSendResult.error) {
+      return res
+        .status(emailSendResult.status)
+        .json({ message: emailSendResult.message });
+    }
+
+    res.json({ msg: "success result" });
   } catch (error) {
     res.json({ error });
   }
 });
-const sendWinnerEmail = async (_id, res, req) => {
+const sendWinnerEmail = async (_id) => {
   try {
-    if (!res) {
-      console.error("Response object (res) is undefined");
-      throw new Error("Response object is required");
-    }
-
     console.log("Fetching result with ID:", _id);
     const result = await Result.findById(_id).populate("userid");
 
     if (!result) {
       console.log("Result not found");
-      return res.status(404).send({ message: "Result not found" });
+      return { error: true, status: 404, message: "Result not found" };
     }
 
     console.log("Result found:", result);
@@ -58,25 +69,58 @@ const sendWinnerEmail = async (_id, res, req) => {
       console.log("User has won, sending email to:", result.userid.email);
       await sendmail(
         result.userid.email,
-        "Félicitation! You have won!",
-        "Dear Patient,\n\nCongratulations on your recent victory! We're excited to inform you that you have won.\n\nBest regards,\nOpalia Recordati"
+        "Félicitations! tu as gagné",
+        "Cher patient,\n\nFélicitations pour votre récente victoire ! Nous sommes ravis de vous informer que vous avez gagné.\n\nMeilleures salutations,\nOpalia Recordati"
       );
       console.log("Email sent successfully");
-      return res.status(200).send({ message: "Email sent successfully" });
+      return { error: false, status: 200, message: "Email sent successfully" };
     } else {
       console.log("User did not win");
-      return res.status(400).send({ message: "User did not win." });
+      return { error: true, status: 400, message: "User did not win." };
     }
   } catch (error) {
     console.error("Error occurred:", error);
-    if (res) {
-      return res
-        .status(500)
-        .send({ message: "Internal server error", error: error.message });
-    } else {
-      console.error("Cannot send response, res is undefined");
-      throw error;
+    return {
+      error: true,
+      status: 500,
+      message: "Internal server error",
+      details: error.message,
+    };
+  }
+};
+const sendWinnerEmailPro = async (_id) => {
+  try {
+    console.log("Fetching result with ID:", _id);
+    const result = await Result.findById(_id).populate("doctorId");
+
+    if (!result) {
+      console.log("Result not found");
+      return { error: true, status: 404, message: "Result not found" };
     }
+
+    console.log("Result found:", result);
+
+    if (result.gagner) {
+      console.log("User has won, sending email to:", result.doctorId.email);
+      await sendmail(
+        result.doctorId.email,
+        "Félicitations! tu as gagné",
+        "Cher Docteur,\n\nFélicitations pour votre récente victoire ! Nous sommes ravis de vous informer que vous avez gagné.\n\nMeilleures salutations,\nOpalia Recordati"
+      );
+      console.log("Email sent successfully");
+      return { error: false, status: 200, message: "Email sent successfully" };
+    } else {
+      console.log("User did not win");
+      return { error: true, status: 400, message: "User did not win." };
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    return {
+      error: true,
+      status: 500,
+      message: "Internal server error",
+      details: error.message,
+    };
   }
 };
 // Scoreapp.post("/check-and-send-email", async (req, res) => {

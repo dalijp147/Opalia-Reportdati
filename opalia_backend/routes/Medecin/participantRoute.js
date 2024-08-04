@@ -21,4 +21,12 @@ router.put(
 
   Particpant_controller.update
 );
+router.get(
+  "/byiddoc/:doctorId/:eventId",
+  Particpant_controller.getParticipantPartipeaevenement
+);
+router.get(
+  "/participon/:eventId",
+  Particpant_controller.getparicipantandspeakertoevent
+);
 module.exports = router;

@@ -11,22 +11,31 @@ import {
   InputNumber,
   Upload,
   message,
+  Badge,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+const { Search } = Input;
+import { useNavigate } from "react-router-dom";
 
 const EventsPage = () => {
+  const navigate = useNavigate();
+
   const [events, setevents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
+  const [participants, setParticipants] = useState([]);
+  const [isParticipantsModalVisible, setIsParticipantsModalVisible] =
+    useState(false);
+
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -35,10 +44,26 @@ const EventsPage = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${baseUrl}/event/`);
-      setevents(response.data.data);
-      setLoading(false);
+      const eventData = response.data.data;
+
+      // Fetch participants for each event
+      await Promise.all(
+        eventData.map(async (event) => {
+          const participantsResponse = await axios.get(
+            `${baseUrl}/participant/participon/${event._id}`
+          );
+          setParticipants((prev) => ({
+            ...prev,
+            [event._id]: participantsResponse.data,
+          }));
+        })
+      );
+
+      setevents(eventData);
     } catch (error) {
       setError(error);
+      message.error("Failed to fetch events!");
+    } finally {
       setLoading(false);
     }
   };
@@ -95,7 +120,7 @@ const EventsPage = () => {
     try {
       if (isUpdate && currentEvent) {
         await axios.put(
-          `${baseUrl}/event/events/${currentEvent._id}`,
+          ` ${baseUrl}/event/events/${currentEvent._id}`,
           formData
         );
         message.success("Événement modifier avec succés");
@@ -112,9 +137,33 @@ const EventsPage = () => {
   const handleFileChange = ({ fileList }) => {
     setFileList(fileList);
   };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredEvents = events.filter(
+    (user) =>
+      user.eventname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.eventLocalisation.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const handleViewDetails = (event) => {
+    navigate(`/event/${event._id}`, { state: { event } });
+  };
+  const isEventFull = (eventId) => {
+    const eventParticipants = participants[eventId] || [];
+    const event = events.find((e) => e._id === eventId);
+    return eventParticipants.length >= event?.nombreparticipant;
+  };
+
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Événement</Typography.Title>
+      <Search
+        placeholder="Rechercher un docteur"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
       <Button
         type="primary"
         danger
@@ -152,6 +201,29 @@ const EventsPage = () => {
             dataIndex: "nombreparticipant",
           },
           {
+            title: "État",
+            key: "status",
+            render: (text, record) => (
+              <Badge
+                count={
+                  isEventFull(record._id) ? "Événement Plein" : "Disponible"
+                }
+                style={{
+                  backgroundColor: isEventFull(record._id)
+                    ? "#f5222d"
+                    : "#52c41a",
+                  color: "#fff",
+                  width: 150,
+                  height: 50,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 4,
+                }}
+              />
+            ),
+          },
+          {
             title: "Action",
             key: "action",
             render: (text, record) => (
@@ -161,12 +233,16 @@ const EventsPage = () => {
                 </Button>
                 <Button onClick={() => handleDeleteEvent(record._id)} danger>
                   Supprimer
+                </Button>{" "}
+                <Button onClick={() => handleViewDetails(record)}>
+                  View Details
                 </Button>
               </Space>
             ),
           },
         ]}
-        dataSource={events}
+        dataSource={filteredEvents}
+        rowKey="_id"
         pagination={{
           pageSize: 5,
         }}

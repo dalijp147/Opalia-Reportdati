@@ -7,10 +7,14 @@ import 'package:opalia_client/models/comment.dart';
 import 'package:opalia_client/models/mediacment.dart';
 
 import '../../config/config.dart';
+import '../../models/AnswerToQuestion.dart';
+import '../../models/answer.dart';
+import '../../models/categorieNews.dart';
 import '../../models/discussion.dart';
 import '../../models/events.dart';
 import '../../models/farma.dart';
 import '../../models/particpant.dart';
+import '../../models/posequestion.dart';
 import '../../models/programme.dart';
 
 class ApiServicePro {
@@ -248,6 +252,32 @@ class ApiServicePro {
       print(url);
       if (data != null) {
         print('This user has a Participant.');
+        return true;
+      } else {
+        print('Error: Empty response body.');
+        return false;
+      }
+    } else {
+      print('Error: HTTP ${response.statusCode}');
+      return false;
+    }
+  }
+
+  static Future<bool> isParticipant(String userId, String eventId) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(Config.apiUrl,
+        Config.ParticpantApi + '/byiddoc/' + userId + '/' + eventId);
+
+    var response = await http.get(url, headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('API Response Data: $data');
+      if (data != null) {
+        print('This user is a Participant.');
         return true;
       } else {
         print('Error: Empty response body.');
@@ -511,6 +541,249 @@ class ApiServicePro {
     } else {
       print(Error().toString());
       print('eroor failed adding Feedback');
+      return false;
+    }
+  }
+
+  static Future<bool> doesFeedbackExist(
+      String participantId, String eventId) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    var url = Uri.http(
+        Config.apiUrl, '${Config.FeedbackApi}/$eventId/$participantId');
+
+    try {
+      var response = await client.get(url, headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print(url);
+        if (data != null && data.isNotEmpty) {
+          print('This Feedback has a score.');
+          return true;
+        } else {
+          print('No feedback found.');
+          return false;
+        }
+      } else {
+        print('Error: HTTP ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return false;
+    }
+  }
+
+  ///CategorieNews
+
+  static Future<List<CategorieNews>?> getAllCategoryNews() async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.categorieNewsAPI + '/');
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('sucess load categorie');
+      return categorieNewsromJson(data);
+    } else {
+      throw Exception('Failed to load categorie News');
+    }
+  }
+
+  ///question
+  static Future<List<PoseQuestion>?> getAllQuestions() async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.questionAPI + '/get-questions');
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('sucess loadPoseQuestion');
+      return APoseQuestionfromJson(data);
+    } else {
+      throw Exception('Failed to PoseQuestion');
+    }
+  }
+
+  static Future<bool> postQuestion(String patientId, String question) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.questionAPI + '/post-question');
+    print(url);
+    var response = await client.post(
+      url,
+      headers: requestHandler,
+      body: json.encode({
+        'patientId': patientId,
+        'question': question,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Successfully posted question');
+      return true;
+    } else {
+      print('Failed to post question');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteQuestion(String id) async {
+    var url = Uri.http(Config.apiUrl, Config.questionAPI + '/delete/' + id);
+    var response = await client.delete(url);
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess deleting question");
+      return true;
+    } else {
+      print('eroor failed deleting  question');
+
+      return false;
+    }
+  }
+
+  ///Answer
+  static Future<List<Answer>?> getAllAnswerss(String questionId) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(
+        Config.apiUrl, Config.anwserAPI + '/get-answers/' + questionId);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('sucess load Answer');
+      return AnswerromJson(data);
+    } else {
+      throw Exception('Failed to load Answer');
+    }
+  }
+
+  static Future<bool> postAnswer(
+      String doctorId, String answer, String questionId) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.anwserAPI + '/post-answer');
+    print(url);
+    var response = await client.post(
+      url,
+      headers: requestHandler,
+      body: json.encode(
+        {
+          'doctorId': doctorId,
+          'answer': answer,
+          'questionId': questionId,
+        },
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      print('Successfully posted Answer');
+      return true;
+    } else {
+      print('Failed to post Answer');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAnswer(String id) async {
+    var url = Uri.http(Config.apiUrl, Config.anwserAPI + '/delete/' + id);
+    var response = await client.delete(url);
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess deleting question");
+      return true;
+    } else {
+      print('eroor failed deleting  question');
+
+      return false;
+    }
+  }
+
+  ///AnswerToQuestion
+  static Future<List<AnswerToQuestion>?> getAllAnswerbyDoctor(id) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(
+        Config.apiUrl, Config.AnswerToQuestionApi + '/getbypost/' + id);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      print('Success load AnswerToQuestion');
+      return AnswerToQuestionfromJson(data);
+    } else {
+      throw Exception('Failed to load AnswerToQuestion');
+    }
+  }
+
+  static Future<bool> postAnswerToQuestionDoc(
+    String subject,
+    doctor,
+    discussion,
+  ) async {
+    var url = Uri.http(
+      Config.apiUrl,
+      Config.AnswerToQuestionApi + '/createDocReponse',
+    );
+    var response = await client.post(
+      url,
+      body: {
+        "comment": subject,
+        "doc": doctor,
+        "question": discussion,
+      },
+    );
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding createDocReponse");
+      print(response.body);
+      return true;
+    } else {
+      print('eroor failed adding createDocReponse');
+      return false;
+    }
+  }
+
+  static Future<bool> postAnswerToQuestionPateint(
+    String subject,
+    doctor,
+    discussion,
+  ) async {
+    var url = Uri.http(
+      Config.apiUrl,
+      Config.AnswerToQuestionApi + '/createUserReponse',
+    );
+    var response = await client.post(
+      url,
+      body: {
+        "comment": subject,
+        "user": doctor,
+        "question": discussion,
+      },
+    );
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess adding createDocReponse");
+      print(response.body);
+      return true;
+    } else {
+      print('eroor failed adding createDocReponse');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAnswerToQuestion(n) async {
+    var url =
+        Uri.http(Config.apiUrl, Config.AnswerToQuestionApi + '/delete/' + n);
+    var response = await client.delete(url);
+    print(url);
+    if (response.statusCode == 200) {
+      print("sucess deleting AnswerToQuestionApi");
+      return true;
+    } else {
+      print('eroor failed deleting AnswerToQuestionApi');
+
       return false;
     }
   }
