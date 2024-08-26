@@ -43,13 +43,13 @@ const FeedbackPage = () => {
   };
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Typography.Title>Événement</Typography.Title>
+      <Typography.Title>Feedbacks</Typography.Title>
 
       <Table
         loading={loading}
         columns={[
           {
-            title: "Particiapant",
+            title: "Participant",
             dataIndex: ["participantId", "username"],
           },
           { title: "Événement", dataIndex: ["eventId", "eventname"] },

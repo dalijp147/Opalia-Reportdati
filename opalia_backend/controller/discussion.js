@@ -1,5 +1,4 @@
 const Discussion = require("../models/Medecin/Discusion.model");
-const LikeModel = require("../models/Medecin/Like.model");
 const { getIo } = require("../middleware/Socket");
 exports.create = (req, res) => {
   var discussion = new Discussion({
@@ -91,25 +90,4 @@ exports.getdiscussionbyeventId = (req, res) => {
           err.message || "Some error occurred while retrieving Discussion.",
       });
     });
-};
-exports.likedislike = async (req, res) => {
-  const { postId, userId } = req.body;
-  const existingLike = await LikeModel.findOne({ postId, userId });
-  try {
-    if (!existingLike) {
-      await LikeModel.create(req.body);
-      await Discussion.findByIdAndUpdate(
-        postId,
-        { $inc: { likes: 1 } },
-        { new: true }
-      );
-      return res.status(200).json({ message: "Like added sucessfully..!!" });
-    } else {
-      await LikeModel.findByIdAndDelete(existingLike._id);
-      await Discussion.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
-      return res.status(200).json({ message: "Like removed sucessfully..!!" });
-    }
-  } catch (error) {
-    res.status(403).json({ status: false, error: error });
-  }
 };

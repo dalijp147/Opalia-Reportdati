@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opalia_client/models/discussion.dart';
-import 'package:opalia_client/screens/pro/widgets/events/discussion/DiscusionItem.dart';
+import 'package:opalia_client/screens/pro/widgets/discussion/DiscusionItem.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import '../../../../models/events.dart';
 import '../../../../services/remote/apiServicePro.dart';
@@ -39,10 +39,9 @@ class _DiscussionTabState extends State<DiscussionTab> {
 
   Future<void> _checkParticipation() async {
     try {
-      final userId = await PreferenceUtils.getuserid();
-      print('User ID: $userId'); // Debug print
-      final participantStatus =
-          await ApiServicePro.isParticipant(userId, widget.event.EventId!);
+      print('User ID: $PreferenceUtils.getuserid()'); // Debug print
+      final participantStatus = await ApiServicePro.isParticipant(
+          PreferenceUtils.getuserid(), widget.event.EventId!);
       print('Participant Status: $participantStatus'); // Debug print
       setState(() {
         isParticipant = participantStatus;
@@ -102,81 +101,100 @@ class _DiscussionTabState extends State<DiscussionTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      child: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : !isParticipant
-              ? Center(
-                  child: Text(
-                    "S'il vous plaiez participer à l'événement pour pouvoir discuter",
-                  ),
-                )
-              : Column(
-                  children: [
-                    Expanded(
-                        child: allDiscussion == null || allDiscussion!.isEmpty
-                            ? Center(child: Text('No Discussions'))
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: ScrollPhysics(),
-                                itemCount: allDiscussion?.length,
-                                itemBuilder: (context, index) {
-                                  final discu = allDiscussion![index];
-                                  return DiscussionItem(discu: discu);
-                                },
-                              )),
-                    Padding(
-                      padding: const EdgeInsets.all(25.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Form(
-                              key: _formKey,
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "Please enter a comment";
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                controller: TextController,
-                                autofocus: false,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                      ),
-                                      borderRadius: kBorderRadius),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                      ),
-                                      borderRadius: kBorderRadius),
-                                  hintStyle: const TextStyle(
-                                    color: Colors.grey,
+    return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              stops: [1, 0.1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red.shade50, Colors.white],
+            ),
+          ),
+        ),
+        centerTitle: true,
+        title: Text(
+          'Discussion',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(8.0),
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : !isParticipant
+                ? Center(
+                    child: Text(
+                      "S'il vous plaiez participer à l'événement pour pouvoir discuter",
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                          child: allDiscussion == null || allDiscussion!.isEmpty
+                              ? Center(child: Text('No Discussions'))
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: ScrollPhysics(),
+                                  itemCount: allDiscussion?.length,
+                                  itemBuilder: (context, index) {
+                                    final discu = allDiscussion![index];
+                                    return DiscussionItem(discu: discu);
+                                  },
+                                )),
+                      Padding(
+                        padding: const EdgeInsets.all(25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please enter a comment";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  controller: TextController,
+                                  autofocus: false,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(
+                                          color: Colors.red,
+                                        ),
+                                        borderRadius: kBorderRadius),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(
+                                          color: Colors.red,
+                                        ),
+                                        borderRadius: kBorderRadius),
+                                    hintStyle: const TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                    filled: true,
+                                    hintText: "Ecrit quelque chose",
+                                    fillColor: Colors.transparent,
                                   ),
-                                  filled: true,
-                                  hintText: "Write a comment",
-                                  fillColor: Colors.transparent,
                                 ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _addDiscussion(TextController.text);
-                              }
-                            },
-                            icon: Icon(Icons.arrow_circle_up_rounded),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  _addDiscussion(TextController.text);
+                                }
+                              },
+                              icon: Icon(Icons.arrow_circle_up_rounded),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+      ),
     );
   }
 }

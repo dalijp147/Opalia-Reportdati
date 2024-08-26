@@ -24,6 +24,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
   TextEditingController NumerotelController = TextEditingController();
   TextEditingController SpecialiteController = TextEditingController();
   TextEditingController NumeroLicenseController = TextEditingController();
+  TextEditingController DescriptionController = TextEditingController();
   late FocusNode emailFocus;
   late FocusNode passwordFocus;
   late FocusNode nomFocus;
@@ -85,6 +86,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         NumerotelController.text.isNotEmpty &&
         selectedSpecialite != null &&
         NumeroLicenseController.text.isNotEmpty &&
+        //    DescriptionController.text.isNotEmpty &&
         _image != null) {
       var rgBody = {
         "email": emailController.text,
@@ -94,6 +96,7 @@ class _SignupproScreenState extends State<SignupproScreen> {
         "numeroTel": NumerotelController.text,
         "specialite": selectedSpecialite!,
         "licenseNumber": NumeroLicenseController.text,
+        // "description": DescriptionController.text,
         "image": _image
       };
       var url = Uri.http(Config.apiUrl, Config.medecinApi + "/registration");
@@ -313,6 +316,45 @@ class _SignupproScreenState extends State<SignupproScreen> {
                       ),
                     ),
                   ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // const Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Align(
+                  //     alignment: Alignment.topLeft,
+                  //     child: Text(
+                  //       'Description de vous :',
+                  //       style: TextStyle(color: Colors.red),
+                  //     ),
+                  //   ),
+                  // ),
+                  // TextFormField(
+                  //   controller: DescriptionController,
+                  //   keyboardType: TextInputType.multiline,
+                  //   maxLines: null,
+                  //   validator: (value) {
+                  //     if (value!.isEmpty) {
+                  //       return "veullez saisire Description ";
+                  //     } else {
+                  //       return null;
+                  //     }
+                  //   },
+                  //   decoration: InputDecoration(
+                  //     filled: true,
+                  //     fillColor: Colors.white,
+                  //     // ignore: dead_code
+                  //     errorText: isNotValide ? "Enter Proper Info" : null,
+                  //     hintText: "Description",
+                  //     enabledBorder: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       borderSide: BorderSide(
+                  //         color: Colors.red,
+                  //         width: 3,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 10,
                   ),

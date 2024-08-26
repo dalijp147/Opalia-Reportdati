@@ -49,8 +49,10 @@ const AdminRoute = require("../routes/adminRoute.js");
 const questionRoute = require("../routes/Patient/questionRoute.js");
 const answerRoute = require("../routes/Medecin/AnswerRoute.js");
 const AnswerToQuestionRoute = require("../routes/AnswerToQuestionRoute.js");
+const CadeauProRoute = require("../routes/Medecin/CadeauRoute.js");
 
 //routes
+app.use("/cadeauPro", CadeauProRoute);
 app.use("/dossier", DossierRoute);
 app.use("/catgorie", categorieRoute);
 app.use("/medicament", mediRoute);

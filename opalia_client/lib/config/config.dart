@@ -23,5 +23,6 @@ class Config {
   static const String questionAPI = "/question";
   static const String anwserAPI = "/answer";
   static const String AnswerToQuestionApi = "/answerToQuestion";
+  static const String CAdeauProApi = "/cadeauPro";
   static const String imageURL = "http://10.0.2.2:3001";
 }

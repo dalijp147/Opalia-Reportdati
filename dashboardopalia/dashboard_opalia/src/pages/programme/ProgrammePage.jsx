@@ -281,9 +281,6 @@ const ProgrammesPage = () => {
                       {...field}
                       name={[field.name, "speaker"]}
                       fieldKey={[field.fieldKey, "speaker"]}
-                      rules={[
-                        { required: true, message: "Please select speakers" },
-                      ]}
                       style={{ width: 150 }}
                     >
                       <Select mode="multiple">

@@ -7,7 +7,7 @@ import 'package:opalia_client/models/mediacment.dart';
 import '../../../../bloc/product/product_bloc.dart';
 import '../../../../services/remote/apiService.dart';
 import '../../../../services/remote/apiServicePro.dart';
-import '../../widgets/Reusiblewidgets/Drawerwidgets.dart';
+import '../../widgets/Allappwidgets/Drawerwidgets.dart';
 import 'DetailMedicamentScreen.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
@@ -30,12 +30,24 @@ class ProductCategorieProScreen extends StatefulWidget {
 class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
   final ProductBloc productBloc = ProductBloc();
   List<Medicament>? allMedicament = [];
+  List<Medicament>? allMedicamentPatient = [];
   Future<void> _fetchMedicament() async {
     try {
       final medicament =
           await ApiServicePro.getMedicamentBycategoriePro(widget.name);
       setState(() {
         allMedicament = medicament;
+      });
+    } catch (e) {
+      print('Failed to fetch categorie: $e');
+    }
+  }
+
+  Future<void> _fetchMedicamentPatient() async {
+    try {
+      final medicament = await ApiService.getMedicamentBycategorie(widget.name);
+      setState(() {
+        allMedicamentPatient = medicament;
       });
     } catch (e) {
       print('Failed to fetch categorie: $e');
@@ -131,6 +143,10 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                     sousclasse: suggestion.sousclassemedi!,
                     id: suggestion.mediId!,
                     tit: widget.name,
+                    forme: suggestion.forme!,
+                    classeparamedicalemedi: suggestion.classeparamedicalemedi!,
+                    dci: suggestion.dci!,
+                    presentationmedi: suggestion.presentationmedi!,
                   ),
                 );
                 print(suggestion.mediname!);
@@ -155,12 +171,14 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                             child: GridView.builder(
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    2, // number of items in each row
-                                mainAxisSpacing: 8.0, // spacing between rows
-                                crossAxisSpacing: 8.0,
-                                // spacing between columns
-                              ),
+                                      crossAxisCount:
+                                          2, // number of items in each row
+                                      mainAxisSpacing:
+                                          8.0, // spacing between rows
+                                      crossAxisSpacing: 8.0,
+                                      childAspectRatio: 0.8
+                                      // spacing between columns
+                                      ),
                               padding: const EdgeInsets.all(
                                   8.0), // padding around the grid
                               itemCount: allMedicament!
@@ -169,21 +187,35 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                                 final medicament = allMedicament![index];
                                 return GestureDetector(
                                   onTap: () {
-                                    Get.to(DetailMedicamentPro(
-                                      image: medicament.mediImage!,
-                                      title: medicament.mediname!,
-                                      sousclasse: medicament.sousclassemedi!,
-                                      id: medicament.mediId!,
-                                      tit: widget.name,
-                                    ));
+                                    Get.to(
+                                      DetailMedicamentPro(
+                                        image: medicament.mediImage!,
+                                        title: medicament.mediname!,
+                                        sousclasse: medicament.sousclassemedi!,
+                                        id: medicament.mediId!,
+                                        tit: widget.name,
+                                        forme: medicament.forme!,
+                                        classeparamedicalemedi:
+                                            medicament.classeparamedicalemedi!,
+                                        dci: medicament.dci!,
+                                        presentationmedi:
+                                            medicament.presentationmedi!,
+                                      ),
+                                    );
                                   },
                                   child: Container(
-                                    decoration: BoxDecoration(
+                                      decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                            width: 2, color: Colors.red),
-                                        color: Colors
-                                            .white), // color of grid items
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color.fromRGBO(250, 239, 239, 1),
+                                            Color.fromRGBO(255, 255, 255, 1),
+                                          ], // Gradient colors when selected
+                                          // Gradient colors when not selected
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                      ), // color of grid items
                                     child: Center(
                                       child: Column(
                                         mainAxisAlignment:
@@ -219,8 +251,8 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                                                     medicament.mediImage == "")
                                                 ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
                                                 : medicament.mediImage!,
-                                            height: 100,
-                                            width: 100,
+                                            height: 150,
+                                            width: 150,
                                             fit: BoxFit.scaleDown,
                                             errorBuilder: (BuildContext context,
                                                 Object error,
@@ -229,17 +261,23 @@ class _ProductCategorieProScreenState extends State<ProductCategorieProScreen> {
                                               print(
                                                   'Error loading image: $error');
                                               return Image.network(
-                                                height: 100,
+                                                height: 150,
                                                 width: 100,
                                                 "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
                                               );
                                             },
                                           ),
-                                          Text(
-                                            medicament.mediname!,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.red),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              medicament.mediname!,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black),
+                                            ),
                                           ),
                                         ],
                                       ),

@@ -13,11 +13,13 @@ class RectangularButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
+      
       onPressed: onPressed,
       child: SizedBox(
         height: 50,
         width: double.infinity,
         child: Card(
+          
           color: onPressed != null ? Colors.red : Colors.red.shade200,
           child: Center(
             child: Text(

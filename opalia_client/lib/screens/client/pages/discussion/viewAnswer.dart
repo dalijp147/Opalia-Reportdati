@@ -69,174 +69,185 @@ class _ViewAnswersScreenState extends State<ViewAnswersScreen> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Answer>?>(
-        future: _answers,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Aucune réponse trouvée'));
-          } else {
-            return snapshot.data!.isEmpty
-                ? Center(child: Text('No comments yet'))
-                : ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final answer = snapshot.data![index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Dismissible(
-                          background: Container(
-                            color: Colors.red,
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                              size: 36,
-                            ),
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20),
-                          ),
-                          key: Key(answer.id!),
-                          onDismissed: (direction) async {
-                            try {
-                              await ApiServicePro.deleteAnswer(answer.id!);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Réponse supprimée')),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Erreur: $e')),
-                              );
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.red,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
+          ),
+        ),
+        child: FutureBuilder<List<Answer>?>(
+          future: _answers,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('Aucune réponse trouvée'));
+            } else {
+              return snapshot.data!.isEmpty
+                  ? Center(child: Text('No comments yet'))
+                  : ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final answer = snapshot.data![index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Dismissible(
+                            background: Container(
+                              color: Colors.red,
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 36,
                               ),
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 20),
                             ),
-                            padding: EdgeInsets.all(9.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage:
-                                          NetworkImage(answer.doctorId!.image!),
-                                      radius: 20,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${answer.doctorId!.name} ${answer.doctorId!.familyname}',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                            key: Key(answer.id!),
+                            onDismissed: (direction) async {
+                              try {
+                                await ApiServicePro.deleteAnswer(answer.id!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Réponse supprimée')),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Erreur: $e')),
+                                );
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Colors.red,
                                 ),
-                                SizedBox(height: 10),
-                                Text(answer.answer!),
-                                SizedBox(height: 10),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Divider(height: 1),
-                                ),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        print('goof' + '' + answer.id!);
-                                        showModalBottomSheet(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          builder: (context) =>
-                                              DraggableScrollableSheet(
-                                            initialChildSize: 0.64,
-                                            minChildSize: 0.2,
-                                            maxChildSize: 1,
-                                            builder:
-                                                (context, scrollController) {
-                                              return AnswerCommentsModal(
-                                                answerId: answer,
-                                                webSocketService:
-                                                    _webSocketService,
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      },
-                                      icon: Icon(Iconsax.message_text_1),
-                                      color: Colors.red,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'posté le ${formatter.format(answer.Publication!)}',
-                                  style: TextStyle(fontWeight: FontWeight.w300),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) =>
-                                          DraggableScrollableSheet(
-                                        initialChildSize: 0.64,
-                                        minChildSize: 0.2,
-                                        maxChildSize: 1,
-                                        builder: (context, scrollController) {
-                                          return AnswerCommentsModal(
-                                            answerId: answer,
-                                            webSocketService: _webSocketService,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
+                              ),
+                              padding: EdgeInsets.all(9.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     children: [
-                                      Text('voir les '),
-                                      Numberasnwser(
-                                        answerId: answer.id!,
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            answer.doctorId!.image!),
+                                        radius: 20,
                                       ),
-                                      SizedBox(
-                                        width: 2,
+                                      SizedBox(width: 5),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${answer.doctorId!.name} ${answer.doctorId!.familyname}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      Text('Comenetaires')
                                     ],
                                   ),
-                                ),
-                              ],
+                                  SizedBox(height: 10),
+                                  Text(answer.answer!),
+                                  SizedBox(height: 10),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Divider(height: 1),
+                                  ),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          print('goof' + '' + answer.id!);
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.transparent,
+                                            builder: (context) =>
+                                                DraggableScrollableSheet(
+                                              initialChildSize: 0.64,
+                                              minChildSize: 0.2,
+                                              maxChildSize: 1,
+                                              builder:
+                                                  (context, scrollController) {
+                                                return AnswerCommentsModal(
+                                                  answerId: answer,
+                                                  webSocketService:
+                                                      _webSocketService,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Iconsax.message_text_1),
+                                        color: Colors.red,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'posté le ${formatter.format(answer.Publication!)}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w300),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) =>
+                                            DraggableScrollableSheet(
+                                          initialChildSize: 0.64,
+                                          minChildSize: 0.2,
+                                          maxChildSize: 1,
+                                          builder: (context, scrollController) {
+                                            return AnswerCommentsModal(
+                                              answerId: answer,
+                                              webSocketService:
+                                                  _webSocketService,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text('voir les '),
+                                        Numberasnwser(
+                                          answerId: answer.id!,
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Text('Comenetaires')
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-          }
-        },
+                        );
+                      },
+                    );
+            }
+          },
+        ),
       ),
     );
   }

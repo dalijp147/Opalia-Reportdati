@@ -144,7 +144,26 @@ exports.sortbydate = (req, res) => {
       });
     });
 };
+exports.getprogrammebyevent = (req, res) => {
+  const event = req.params.event;
 
+  Programme.find({ event })
+    .populate("prog.speaker")
+    .populate("event")
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0) message = "No event found!";
+      else message = "event successfully retrieved";
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message: err.message || "Some error occurred while retrieving event.",
+      });
+    });
+};
 exports.updateProgramme = (req, res) => {
   const programmeId = req.params.programmeId;
 

@@ -14,8 +14,10 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
 import { useAuthContext } from "./hooks/useAuthContext";
-import MedicamentsByCategory from "./components/MedicamentbyCategorie";
+import MedicamentsByCategory from "./pages/Medicament/MedicamentbyCategorie";
 import EventDetailsPage from "./pages/events/EventDetailpage";
+import SantesByCategory from "./pages/Medicament/SantePage";
+import ParticipantQuizPAge from "./pages/quiz/ParticipantQuiz";
 const AppRoute = () => {
   const { user } = useAuthContext();
   return (
@@ -49,9 +51,13 @@ const AppRoute = () => {
         element={user ? <NewsPage /> : <Navigate to="/login" />}
       ></Route>{" "}
       <Route
-        path="/medicament"
+        path="pro"
         element={user ? <MedicamentsByCategory /> : <Navigate to="/login" />}
       ></Route>{" "}
+      <Route
+        path="/categorie"
+        element={user ? <SantesByCategory /> : <Navigate to="/login" />}
+      ></Route>
       <Route
         path="/categorie"
         element={user ? <CategorieNewsPage /> : <Navigate to="/login" />}
@@ -59,6 +65,10 @@ const AppRoute = () => {
       <Route
         path="/quiz"
         element={user ? <QuizPapge /> : <Navigate to="/login" />}
+      ></Route>{" "}
+      <Route
+        path="/parti"
+        element={user ? <ParticipantQuizPAge /> : <Navigate to="/login" />}
       ></Route>{" "}
       <Route
         path="/user"

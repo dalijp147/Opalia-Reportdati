@@ -88,97 +88,106 @@ class _DicusssionDocState extends State<DicusssionDoc> {
                   colors: [Colors.red.shade50, Colors.white])),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder<List<PoseQuestion>?>(
-              future: _questions,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No questions found'));
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final question = snapshot.data![index];
-                      return Dismissible(
-                        background: Container(
-                          height: 50,
-                          color: Colors.red, // Background color when swiping
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                            size: 36,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<List<PoseQuestion>?>(
+                future: _questions,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No questions found'));
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final question = snapshot.data![index];
+                        return Dismissible(
+                          background: Container(
+                            height: 50,
+                            color: Colors.red, // Background color when swiping
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 36,
+                            ),
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.only(right: 20),
                           ),
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20),
-                        ),
-                        key: Key(
-                          question.toString(),
-                        ),
-                        onDismissed: (direction) async {
-                          // Remove the item from the data source.
-                          await ApiServicePro.deleteQuestion(question.id!);
-                          _loadQuestions(); // Refresh the list after deletion
-                        },
-                        child: ListTile(
-                          leading: ClipOval(
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: Image.network(
-                                question.patientId?.image ?? '',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(Icons.person, size: 50);
-                                },
+                          key: Key(
+                            question.toString(),
+                          ),
+                          onDismissed: (direction) async {
+                            // Remove the item from the data source.
+                            await ApiServicePro.deleteQuestion(question.id!);
+                            _loadQuestions(); // Refresh the list after deletion
+                          },
+                          child: ListTile(
+                            leading: ClipOval(
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Image.network(
+                                  question.patientId?.image ?? '',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(Icons.person, size: 50);
+                                  },
+                                ),
                               ),
                             ),
+                            title: Text(question.question!),
+                            subtitle: Text(
+                              'Asked by Patient: ${question.patientId?.name ?? 'Unknown'}',
+                            ),
+                            trailing: Numberasnwserss(questionId: question.id!),
+                            onTap: () {
+                              Get.to(ViewAnswersScreen(
+                                questionId: question.id!,
+                              ));
+                            },
                           ),
-                          title: Text(question.question!),
-                          subtitle: Text(
-                            'Asked by Patient: ${question.patientId?.name ?? 'Unknown'}',
-                          ),
-                          trailing: Numberasnwserss(questionId: question.id!),
-                          onTap: () {
-                            Get.to(ViewAnswersScreen(
-                              questionId: question.id!,
-                            ));
-                          },
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _questionController,
-                    decoration: InputDecoration(
-                      labelText: 'Ta Question',
-                      border: OutlineInputBorder(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _questionController,
+                      decoration: InputDecoration(
+                        labelText: 'Ta Question',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _submitQuestion,
-                  child: Text('Submit'),
-                ),
-              ],
+                  SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _submitQuestion,
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

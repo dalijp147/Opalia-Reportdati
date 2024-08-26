@@ -17,6 +17,10 @@ class DetailMedicamentPro extends StatefulWidget {
   final String image;
   final String title;
   final String sousclasse;
+  final String forme;
+  final String dci;
+  final String presentationmedi;
+  final String classeparamedicalemedi;
   final String tit;
   DetailMedicamentPro({
     super.key,
@@ -25,6 +29,10 @@ class DetailMedicamentPro extends StatefulWidget {
     required this.sousclasse,
     required this.id,
     required this.tit,
+    required this.forme,
+    required this.classeparamedicalemedi,
+    required this.presentationmedi,
+    required this.dci,
   });
 
   @override
@@ -41,18 +49,24 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
         body: Stack(
           children: [
             Container(
-              decoration: BoxDecoration(color: Colors.white),
-              width: double.infinity,
-              child:
-                  // Image.network(
-                  //   (medi.mediImage == null || medi.mediImage == "")
-                  //       ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                  //       : medi.mediImage!,
-                  // ),
-                  Image.network(
-                (widget.image == null || widget.image == "")
-                    ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                    : widget.image!,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(182, 28, 12, 0.1),
+                    Color.fromRGBO(255, 255, 255, 0.1),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: ClipOval(
+                child: Image.network(
+                  (widget.image == null || widget.image == "")
+                      ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
+                      : widget.image!,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             buttonArrow(context),
@@ -166,7 +180,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.medication, color: Colors.red, size: 30),
                         Text(
@@ -177,7 +191,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                           ),
                         ),
                         Text(
-                          'unknown',
+                          widget.presentationmedi,
                           style: TextStyle(
                             fontSize: 10.5,
                             fontWeight: FontWeight.bold,
@@ -186,7 +200,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                       ],
                     )),
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.blur_circular_sharp,
                             color: Colors.red, size: 30),
@@ -198,7 +212,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                           ),
                         ),
                         Text(
-                          'unknown',
+                          widget.dci,
                           style: TextStyle(
                             fontSize: 10.5,
                             fontWeight: FontWeight.bold,
@@ -236,7 +250,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.medical_services_outlined,
                             color: Colors.red, size: 30),
@@ -248,7 +262,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                           ),
                         ),
                         Text(
-                          'unknown',
+                          widget.forme,
                           style: TextStyle(
                             fontSize: 10.5,
                             fontWeight: FontWeight.bold,
@@ -257,19 +271,19 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                       ],
                     )),
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.health_and_safety_outlined,
                             color: Colors.red, size: 30),
                         Text(
                           'Classe thérapeutique',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 254, 17, 0),
-                            fontWeight: FontWeight.bold,
-                          ),
+                              color: Color.fromARGB(255, 254, 17, 0),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
                         ),
                         Text(
-                          'unknown',
+                          widget.classeparamedicalemedi!,
                           style: TextStyle(
                               fontSize: 10.5, fontWeight: FontWeight.bold),
                         ),
@@ -290,7 +304,7 @@ class _DetailMedicamentProState extends State<DetailMedicamentPro> {
                               ),
                             ),
                             Text(
-                              "unknown",
+                              widget.sousclasse,
                               style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.bold,

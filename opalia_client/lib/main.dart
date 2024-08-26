@@ -6,7 +6,7 @@ import 'package:opalia_client/Widget/profileScreen.dart';
 import 'package:opalia_client/screens/client/pages/auth/signin.dart';
 import 'package:opalia_client/screens/client/widgets/Allappwidgets/BottomNav.dart';
 import 'package:opalia_client/screens/pro/pages/auth/signinpro.dart';
-import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
+import 'package:opalia_client/screens/pro/widgets/Allappwidgets/BottomNavPro.dart';
 import 'package:opalia_client/services/local/notif_service.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:shared_preferences/shared_preferences.dart';

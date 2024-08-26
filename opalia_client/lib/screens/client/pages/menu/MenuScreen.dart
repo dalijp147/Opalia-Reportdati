@@ -4,8 +4,9 @@ import 'package:opalia_client/screens/client/pages/menu/LanguageScreen.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../pro/pages/Aprops.dart';
+import '../../../pro/pages/ConcatScrenn.dart';
 import '../auth/signin.dart';
-import '../dossiermedical/DossiermedScreen.dart';
 import '../user/updateScreenUser.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -182,111 +183,8 @@ class _MenuScreenState extends State<MenuScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
           ),
-          const SizedBox(
-            height: 9,
-          ),
-          Container(
-            width: double.infinity,
-            child: Row(
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  margin: EdgeInsets.only(left: 5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red.shade100,
-                  ),
-                  child: const Icon(
-                    Icons.speaker_notes,
-                    color: Colors.red,
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                const Text(
-                  'Langue',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                const Text(
-                  'Francais',
-                  style: TextStyle(
-                      color: Colors.grey, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(LanguageScreen());
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    margin: EdgeInsets.only(right: 5),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: const Icon(
-                      Icons.navigate_next_rounded,
-                      color: Colors.black,
-                      size: 50,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Container(
-            width: double.infinity,
-            child: Row(
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  margin: EdgeInsets.only(left: 5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red.shade100,
-                  ),
-                  child: const Icon(
-                    Icons.notification_add,
-                    color: Colors.red,
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                const Text(
-                  'Notification',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                Container(
-                  height: 50,
-                  width: 50,
-                  margin: EdgeInsets.only(right: 5),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: const Icon(
-                    Icons.navigate_next_rounded,
-                    color: Colors.black,
-                    size: 50,
-                  ),
-                ),
-              ],
-            ),
-          ),
           SizedBox(
-            height: 20,
+            height: 9,
           ),
           Container(
             width: double.infinity,
@@ -309,7 +207,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   width: 20,
                 ),
                 const Text(
-                  'Mode sombre',
+                  "Évalué l'application",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
@@ -331,32 +229,115 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
           SizedBox(
-            height: 35,
+            height: 10,
           ),
-          // Expanded(
-          //   child: Align(
-          //     alignment: FractionalOffset.bottomCenter,
-          //     child: ElevatedButton(
-          //       style: ElevatedButton.styleFrom(
-          //         minimumSize: Size(100, 50),
-          //       ),
-          //       onPressed: () async {
-          //         SharedPreferences pref =
-          //             await SharedPreferences.getInstance();
-          //         await pref.clear();
-          //         Navigator.pushAndRemoveUntil(
-          //           context,
-          //           MaterialPageRoute(builder: (context) => SigninScreen()),
-          //           (Route<dynamic> route) => false,
-          //         );
-          //       },
-          //       child: Text('déconnecter'),
-          //     ),
-          //   ),
-          // ),
-          // SizedBox(
-          //   height: 10,
-          // )
+          const Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Autre",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            ),
+          ),
+          SizedBox(
+            height: 9,
+          ),
+          Container(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  margin: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red.shade100,
+                  ),
+                  child: const Icon(
+                    Icons.description_sharp,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                const Text(
+                  "À Propos de nous",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(ApropsScreen());
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    margin: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: const Icon(
+                      Icons.navigate_next_rounded,
+                      color: Colors.black,
+                      size: 50,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Container(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  margin: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red.shade100,
+                  ),
+                  child: const Icon(
+                    Icons.phone,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                const Text(
+                  "Contacter Nous",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(ContactUsScreen());
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    margin: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: const Icon(
+                      Icons.navigate_next_rounded,
+                      color: Colors.black,
+                      size: 50,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

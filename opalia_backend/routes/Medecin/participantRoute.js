@@ -29,4 +29,11 @@ router.get(
   "/participon/:eventId",
   Particpant_controller.getparicipantandspeakertoevent
 );
+router.patch("/approve/:id", Particpant_controller.approveParticipant);
+router.patch("/disapprove/:id", Particpant_controller.disapproveParticipant);
+router.get(
+  "/:doctorId/speaker",
+  Particpant_controller.getEventsWhereParticipantIsSpeaker
+);
+
 module.exports = router;

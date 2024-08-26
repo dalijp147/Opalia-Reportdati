@@ -8,7 +8,8 @@ import axios from "axios";
 import WinnerComponent from "../../components/winnerPage";
 import ChartComponent from "../../components/ChartComponent";
 import MapComponent from "../../components/MapComponent";
-
+import ChartttComponent from "../../components/CahrtttComponent";
+import { FaPeopleRobbery } from "react-icons/fa6";
 const DashboardPage = () => {
   const [userCount, setUserCount] = useState(0);
   const [eventCount, seteventCount] = useState(0);
@@ -16,6 +17,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [doctorCount, setDoctorCount] = useState(0);
   const [quizCount, setquizCount] = useState(0);
+  const [quizpartiCount, setquizpartiCount] = useState(0);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -39,11 +41,15 @@ const DashboardPage = () => {
       .get("http://localhost:3001/feedback/")
       .then((response) => setFeedbackCount(response.data.length))
       .catch((error) => console.error("Error fetching feedback data:", error));
+    axios
+      .get("http://localhost:3001/result/")
+      .then((response) => setquizpartiCount(response.data.length))
+      .catch((error) => console.error("Error fetching feedback data:", error));
   }, []);
 
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Typography.Title>DashBoard</Typography.Title>
+      <Typography.Title>Accueil</Typography.Title>
       <Space direction="horizontal">
         <DashBoardCard
           icon={<FaUserGroup style={iconStyle} />}
@@ -70,16 +76,25 @@ const DashboardPage = () => {
           title={"Nombre de Feedback des évenements"}
           value={feedbackCount}
         />
+        <DashBoardCard
+          icon={<FaPeopleRobbery style={iconStyle} />}
+          title={"Nombre de participant au quiz"}
+          value={quizpartiCount}
+        />
       </Space>
 
       <div style={{ display: "flex", width: "100%" }}>
         <div style={{ flex: 1 }}>
           <Users />
+          <Typography.Title>
+            Nombre de participant par Événement
+          </Typography.Title>
+          <ChartttComponent />
         </div>
         <div style={{ width: "50px" }}></div>
         <div style={{ flex: 1 }}>
-          <WinnerComponent />
-          <ChartComponent doctors={doctorCount} patients={userCount} />{" "}
+          <WinnerComponent /> {/* Adjust the margin as needed */}
+          <ChartComponent doctors={doctorCount} patients={userCount} />
         </div>
       </div>
     </Space>

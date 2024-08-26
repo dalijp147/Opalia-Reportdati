@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:opalia_client/screens/pro/pages/Events/ListeventScreen.dart';
-import 'package:opalia_client/screens/pro/pages/MenuScreenPro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../../services/local/sharedprefutils.dart';
-import '../../../client/pages/menu/MenuScreen.dart';
 import '../../../client/pages/news/FavoriteScreen.dart';
 import '../../pages/PharmaCo/PhamaCoFormScreen.dart';
 import '../../pages/answer/DicusssionDocPro.dart';
 import '../../pages/auth/signinpro.dart';
 import '../../pages/calculator/CalculatorScreen.dart';
+import '../../pages/Events/ListeventScreen.dart';
+import '../../pages/MenuScreenPro.dart';
 
 class DrawerWidgetPro extends StatelessWidget {
   const DrawerWidgetPro({super.key});
+
   Future<void> logout(BuildContext context) async {
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
@@ -52,110 +51,63 @@ class DrawerWidgetPro extends StatelessWidget {
               child: ClipOval(
                 child: Image.network(
                   PreferenceUtils.getUserImage(),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ), //UserAccountDrawerHeader
+          ), // UserAccountsDrawerHeader
 
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text(
               'Menu',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onTap: () {
               Get.to(MenuScreenPro());
             },
           ),
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           ListTile(
             leading: const Icon(Icons.favorite),
             title: const Text(
-              'Actualités favorite',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              'Vos actualités favorites',
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onTap: () {
               Get.to(const FavoriteScreen());
             },
           ),
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           ListTile(
             leading: const Icon(Icons.book),
             title: const Text(
-              'Liste des Evenements',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              'Vos événements',
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onTap: () {
               Get.to(const ListEventSceen());
             },
           ),
-          SizedBox(
-            height: 10,
-          ),
-          ListTile(
-            leading: const Icon(Icons.medical_services),
-            title: const Text(
-              'Pharmacovigilance',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onTap: () {
-              Get.to(const PharmaCoVigilanceScreen());
-            },
-          ),
-          SizedBox(
-            height: 10,
-          ),
+
+          const SizedBox(height: 10),
           ListTile(
             leading: const Icon(Icons.mark_unread_chat_alt_outlined),
             title: const Text(
-              'Donner un conseille',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              'Forum Santé',
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onTap: () {
               Get.to(const DicusssionDocPro());
             },
           ),
-          SizedBox(
-            height: 10,
-          ),
-          ListTile(
-            leading: const Icon(Icons.calculate),
-            title: const Text(
-              'Calculator',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onTap: () {
-              Get.to(const CalculatorScreen());
-            },
-          ),
 
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text(
               'Déconnecter',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onTap: () async {
               await logout(context);

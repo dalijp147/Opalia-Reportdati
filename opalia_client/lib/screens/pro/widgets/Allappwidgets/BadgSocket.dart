@@ -134,7 +134,17 @@ class _BadgesSocketState extends State<BadgesSocket> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventListScreen(events: _events),
+        builder: (context) => EventListScreen(
+          events: _events,
+          onClearNotifications: () {
+            setState(() {
+              _notificationCount = 0;
+              _events.clear();
+              saveNotificationCount();
+              saveEvents();
+            });
+          },
+        ),
       ),
     ).then((_) {
       if (mounted) {
@@ -162,7 +172,10 @@ class _BadgesSocketState extends State<BadgesSocket> {
           _notificationCount.toString(),
           style: TextStyle(color: Colors.white),
         ),
-        child: Icon(Icons.notifications),
+        child: Icon(
+          Icons.notifications_active_outlined,
+          color: Colors.red,
+        ),
         showBadge: _notificationCount > 0,
       ),
       onPressed: _navigateToEventList,
@@ -172,7 +185,8 @@ class _BadgesSocketState extends State<BadgesSocket> {
 
 class EventListScreen extends StatelessWidget {
   final List<Map<String, dynamic>> events;
-  EventListScreen({required this.events});
+  final VoidCallback onClearNotifications;
+  EventListScreen({required this.events, required this.onClearNotifications});
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
   @override
@@ -194,66 +208,109 @@ class EventListScreen extends StatelessWidget {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete_forever),
+            onPressed: () {
+              // Clear notifications and call the callback
+              onClearNotifications();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
-      body: ListView.builder(
-        itemCount: events.length,
-        itemBuilder: (context, index) {
-          final event = events[index];
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
+      body: events == null || events!.isEmpty
+          ? Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  width: 1,
-                  color: Colors.red,
+                image: DecorationImage(
+                  image: AssetImage(
+                      'assets/images/Grouhome.png'), // Replace with your image path
+                  fit: BoxFit
+                      .cover, // Adjust the image to cover the entire screen
                 ),
               ),
-              child: ListTile(
-                leading:
-                    event['eventimage'] != null || event['mediImage'] != null
-                        ? ClipOval(
-                            child: Image.network(
-                              event['eventimage'] ?? event['mediImage'],
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Icon(
-                            Icons.person,
-                            size: 50.0,
-                          ),
-                title: Text(
-                  event['eventname'] != null
-                      ? 'Nouveau Événement:  ${event['eventname'] ?? event['mediname'] ?? 'N/A'}'
-                      : event['mediname'] != null
-                          ? 'Nouveau Medicament : ${event['mediname'] ?? 'N/A'}'
-                          : 'Nouvelle Question :  ${event['question'] ?? 'N/A'}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              child: Center(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/notif.png', scale: 0.5),
+                  Text(
+                    'Aucune notification',
+                    style: TextStyle(fontSize: 25),
+                  )
+                ],
+              )),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                      'assets/images/Grouhome.png'), // Replace with your image path
+                  fit: BoxFit
+                      .cover, // Adjust the image to cover the entire screen
                 ),
-                subtitle: event['eventname'] != null
-                    ? Text(
-                        'Date : ${formatter.format(DateTime.parse(event['dateEvent']))}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    : SizedBox.shrink(),
-                onTap: () {
-                  event['eventname'] != null
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EventDetailScreen(event: event),
-                          ),
-                        )
-                      : Text('');
+              ),
+              child: ListView.builder(
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.red,
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: event['eventimage'] != null ||
+                                event['mediImage'] != null
+                            ? ClipOval(
+                                child: Image.network(
+                                  event['eventimage'] ?? event['mediImage'],
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(
+                                Icons.person,
+                                size: 50.0,
+                              ),
+                        title: Text(
+                          event['eventname'] != null
+                              ? 'Nouveau Événement:  ${event['eventname'] ?? event['mediname'] ?? 'N/A'}'
+                              : event['mediname'] != null
+                                  ? 'Nouveau Medicament : ${event['mediname'] ?? 'N/A'}'
+                                  : 'Nouvelle Question :  ${event['question'] ?? 'N/A'}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: event['eventname'] != null
+                            ? Text(
+                                'Date : ${formatter.format(DateTime.parse(event['dateEvent']))}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            : SizedBox.shrink(),
+                        onTap: () {
+                          event['eventname'] != null
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EventDetailScreen(event: event),
+                                  ),
+                                )
+                              : Text('');
+                        },
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
-          );
-        },
-      ),
     );
   }
 }

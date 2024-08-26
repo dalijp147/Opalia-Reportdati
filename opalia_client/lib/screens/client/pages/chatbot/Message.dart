@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:opalia_client/services/local/sharedprefutils.dart';
 
 class Message {
   final bool isUser;
   final String message;
-  final DateTime date;
+
   Message({
     required this.isUser,
     required this.message,
-    required this.date,
   });
 }
 
 class Messages extends StatelessWidget {
   final bool isUser;
   final String message;
-  final String date;
+
   const Messages({
     super.key,
     required this.isUser,
     required this.message,
-    required this.date,
   });
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class Messages extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 15)
           .copyWith(left: isUser ? 100 : 10, right: isUser ? 10 : 100),
       decoration: BoxDecoration(
-          color: isUser ? Colors.red : Colors.red.shade400,
+          color: isUser ? Colors.red : const Color.fromARGB(255, 232, 144, 143),
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10),
               bottomLeft: isUser ? Radius.circular(10) : Radius.zero,
@@ -38,18 +37,18 @@ class Messages extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          CircleAvatar(
+            radius: 10,
+            backgroundColor: Colors.grey[300],
+            backgroundImage: isUser
+                ? NetworkImage(PreferenceUtils.getUserImage()) as ImageProvider
+                : AssetImage('assets/images/Group.png') as ImageProvider,
+          ),
           Text(
             message,
             style: TextStyle(
                 fontSize: 16, color: isUser ? Colors.white : Colors.white),
           ),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 10,
-              color: isUser ? Colors.white : Colors.black,
-            ),
-          )
         ],
       ),
     );

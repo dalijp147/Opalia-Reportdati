@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -88,7 +89,7 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Reponse',
+          'Réponse',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         flexibleSpace: Container(
@@ -102,40 +103,48 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Answer>?>(
-        future: _reponse,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Pas de reponse'));
-          } else {
-            return snapshot.data! == null || snapshot.data!.isEmpty
-                ? Center(child: Text('pas de Reponse'))
-                : ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final answer = snapshot.data![index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Dismissible(
-                          background: Container(
-                            height: 50,
-                            color: Colors.red,
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                              size: 36,
-                            ),
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20),
-                          ),
-                          key: Key(answer.toString()),
-                          onDismissed: (direction) async {
-                            await ApiServicePro.deleteAnswer(answer.id!);
-                          },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
+          ),
+        ),
+        child: FutureBuilder<List<Answer>?>(
+          future: _reponse,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('Pas de reponse'));
+            } else {
+              return snapshot.data! == null || snapshot.data!.isEmpty
+                  ? Center(child: Text('pas de Reponse'))
+                  : ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final answer = snapshot.data![index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          //  child: Dismissible(
+                          //   background: Container(
+                          //     height: 50,
+                          //     color: Colors.red,
+                          //     child: Icon(
+                          //       Icons.delete,
+                          //       color: Colors.white,
+                          //       size: 36,
+                          //     ),
+                          //     alignment: Alignment.centerRight,
+                          //     padding: EdgeInsets.only(right: 20),
+                          //   ),
+                          // key: Key(answer.toString()),
+                          // onDismissed: (direction) async {
+                          //   await ApiServicePro.deleteAnswer(answer.id!);
+                          // },
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
@@ -163,9 +172,10 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            answer.doctorId!.name! +
-                                                '' +
-                                                answer.doctorId!.familyname!,
+                                            answer.doctorId!.familyname!
+                                                    .capitalizeFirst! +
+                                                ' ' +
+                                                answer.doctorId!.name!,
                                             style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
@@ -174,6 +184,65 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
                                         ],
                                       ),
                                     ),
+                                    answer.doctorId!.doctorId! ==
+                                            PreferenceUtils.getuserid()
+                                        ? IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                      'Voulez-vous vraiment supprimer votre réponse ?',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    content: Text(
+                                                      'Si oui, appuyez sur OK',
+                                                      style: TextStyle(
+                                                          fontSize: 20),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: Text('Annuler'),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      SizedBox(width: 110),
+                                                      TextButton(
+                                                        child: Text('OK'),
+                                                        onPressed: () async {
+                                                          Navigator.of(context)
+                                                              .pop(); // Close the dialog before async operation
+                                                          try {
+                                                            await ApiServicePro
+                                                                .deleteAnswer(
+                                                                    answer.id!);
+                                                          } catch (e) {
+                                                            // Show error message to user
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    'Failed to delete discussion: $e'),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: Icon(Icons.delete),
+                                          )
+                                        : SizedBox.shrink(),
                                   ],
                                 ),
                                 SizedBox(height: 10),
@@ -242,7 +311,6 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
                                   },
                                   child: Row(
                                     children: [
-                                      Text('voir les '),
                                       Numberasnwser(
                                         answerId: answer.id!,
                                       ),
@@ -256,12 +324,13 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
                               ],
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-          }
-        },
+                          //),
+                        );
+                      },
+                    );
+            }
+          },
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -273,7 +342,7 @@ class _DonnerAnswerState extends State<DonnerAnswer> {
                 child: TextFormField(
                   controller: _questionController,
                   decoration: InputDecoration(
-                    labelText: 'Ta Reponse',
+                    labelText: 'Écrit une réponse',
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
@@ -400,7 +469,7 @@ class _AnswerCommentsModalState extends State<AnswerCommentsModal> {
               child: isLoading
                   ? Center(child: CircularProgressIndicator())
                   : allComment!.isEmpty
-                      ? Center(child: Text('No comments yet'))
+                      ? Center(child: Text("Pas de commentaire pour l'instant"))
                       : ListView.builder(
                           itemCount: allComment!.length,
                           itemBuilder: (context, index) {
@@ -432,14 +501,15 @@ class _AnswerCommentsModalState extends State<AnswerCommentsModal> {
                     child: Form(
                       key: formKey,
                       child: TextFormField(
+                        autocorrect: true,
                         controller: commentController,
                         decoration: InputDecoration(
-                          labelText: 'Your comment',
+                          labelText: 'Écrit ton commentaire',
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return "Please enter a comment";
+                            return "Veuillez saisir un commentaire";
                           }
                           return null;
                         },

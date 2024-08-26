@@ -330,8 +330,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
         onPressed: () {
           Get.to(ChatBot());
         },
-        child: Icon(
-          Icons.chat,
+        child: Image.asset(
+          'assets/images/Group.png',
+          height: 30,
         ),
       ),
     );

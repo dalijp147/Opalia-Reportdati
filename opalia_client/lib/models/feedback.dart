@@ -3,23 +3,23 @@ import 'package:opalia_client/models/particpant.dart';
 
 import 'events.dart';
 
-List<Feedback> EventsFromJson(dynamic str) =>
-    List<Feedback>.from((str).map((x) => Feedback.fromMap(x)));
+List<Feeddback> FeedbackFromJson(dynamic str) =>
+    List<Feeddback>.from((str).map((x) => Feeddback.fromMap(x)));
 
-class Feedback {
+class Feeddback {
   late Events? EventId;
   late String? FeedbackId;
   late Medecin? participantId;
   late String? comment;
   late int? etoile;
-  Feedback({
+  Feeddback({
     this.EventId,
     this.participantId,
     this.comment,
     this.etoile,
     this.FeedbackId,
   });
-  factory Feedback.fromMap(Map<String, dynamic> json) {
+  factory Feeddback.fromMap(Map<String, dynamic> json) {
     // List<Medecin> participantsList = [];
     // if (json['participant'] != null) {
     //   var participantsJson = json['participant'] as List? ?? [];
@@ -30,7 +30,7 @@ class Feedback {
     //   }
     // }
 
-    return Feedback(
+    return Feeddback(
       FeedbackId: json['_id'],
       EventId: json['eventId'] != null
           ? Events.fromMap(json['eventId'] as Map<String, dynamic>)

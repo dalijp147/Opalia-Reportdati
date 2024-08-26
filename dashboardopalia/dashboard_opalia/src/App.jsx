@@ -7,34 +7,39 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 const { Sider, Header, Content } = Layout;
 import "./App.css";
 import AppRoute from "./AppRoute";
+import { useAuthContext } from "./hooks/useAuthContext";
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { user } = useAuthContext();
   return (
     <Layout>
-      <Sider
-        theme="light"
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        className="sider"
-      >
-        <SideBar />
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
-          className="trigger-btn"
-        />
-      </Sider>
+      {user && (
+        <Sider
+          style={{ backgroundColor: "rgba(236, 233, 233, 0.884)" }}
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          className="sider"
+        >
+          <SideBar />
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            className="trigger-btn"
+          />
+        </Sider>
+      )}
       <Layout>
-        <Header className="header">
-          {" "}
-          <CustomHeader />
-        </Header>
+        {user && (
+          <Header className="header">
+            <CustomHeader />
+          </Header>
+        )}
         <Content className="content">
           <AppRoute />
-        </Content>{" "}
-      </Layout>{" "}
+        </Content>
+      </Layout>
     </Layout>
   );
 };

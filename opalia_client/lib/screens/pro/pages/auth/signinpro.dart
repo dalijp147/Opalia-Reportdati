@@ -8,7 +8,7 @@ import 'package:opalia_client/screens/pro/pages/auth/signuppro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../config/config.dart';
 import '../../../client/widgets/Allappwidgets/BottomNav.dart';
-import '../../widgets/Reusiblewidgets/BottomNavPro.dart';
+import '../../widgets/Allappwidgets/BottomNavPro.dart';
 
 class SigninproScreen extends StatefulWidget {
   const SigninproScreen({super.key});
@@ -190,11 +190,8 @@ class _SigninproScreenState extends State<SigninproScreen> {
                   height: 200,
                   width: 200,
                 ),
-                Lottie.asset(
-                  'assets/animation/doctor.json',
-                  height: 210,
-                  width: 210,
-                ),
+                Lottie.asset('assets/animation/opa.json',
+                    height: 210, width: 210, frameRate: FrameRate.max),
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(

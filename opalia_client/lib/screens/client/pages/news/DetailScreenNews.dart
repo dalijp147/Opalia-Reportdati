@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:opalia_client/models/news.dart';
@@ -55,146 +55,130 @@ class _DetailNewsState extends State<DetailNews> {
     int randomNumber = random.nextInt(1000);
     // var isFavorite = boxFavorite.get("isnews") != null;
     var formatter = DateFormat('EEEE, d MMMM yyyy à HH:mm', 'fr_FR');
-
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            // onPressed: () async {
-            //   await HiveService.writeDataFavorite(
-            //     {
-            //       "namenews": widget.news.newsTitle,
-            //       "isnews": widget.news.newsId,
-            //       "newsImage": widget.news.newsImage,
-            //       "newsDate": widget.news.newsPublication,
-            //       "random": randomNumber
-            //     },
-            //   );
-            // },
-            icon: Icon(
-              _isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: Colors.red,
-            ),
-            onPressed: () async {
-              setState(
-                () {
-                  //boxFavorite.get
-                  _isFavorite = !_isFavorite;
-                },
-              );
-
-              if (_isFavorite) {
-                await HiveService.writeDataFavorite(
-                  {
-                    "namenews": widget.news.newsTitle,
-                    "isnews": widget.news.newsId,
-                    "newsImage": widget.news.newsImage,
-                    "newsDate": widget.news.newsPublication,
-                    "random": randomNumber,
-                    "favorite": true
-                  },
-                );
-              } else {
-                await HiveService.deleteDataFavoriteone(widget.news.newsId);
-              }
-            },
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-        ],
-      ),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Stack(
+              children: [
+                Container(
+                  height: 270,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        widget.news.newsImage!
+                            .replaceFirst("file:///", "http://"),
+                      ),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+                AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  leading: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_sharp,
+                        size: 40.0,
+                        weight: 50.0,
+                      ),
+                      onPressed: () {
+                        Get.back();
+                      }),
+                  actions: [
+                    IconButton(
+                      icon: Icon(
+                        _isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.red,
+                        size: 40.0,
+                        weight: 50.0,
+                      ),
+                      onPressed: () async {
+                        setState(
+                          () {
+                            _isFavorite = !_isFavorite;
+                          },
+                        );
+
+                        if (_isFavorite) {
+                          await HiveService.writeDataFavorite(
+                            {
+                              "namenews": widget.news.newsTitle,
+                              "isnews": widget.news.newsId,
+                              "newsImage": widget.news.newsImage,
+                              "newsDate": widget.news.newsPublication,
+                              "random": randomNumber,
+                              "favorite": true
+                            },
+                          );
+                        } else {
+                          await HiveService.deleteDataFavoriteone(
+                              widget.news.newsId);
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
+                Positioned(
+                  bottom: 10,
+                  left: 10,
+                  right: 10,
+                  child: Text(
+                    widget.news.newsTitle!,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white,
+                      backgroundColor: Colors.black54,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Container(
-              height: 240,
+              height: screenHeight - 240,
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(
-                    widget.news.newsImage!.replaceFirst("file:///", "http://"),
+                  image: AssetImage(
+                    'assets/images/Grouhome.png',
                   ),
-                  fit: BoxFit.fill,
+                  fit: BoxFit
+                      .fill, // Adjust the image to cover the entire container
+                ),
+              ),
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Posté le ${formatter.format(widget.news.newsPublication!)}',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.news.newsDetail!,
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.news.newsTitle!,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-            ),
-            Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'poster le ${formatter.format(widget.news.newsPublication!)}',
-                )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.news.newsDetail!,
-                style: TextStyle(color: Colors.grey.shade800),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Autre Actualité :",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            FutureBuilder<List<News>>(
-              future: ApiService.getnewsbycategorie(widget.news.categorienews!),
-              builder: (BuildContext context, AsyncSnapshot<List<News>> model) {
-                if (model.connectionState == ConnectionState.waiting) {
-                  return Column(children: [
-                    SizedBox(
-                      height: 100,
-                    ),
-                    Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ]);
-                } else if (model.hasError) {
-                  return Center(child: Text('Error: ${model.error}'));
-                } else {
-                  return model.data!.isEmpty
-                      ? Column(
-                          children: [
-                            SizedBox(
-                              height: 100,
-                            ),
-                            Center(
-                              child:
-                                  Text('Pas d actualite pour cette categorie'),
-                            ),
-                          ],
-                        )
-                      : Container(
-                          width: 500,
-                          height: 250,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: model.data!.length,
-                            itemBuilder: (context, index) {
-                              final news = model.data![index];
-                              return RelatedActualieItem(
-                                imageNews: news.newsImage!,
-                                nameNews: news.newsTitle!,
-                                desc: news.newsDetail!,
-                              );
-                            },
-                          ),
-                        );
-                }
-              },
-            )
           ],
         ),
       ),

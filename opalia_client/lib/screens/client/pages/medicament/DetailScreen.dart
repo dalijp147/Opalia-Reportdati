@@ -12,10 +12,20 @@ class DetailProduct extends StatefulWidget {
   //final Medicament medi;
   final String image;
   final String title;
+  final String sousclasse;
+  final String forme;
+  final String dci;
+  final String presentationmedi;
+  final String classeparamedicalemedi;
   DetailProduct({
     super.key,
     required this.image,
     required this.title,
+    required this.sousclasse,
+    required this.forme,
+    required this.dci,
+    required this.presentationmedi,
+    required this.classeparamedicalemedi,
     //required this.medi,
   });
 
@@ -186,7 +196,7 @@ class _DetailProductState extends State<DetailProduct> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.medication, color: Colors.red, size: 30),
                         Text(
@@ -196,11 +206,17 @@ class _DetailProductState extends State<DetailProduct> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          widget.presentationmedi,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.blur_circular_sharp,
                             color: Colors.red, size: 30),
@@ -211,11 +227,17 @@ class _DetailProductState extends State<DetailProduct> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          widget.dci,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.medication_liquid_sharp,
                             color: Colors.red, size: 30),
@@ -226,7 +248,13 @@ class _DetailProductState extends State<DetailProduct> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          'unkown',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                   ],
@@ -238,7 +266,7 @@ class _DetailProductState extends State<DetailProduct> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.medical_services_outlined,
                             color: Colors.red, size: 30),
@@ -250,12 +278,16 @@ class _DetailProductState extends State<DetailProduct> {
                           ),
                         ),
                         Text(
-                          'Boite de 20',
+                          widget.forme,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )),
                     Container(
-                        child: const Column(
+                        child: Column(
                       children: [
                         Icon(Icons.health_and_safety_outlined,
                             color: Colors.red, size: 30),
@@ -266,13 +298,19 @@ class _DetailProductState extends State<DetailProduct> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Boite de 20'),
+                        Text(
+                          widget.classeparamedicalemedi,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     )),
                     Container(
                         width: 100,
                         height: 100,
-                        child: const Column(
+                        child: Column(
                           children: [
                             Icon(Icons.medical_information_outlined,
                                 color: Colors.red, size: 30),
@@ -283,7 +321,13 @@ class _DetailProductState extends State<DetailProduct> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text('Boite de 20'),
+                            Text(
+                              widget.sousclasse,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         )),
                   ],
@@ -311,6 +355,12 @@ class _DetailProductState extends State<DetailProduct> {
                           Get.to(DetailProduct(
                             image: medicament.mediImage!,
                             title: medicament.mediname!,
+                            classeparamedicalemedi:
+                                medicament.classeparamedicalemedi!,
+                            dci: medicament.dci!,
+                            forme: medicament.forme!,
+                            presentationmedi: medicament.presentationmedi!,
+                            sousclasse: medicament.sousclassemedi!,
                           ));
                         },
                         child: Padding(
@@ -354,7 +404,7 @@ class _DetailProductState extends State<DetailProduct> {
                                     // width: 50,
                                     (medicament.mediImage == null ||
                                             medicament.mediImage == "")
-                                        ?      "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                                        ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
                                         : medicament.mediImage!,
                                     height: 100,
                                     width: 100,

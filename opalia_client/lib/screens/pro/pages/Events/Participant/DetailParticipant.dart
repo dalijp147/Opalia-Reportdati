@@ -1,10 +1,12 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:opalia_client/models/medecin.dart';
+import 'package:opalia_client/screens/pro/pages/Events/Participant/tab/AvisTab.dart';
+import 'package:opalia_client/screens/pro/pages/Events/Participant/tab/DetailPatTab.dart';
+import 'package:opalia_client/screens/pro/pages/Events/Participant/tab/EventTabPat.dart';
 
 import '../../../../../models/events.dart';
-import '../../../../../models/particpant.dart';
 
 class DetailParticipant extends StatefulWidget {
   final String description;
@@ -12,14 +14,19 @@ class DetailParticipant extends StatefulWidget {
   final String nom;
   final String prenom;
   final String specialite;
+  final Events event;
+  final Medecin DocId;
+
   const DetailParticipant({
-    super.key,
+    Key? key,
     required this.description,
     required this.image,
     required this.nom,
     required this.specialite,
     required this.prenom,
-  });
+    required this.event,
+    required this.DocId,
+  }) : super(key: key);
 
   @override
   State<DetailParticipant> createState() => _DetailParticipantState();
@@ -28,147 +35,136 @@ class DetailParticipant extends StatefulWidget {
 class _DetailParticipantState extends State<DetailParticipant> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 4,
+        title: Text('Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
+          ),
+        ),
+        child: Column(
           children: [
+            SizedBox(
+              height: 10,
+            ),
             Container(
-              decoration: BoxDecoration(color: Colors.white),
-              width: double.infinity,
-              child:
-                  // Image.network(
-                  //   (medi.mediImage == null || medi.mediImage == "")
-                  //       ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                  //       : medi.mediImage!,
-                  // ),
-                  Image.network(
-                (widget.image == null || widget.image == "")
-                    ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fno-internet-connection&psig=AOvVaw2HCMMO6ShxWOr8l3PHFJge&ust=1709807202871000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPihjZbE34QDFQAAAAAdAAAAABAE"
-                    : widget.image!,
-              ),
-            ),
-            buttonArrow(context),
-            scroll(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  buttonArrow(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          clipBehavior: Clip.hardEdge,
-          height: 55,
-          width: 55,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 30,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  scroll() {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      maxChildSize: 1.0,
-      minChildSize: 0.6,
-      builder: (context, scrollController) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          clipBehavior: Clip.hardEdge,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 25),
-                  child: Row(
+              height: 180, // Set a fixed height for the image and doctor info
+              child: Column(
+                children: [
+                  ClipOval(
+                    child: Image.network(
+                      widget.image.isEmpty
+                          ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                          : widget.image,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 70,
+                          width: 70,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        print('Error loading image: $error');
+                        return ClipOval(
+                          child: Image.network(
+                            "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        height: 5,
-                        width: 30,
-                        color: Colors.black12,
-                      )
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Docteur ${widget.prenom}',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            widget.nom,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        widget.specialite,
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
-                ),
-                Row(
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: DefaultTabController(
+                length: 3,
+                child: Column(
                   children: [
-                    Text(
-                      widget.nom,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    TabBar(
+                      labelStyle: TextStyle(fontSize: 16),
+                      labelColor: Colors.red,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Colors.red,
+                      tabs: [
+                        Tab(text: 'À Propos'),
+                        Tab(text: 'Événements'),
+                        Tab(text: 'Avis'),
+                      ],
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      widget.prenom,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          DetailTabParticipant(
+                            Description: widget.description,
+                          ),
+                          EventTabPatScreen(
+                            docId: widget.DocId,
+                          ),
+                          AvisTabScreen(
+                            doctorId: widget.DocId.doctorId!,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                Text(
-                  "Spécialité: " + widget.specialite,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  child: Divider(height: 4),
-                ),
-                const Text(
-                  "Description",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  widget.description!,
-                ),
-              ],
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

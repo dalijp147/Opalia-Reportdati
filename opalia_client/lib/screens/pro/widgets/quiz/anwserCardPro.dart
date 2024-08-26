@@ -28,8 +28,16 @@ class AnswerCardPro extends StatelessWidget {
               height: 70,
               padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(255, 235, 235, 1),
+                    Color.fromRGBO(255, 255, 255, 1),
+                  ], // Gradient colors when selected
+                  // Gradient colors when not selected
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(50.0),
                 border: Border.all(
                   color: isCorrectAnswer
                       ? Colors.green
@@ -61,8 +69,16 @@ class AnswerCardPro extends StatelessWidget {
               height: 70,
               padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white10,
-                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(255, 235, 235, 1),
+                    Color.fromRGBO(255, 255, 255, 1),
+                  ], // Gradient colors when selected
+                  // Gradient colors when not selected
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(50.0),
                 border: Border.all(
                   color: Colors.grey.shade200,
                 ),

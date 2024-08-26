@@ -92,7 +92,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ListTile(
             leading: const Icon(Icons.mark_unread_chat_alt_outlined),
             title: const Text(
-              'Demander un conseille',
+              'Demander un conseil',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
               ),
@@ -107,7 +107,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ListTile(
             leading: const Icon(Icons.book),
             title: const Text(
-              'Actualités favorite',
+              'Actualités favorites',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
               ),

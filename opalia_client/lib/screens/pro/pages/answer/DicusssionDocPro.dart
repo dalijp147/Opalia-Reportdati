@@ -59,53 +59,63 @@ class _DicusssionDocProState extends State<DicusssionDocPro> {
           ),
         ),
       ),
-      body: FutureBuilder<List<PoseQuestion>?>(
-        future: _questions,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No questions found'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final question = snapshot.data![index];
-                return ListTile(
-                  leading: ClipOval(
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Image.network(
-                        question.patientId?.image ?? '',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.person, size: 50);
-                        },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
+          ),
+        ),
+        child: FutureBuilder<List<PoseQuestion>?>(
+          future: _questions,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No questions found'));
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final question = snapshot.data![index];
+                  return ListTile(
+                    leading: ClipOval(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Image.network(
+                          question.patientId?.image ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.person, size: 50);
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  title: Text(question.question!),
-                  subtitle: Text(
-                    'Asked by Patient ID: ${question.patientId!.name}',
-                  ),
-                  trailing: Numberasnwser(questionId: question.id!),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DonnerAnswer(questionId: question.id!),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          }
-        },
+                    title: Text(
+                      '${question.patientId!.name}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(question.question!, maxLines: 2),
+                    trailing: Numberasnwser(questionId: question.id!),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DonnerAnswer(questionId: question.id!),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

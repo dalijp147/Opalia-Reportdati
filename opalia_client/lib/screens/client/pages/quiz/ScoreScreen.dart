@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opalia_client/screens/client/pages/quiz/QuizScreen.dart';
-import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/BottomNavPro.dart';
+import 'package:opalia_client/screens/pro/widgets/Allappwidgets/BottomNavPro.dart';
 
 import '../../../../models/question.dart';
 import '../../../../services/local/sharedprefutils.dart';

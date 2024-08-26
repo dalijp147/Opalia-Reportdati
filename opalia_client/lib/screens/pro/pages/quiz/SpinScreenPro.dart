@@ -23,11 +23,7 @@ class SpinWheelPro extends StatefulWidget {
 
 class _SpinWheelProState extends State<SpinWheelPro> {
   StreamController<int> controller = StreamController<int>();
-  List<String> items = [
-    'Won',
-    'Won',
-    'Won',
-  ];
+  List<String> items = ['perdu', 'Hosper', 'perdu', 'IALUFRESH'];
 
   @override
   void dispose() {
@@ -44,7 +40,7 @@ class _SpinWheelProState extends State<SpinWheelPro> {
 
     Future.delayed(Duration(seconds: 4), () {
       String selectedItem = items[selected];
-      if (selectedItem == 'Won') {
+      if (selectedItem == 'Hosper' || selectedItem == 'IALUFRESH') {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -162,7 +158,7 @@ class _SpinWheelProState extends State<SpinWheelPro> {
             child: ElevatedButton(
               onPressed: spinWheel,
               child: Text(
-                'Spin the Wheel!',
+                'Tourner la roue de la chance!',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

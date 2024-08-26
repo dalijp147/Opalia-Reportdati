@@ -30,43 +30,26 @@ const MedicamentsByCategory = () => {
 
   useEffect(() => {
     fetchCategories();
-    fetchMedicamentsAll();
+    fetchMedicaments();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const [responsePro, responseCat] = await Promise.all([
-        axios.get("http://localhost:3001/categoriePro/"),
-        axios.get("http://localhost:3001/catgorie/"),
-      ]);
-
-      const combinedCategories = [
-        ...responsePro.data.data,
-        ...responseCat.data.data,
-      ];
-      setCategories(combinedCategories);
+      const response = await axios.get("http://localhost:3001/categoriePro/");
+      setCategories(response.data.data);
     } catch (error) {
       message.error("Erreur lors de la récupération des catégories");
     }
   };
-  const fetchMedicaments = async (category) => {
+
+  const fetchMedicaments = async (category = selectedCategory) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3001/medicament/cat/${category}`
+        `http://localhost:3001/medicament/cat/${
+          category || "66698541edfa936fab0444f4"
+        } `
       );
-      setMedicaments(response.data.data);
-    } catch (error) {
-      message.error("Erreur lors de la récupération des médicaments");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMedicamentsAll = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/medicament/");
       setMedicaments(response.data.data);
     } catch (error) {
       message.error("Erreur lors de la récupération des médicaments");
@@ -84,6 +67,7 @@ const MedicamentsByCategory = () => {
     try {
       await axios.delete(`http://localhost:3001/medicament/delete/${id}`);
       message.success("Medicament deleted successfully");
+      fetchMedicamentsAll();
     } catch (error) {
       message.error("Failed to delete medicament");
     }
@@ -168,21 +152,12 @@ const MedicamentsByCategory = () => {
     },
     {
       title: "Catégorie",
-      key: "categorie",
+      key: "categoriePro",
       render: (text, record) => {
         const categoriePro = record.categoriePro
           ? record.categoriePro.categorienompro
           : null;
-        const categorie = record.categorie
-          ? record.categorie.categorienom
-          : null;
-        return (
-          <>
-            {categoriePro && <span>{categoriePro}</span>}
-            {categorie && categoriePro && <span> / </span>}
-            {categorie && <span>{categorie}</span>}
-          </>
-        );
+        return <span>{categoriePro}</span>;
       },
     },
     {
@@ -190,11 +165,11 @@ const MedicamentsByCategory = () => {
       key: "actions",
       render: (text, record) => (
         <Space size="middle">
-          <Button type="primary" onClick={() => handleEdit(record)}>
+          <Button type="default" onClick={() => handleEdit(record)}>
             Modifier
           </Button>
           <Button
-            type="primary"
+            type="default"
             danger
             onClick={() => handleDelete(record._id)}
           >
@@ -221,7 +196,7 @@ const MedicamentsByCategory = () => {
       >
         {categories.map((category) => (
           <Option key={category._id} value={category._id}>
-            {category.categorienompro || category.categorienom}
+            {category.categorienompro}
           </Option>
         ))}
       </Select>
@@ -328,26 +303,29 @@ const MedicamentsByCategory = () => {
           </Form.Item>
           <Form.Item
             name="categoriePro"
-            label="Catégorie Professionnelle"
+            label="Catégorie Médicament"
             rules={[
               {
-                message: "Veuillez entrer la catégorie professionnelle",
+                required: true,
+                message: "Veuillez sélectionner une catégorie Médicament",
               },
             ]}
           >
-            <Select>
+            <Select placeholder="Sélectionnez une catégorie">
               {categories.map((category) => (
                 <Option key={category._id} value={category._id}>
-                  {category.categorienompro || category.categorienom}
+                  {category.categorienompro}
                 </Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
-              {isEditing ? "Modifier" : "Ajouter"}
-            </Button>
-            <Button onClick={() => setIsModalVisible(false)}>Annuler</Button>
+            <Space>
+              <Button type="primary" htmlType="submit" danger>
+                {isEditing ? "Mettre à jour" : "Ajouter"}
+              </Button>
+              <Button onClick={() => setIsModalVisible(false)}>Annuler</Button>
+            </Space>
           </Form.Item>
         </Form>
       </Modal>

@@ -19,16 +19,16 @@ class ListEventSceen extends StatefulWidget {
 
 class _ListEventSceenState extends State<ListEventSceen> {
   final PartipantBloc partipantBloc = PartipantBloc();
+
   @override
   void initState() {
     partipantBloc.add(PartipantInitialFetchEvent());
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var formatter = new DateFormat('yyyy-MM-dd');
+    var formatter = DateFormat('yyyy-MM-dd');
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -62,9 +62,9 @@ class _ListEventSceenState extends State<ListEventSceen> {
               );
 
             case PartipantFetchSucess:
-              final sucessState = state as PartipantFetchSucess;
+              final successState = state as PartipantFetchSucess;
 
-              return sucessState.particpants.isEmpty
+              return successState.particpants.isEmpty
                   ? Center(
                       child: Lottie.asset(
                         'assets/animation/emptybox.json',
@@ -74,36 +74,31 @@ class _ListEventSceenState extends State<ListEventSceen> {
                     )
                   : Container(
                       height: double.infinity,
-                      width: 500,
+                      width: double.infinity,
                       padding: const EdgeInsets.all(8.0),
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
-                        itemCount: sucessState.particpants.length,
+                        itemCount: successState.particpants.length,
                         itemBuilder: (context, index) {
-                          final reminder = sucessState.particpants![index];
+                          final reminder = successState.particpants[index];
                           return Dismissible(
                             background: Container(
                               color:
                                   Colors.red, // Background color when swiping
-                              child: Icon(
+                              child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
                                 size: 36,
                               ),
                               alignment: Alignment.centerRight,
-                              padding: EdgeInsets.only(right: 20),
+                              padding: const EdgeInsets.only(right: 20),
                             ),
-                            key: Key(
-                              reminder.toString(),
-                            ),
+                            key: Key(reminder.toString()),
                             onDismissed: (direction) async {
-                              // Remove the item from the data source.
                               await ApiServicePro.deleteParticipant(
                                 reminder.participantId!,
                               );
-
-                              // Then show a snackbar.
                             },
                             child: GestureDetector(
                               onTap: () {
@@ -116,7 +111,7 @@ class _ListEventSceenState extends State<ListEventSceen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Container(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     border:
@@ -126,11 +121,14 @@ class _ListEventSceenState extends State<ListEventSceen> {
                                   child: Row(
                                     children: [
                                       Image.network(
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null)
+                                        loadingBuilder: (
+                                          BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress,
+                                        ) {
+                                          if (loadingProgress == null) {
                                             return child;
+                                          }
                                           return Container(
                                             height: 100,
                                             width: double.infinity,
@@ -149,74 +147,60 @@ class _ListEventSceenState extends State<ListEventSceen> {
                                           );
                                         },
                                         (reminder.eventId!.eventimage == null ||
-                                                reminder.eventId!.eventimage! ==
-                                                    "")
+                                                reminder.eventId!.eventimage!
+                                                    .isEmpty)
                                             ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
                                             : reminder.eventId!.eventimage!,
                                         height: 100,
+                                        width: 100,
                                         fit: BoxFit.scaleDown,
-                                        errorBuilder: (BuildContext context,
-                                            Object error,
-                                            StackTrace? stackTrace) {
-                                          // You can add logging here to see what the error is
+                                        errorBuilder: (
+                                          BuildContext context,
+                                          Object error,
+                                          StackTrace? stackTrace,
+                                        ) {
                                           print('Error loading image: $error');
                                           return Image.network(
+                                            "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
                                             height: 100,
                                             width: 100,
-                                            "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
                                           );
                                         },
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              const Text(
-                                                "Nom de l'évenement:",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Nom de l'évenement:",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
                                               ),
-                                              Text(
-                                                reminder.eventId!.eventname!,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                            ),
+                                            Text(
+                                              reminder.eventId!.eventname!,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              const Text(
-                                                "Date de l'évenement:",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            const Text(
+                                              "Date de l'évenement:",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
                                               ),
-                                              Text(
-                                                '${formatter.format(reminder.eventId!.dateEvent!)}',
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 50,
+                                            ),
+                                            Text(
+                                              formatter.format(
+                                                  reminder.eventId!.dateEvent!),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       IconButton(
                                         onPressed: () async {
@@ -224,25 +208,27 @@ class _ListEventSceenState extends State<ListEventSceen> {
                                             reminder.participantId!,
                                           );
                                         },
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Iconsax.trash,
                                           color: Colors.red,
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
                             ),
                           );
-                          // );
                         },
                       ),
                     );
             default:
               return Center(
-                child: Lottie.asset('assets/animation/heartrate.json',
-                    height: 210, width: 210),
+                child: Lottie.asset(
+                  'assets/animation/heartrate.json',
+                  height: 210,
+                  width: 210,
+                ),
               );
           }
         },

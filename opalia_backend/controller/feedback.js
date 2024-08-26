@@ -1,4 +1,5 @@
 const Feedback = require("../models/Medecin/feedbackmodel");
+const Partipant = require("../models/Medecin/participan.model");
 
 exports.create = async (req, res) => {
   try {
@@ -99,6 +100,66 @@ exports.getfeedbypartiandevent = (req, res) => {
   const participantId = req.params.participantId;
   const eventId = req.params.eventId;
   Feedback.find({ participantId, eventId })
+    .populate("participantId")
+    .populate("eventId")
+    .then((data) => {
+      var message = "";
+      if (data === undefined || data.length == 0)
+        message = "No Feedback found!";
+      else message = "Feedback successfully retrieved";
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        success: false,
+        message:
+          err.message || "Some error occurred while retrieving Feedback.",
+      });
+    });
+};
+// Adjust the path as necessary
+exports.getFeedbackForSpeakers = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Find participants who are speakers for the event
+    const speakers = await Partipant.find({ eventId, speaker: true }).select(
+      "_id"
+    );
+
+    if (speakers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No speakers found for this event.",
+      });
+    }
+
+    // Fetch feedback from these speakers
+    const feedbacks = await Feedback.find({
+      eventId,
+      participantId: { $in: speakers.map((speaker) => speaker._id) },
+    })
+      .populate("participantId")
+      .populate("eventId");
+
+    res.status(200).json({
+      success: true,
+      message: feedbacks.length
+        ? "Feedback successfully retrieved"
+        : "No feedback found.",
+      data: feedbacks,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Some error occurred while retrieving feedback.",
+    });
+  }
+};
+exports.getfeedbyevent = (req, res) => {
+  const eventId = req.params.eventId;
+  Feedback.find({ eventId })
     .populate("participantId")
     .populate("eventId")
     .then((data) => {

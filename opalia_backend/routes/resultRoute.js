@@ -1,12 +1,12 @@
 const express = require("express");
 const Scoreapp = express.Router();
-const Result = require("../models/Patient/result.model");
+const Result = require("../models/Patient/participantquiz.model");
 const sendmail = require("../middleware/sendMail");
 const User = require("../models/Patient/user.model");
 const Quiz_Controller = require("../controller/quiz");
 Scoreapp.get("/", async (req, res) => {
   try {
-    const result = await Result.find();
+    const result = await Result.find().populate("userid").populate("doctorId");
     res.json(result);
   } catch (error) {
     res.json({ error });

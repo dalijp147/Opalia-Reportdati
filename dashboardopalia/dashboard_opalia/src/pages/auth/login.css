@@ -1,0 +1,96 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #f0f2f5; /* Optional: Background color */
+}
+
+.login-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 300px; /* Fixed width for the form */
+}
+
+.login-form h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #fa7979;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.login-form button:hover {
+  width: 100%;
+  padding: 10px;
+  background-color: #f60000;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.login-form button:disabled {
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+.login-form .error {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-link p {
+  margin-bottom: 10px;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #52c41a;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.signup-button:hover {
+  background-color: #ec1e0f;
+}
+
+.signup-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 25, 0, 0.2);
+}

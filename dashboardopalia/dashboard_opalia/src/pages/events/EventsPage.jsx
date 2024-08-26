@@ -126,7 +126,9 @@ const EventsPage = () => {
         message.success("Événement modifier avec succés");
       } else {
         await axios.post(`${baseUrl}/event/create`, formData);
-        message.success("Événement ajouter avec succés");
+        message.success(
+          "Événement ajouter avec succés ensuite ajouter un programme"
+        );
       }
       setIsModalVisible(false);
       fetchEvents();
@@ -159,7 +161,7 @@ const EventsPage = () => {
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Événement</Typography.Title>
       <Search
-        placeholder="Rechercher un docteur"
+        placeholder="Rechercher un Événement"
         onSearch={handleSearch}
         onChange={(e) => handleSearch(e.target.value)}
         style={{ width: 300, marginBottom: 20 }}
@@ -234,8 +236,11 @@ const EventsPage = () => {
                 <Button onClick={() => handleDeleteEvent(record._id)} danger>
                   Supprimer
                 </Button>{" "}
-                <Button onClick={() => handleViewDetails(record)}>
-                  View Details
+                <Button
+                  onClick={() => handleViewDetails(record)}
+                  type="primary"
+                >
+                  Voir Détail
                 </Button>
               </Space>
             ),

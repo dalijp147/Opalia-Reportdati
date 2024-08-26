@@ -10,6 +10,10 @@ class Medicament {
   late String? mediImage;
   late String? forme;
   late String? sousclassemedi;
+  late String? dci;
+  late String? presentationmedi;
+  late String? classeparamedicalemedi;
+
   // ignore: non_constant_identifier_names
   //late String? classeparamédicalemedi;  late String? présentationmedi;
   Medicament({
@@ -18,6 +22,10 @@ class Medicament {
     this.medidesc,
     this.mediImage,
     this.sousclassemedi,
+    this.classeparamedicalemedi,
+    this.dci,
+    this.forme,
+    this.presentationmedi,
   });
 
   factory Medicament.fromMap(Map<String, dynamic> json) {
@@ -27,6 +35,10 @@ class Medicament {
       medidesc: json['medidesc'],
       mediImage: json['mediImage'],
       sousclassemedi: json['sousclassemedi'] ?? "unkonwn",
+      classeparamedicalemedi: json['classeparamedicalemedi'] ?? "unkonwn",
+      dci: json['dci'] ?? "unkonwn",
+      forme: json['forme'] ?? "unkonwn",
+      presentationmedi: json['presentationmedi'] ?? "unkonwn",
     );
   }
   Map<String, dynamic> toMap() {

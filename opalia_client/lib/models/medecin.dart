@@ -11,6 +11,7 @@ class Medecin {
 
   late String? image;
   late String? specialite;
+  // late String? description;
   Medecin({
     this.doctorId,
     this.email,
@@ -20,6 +21,7 @@ class Medecin {
     this.numeroTel,
     this.image,
     this.specialite,
+    // this.description,
   });
 
   factory Medecin.fromMap(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Medecin {
       numeroTel: json['numeroTel'] ?? 0,
       image: json['image'],
       specialite: json['specialite'],
+      //   description: json['description'] ?? 'Pas de description',
     );
   }
   Map<String, dynamic> toMap() {
@@ -44,6 +47,7 @@ class Medecin {
       'image': image,
       'numeroTel': numeroTel,
       'specialite': specialite,
+      //  'description': description,
     };
   }
 }

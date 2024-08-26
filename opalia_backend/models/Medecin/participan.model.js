@@ -20,5 +20,9 @@ const participantScheema = moogoose.Schema({
     type: String,
     default: "unknown",
   },
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
 });
 module.exports = moogoose.model("Particant", participantScheema);

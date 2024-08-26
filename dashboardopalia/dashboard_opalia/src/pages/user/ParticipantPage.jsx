@@ -13,7 +13,7 @@ import {
   Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-
+const { Search } = Input;
 const { Option } = Select;
 
 const ParticipantsPage = () => {
@@ -26,7 +26,7 @@ const ParticipantsPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState(null);
   const [form] = Form.useForm();
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     fetchParticipants();
     fetchDoctors();
@@ -84,9 +84,39 @@ const ParticipantsPage = () => {
     try {
       await axios.delete(`http://localhost:3001/participant/delete/${id}`);
       message.success("Participant successfully deleted!");
-      fetchParticipants();
+      setParticipants((prevUsers) =>
+        prevUsers.filter((user) => user._id !== id)
+      );
     } catch (error) {
       message.error("Failed to delete participant!");
+    }
+  };
+
+  const handleApproveParticipant = async (id) => {
+    try {
+      await axios.patch(`http://localhost:3001/participant/approve/${id}`);
+      message.success("Participant successfully approved!");
+      setParticipants((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === id ? { ...user, isApproved: true } : user
+        )
+      );
+    } catch (error) {
+      message.error("Failed to approve participant!");
+    }
+  };
+
+  const handleDisapproveParticipant = async (id) => {
+    try {
+      await axios.patch(`http://localhost:3001/participant/disapprove/${id}`);
+      message.success("Participant successfully disapproved!");
+      setParticipants((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === id ? { ...user, isApproved: false } : user
+        )
+      );
+    } catch (error) {
+      message.error("Failed to disapprove participant!");
     }
   };
 
@@ -112,20 +142,32 @@ const ParticipantsPage = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-  const getEventName = (eventId) => {
-    const event = events.find((event) => event._id === eventId);
-    return event ? event.eventname : "";
+  const filteredUsers = participants.filter(
+    (user) =>
+      user.doctorId.familyname
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      user.doctorId.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Typography.Title>Participants</Typography.Title>
+      <Typography.Title>Participants et orateurs</Typography.Title>
+      <Search
+        placeholder="Rechercher un Participants"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
       <Button
         type="primary"
         danger
         icon={<PlusOutlined />}
         onClick={handleAddParticipant}
       >
-        Ajouter Participant
+        Ajouter
       </Button>
 
       <Table
@@ -137,7 +179,7 @@ const ParticipantsPage = () => {
           },
           { title: "Événement", dataIndex: ["eventId", "eventname"] },
           {
-            title: "Speaker",
+            title: "Orateur",
             dataIndex: "speaker",
             render: (text) => (text ? "Oui" : "Non"),
           },
@@ -161,11 +203,23 @@ const ParticipantsPage = () => {
                 >
                   Supprimer
                 </Button>
+                {/* <Button
+                  onClick={() => handleApproveParticipant(record._id)}
+                  type="primary"
+                >
+                  Approuver
+                </Button>
+                <Button
+                  onClick={() => handleDisapproveParticipant(record._id)}
+                  type="default"
+                >
+                  Désapprouver
+                </Button> */}
               </Space>
             ),
           },
         ]}
-        dataSource={participants}
+        dataSource={filteredUsers}
         pagination={{ pageSize: 5 }}
       ></Table>
 
@@ -203,7 +257,7 @@ const ParticipantsPage = () => {
             </Select>
           </Form.Item>
           <Form.Item name="speaker" valuePropName="checked">
-            <Checkbox>Speaker à l'évenement</Checkbox>
+            <Checkbox>Orateur à l'évenement</Checkbox>
           </Form.Item>
           <Form.Item name="participon" valuePropName="checked">
             <Checkbox>Participe à l'évenemnet</Checkbox>

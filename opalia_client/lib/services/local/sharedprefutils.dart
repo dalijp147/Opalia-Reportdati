@@ -57,6 +57,14 @@ class PreferenceUtils {
     return userId;
   }
 
+  static String getDescription() {
+    String? token = _prefsInstance!.getString('token');
+    Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
+    var userId = jsonDecoddd['description'];
+
+    return userId;
+  }
+
   static String getSpecialite() {
     String? token = _prefsInstance!.getString('token');
     Map<String, dynamic> jsonDecoddd = JwtDecoder.decode(token!);
@@ -74,7 +82,12 @@ class PreferenceUtils {
   }
 
   static Future<bool> setString(String key, String value) async {
-    var prefs = await _instance;
-    return prefs?.setString(key, value) ?? Future.value(false);
+    try {
+      var prefs = await _instance;
+      return prefs?.setString(key, value) ?? Future.value(false);
+    } catch (e) {
+      print('Error setting string in SharedPreferences: $e');
+      return false;
+    }
   }
 }

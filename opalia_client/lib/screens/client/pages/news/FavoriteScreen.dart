@@ -17,6 +17,7 @@ class FavoriteScreen extends StatefulWidget {
 class _FavoriteScreenState extends State<FavoriteScreen> {
   List<Map<String, dynamic>> _items = [];
   final boxFavorite = Hive.box('favoriteBox');
+
   void _refrechFavoriteItems() {
     setState(() {
       _items = HiveService.refrechFavoriteItem().reversed.toList();
@@ -76,29 +77,35 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.red.shade100,
                       ),
-                      width: 50,
-                      height: 100,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image.network(
-                            currentItem['newsImage'],
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
+                          Expanded(
+                            flex: 2,
+                            child: Image.network(
+                              currentItem['newsImage'],
+                              width: double.infinity,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          Text(
-                            currentItem['namenews'],
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            flex: 3,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                currentItem['namenews'],
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                           IconButton(
                             onPressed: () {
-                              deleteItemsnews(
-                                currentItem['key'],
-                              );
+                              deleteItemsnews(currentItem['key']);
                             },
                             icon: Icon(Icons.delete),
-                          )
+                          ),
                         ],
                       ),
                     ),

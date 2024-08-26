@@ -64,6 +64,7 @@ app.post("/registration", upload.single("image"), async (req, res) => {
       specialite: req.body.specialite,
       familyname: req.body.familyname,
       numeroTel: req.body.numeroTel,
+      description: req.body.description,
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
@@ -80,12 +81,56 @@ app.post("/registration", upload.single("image"), async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-app.patch("/update/:id", async (req, res) => {
+app.put("/update/:id", upload.single("image"), async (req, res) => {
+  const id = req.params.id;
+
+  // Check if the ID is provided
+  if (!id) {
+    return res.status(400).json({ message: "Medecin ID is required" });
+  }
+
+  // Check if a file is uploaded and update the image URL
+  let imageUrl = null;
+  if (req.file) {
+    const path = req.file.path.replace(/\\/g, "/");
+    imageUrl = `${req.protocol}://10.0.2.2:3001/${path}`;
+  }
+
   try {
-    const updateMedecin = await res.Medecin.save();
-    res.json(updateMedecin);
+    // Find the Medecin by ID
+    const medecin = await Medecin.findById(id);
+
+    if (!medecin) {
+      return res.status(404).json({ message: "Medecin not found" });
+    }
+
+    // Update fields
+    medecin.username = req.body.username || medecin.username;
+    medecin.familyname = req.body.familyname || medecin.familyname;
+    medecin.numeroTel = req.body.numeroTel || medecin.numeroTel;
+    medecin.description = req.body.description || medecin.description;
+    medecin.email = req.body.email || medecin.email;
+    medecin.specialite = req.body.specialite || medecin.specialite;
+    medecin.password = req.body.password || medecin.password;
+    medecin.licenseNumber = req.body.licenseNumber || medecin.licenseNumber;
+    medecin.isApproved = req.body.isApproved || medecin.isApproved;
+    medecin.isVerified = req.body.isVerified || medecin.isVerified;
+
+    // Update the image URL if a new file is uploaded
+    if (imageUrl) {
+      medecin.image = imageUrl;
+    }
+
+    // Save the updated document
+    const updatedMedecin = await medecin.save();
+
+    // Send the updated document as the response
+    res.status(200).json(updatedMedecin);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message || "Some error occurred while updating the Medecin.",
+    });
   }
 });
 app.patch("/approve/:id", async (req, res) => {
@@ -141,6 +186,7 @@ app.post("/login", async (req, res) => {
       familyname: user.familyname,
       specialite: user.specialite,
       licenseNumber: user.licenseNumber,
+      description: user.description,
     };
     const token = await USerService.generateAccessToken(
       tokenData,

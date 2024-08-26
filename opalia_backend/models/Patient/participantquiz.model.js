@@ -9,4 +9,5 @@ const resultSchema = moogoose.Schema({
   gagner: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
+
 module.exports = moogoose.model("Result", resultSchema);

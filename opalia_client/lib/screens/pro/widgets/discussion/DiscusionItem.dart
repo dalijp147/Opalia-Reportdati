@@ -4,10 +4,10 @@ import 'package:opalia_client/models/comment.dart';
 import 'package:opalia_client/models/discussion.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../../services/local/sharedprefutils.dart';
-import '../../../../../services/remote/apiServicePro.dart';
-import '../../../../../services/remote/websocketService.dart';
-import '../../../../client/widgets/Allappwidgets/constant.dart';
+import '../../../../services/local/sharedprefutils.dart';
+import '../../../../services/remote/apiServicePro.dart';
+import '../../../../services/remote/websocketService.dart';
+import '../../../client/widgets/Allappwidgets/constant.dart';
 
 class DiscussionItem extends StatefulWidget {
   final Discussion discu;
@@ -96,6 +96,7 @@ class _DiscussionItemState extends State<DiscussionItem> {
     try {
       await ApiServicePro.deleteComment(commentId);
       _fetchDiscussion();
+      print('sucess');
     } catch (e) {
       print('Failed to delete comment: $e');
     }
@@ -174,44 +175,58 @@ class _DiscussionItemState extends State<DiscussionItem> {
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(
-                          'Voulez-vous vraiment supprimer ce post ?',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        content: Text(
-                          'Si oui, appuyez sur OK',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('Annuler'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          SizedBox(width: 110),
-                          TextButton(
-                            child: Text('OK'),
-                            onPressed: () async {
-                              await _deleteDicussion(
-                                  widget.discu.discussionId!);
-                              print(widget.discu.discussionId!);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                icon: Icon(Icons.delete),
-              ),
+              widget.discu.author!.doctorId! == PreferenceUtils.getuserid()
+                  ? IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Voulez-vous vraiment supprimer ce post ?',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              content: Text(
+                                'Si oui, appuyez sur OK',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Annuler'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                SizedBox(width: 110),
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () async {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog before async operation
+                                    try {
+                                      await _deleteDicussion(
+                                          widget.discu.discussionId!);
+                                      print(widget.discu.discussionId!);
+                                    } catch (e) {
+                                      // Show error message to user
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              'Failed to delete discussion: $e'),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete),
+                    )
+                  : SizedBox.shrink()
             ],
           ),
           SizedBox(height: 10),
@@ -276,30 +291,36 @@ class _DiscussionItemState extends State<DiscussionItem> {
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
                                                 child: ListTile(
-                                                  leading: CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(
-                                                      widget
-                                                          .discu.author!.image!,
+                                                    leading: CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        com.doc!.image!,
+                                                      ),
+                                                      radius: 20,
                                                     ),
-                                                    radius: 20,
-                                                  ),
-                                                  title: Text(
-                                                    '${com.doc!.name!} ${com.doc!.familyname!}',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                  subtitle: Text(com.comment!),
-                                                  isThreeLine: true,
-                                                  trailing: IconButton(
-                                                    onPressed: () async {
-                                                      await _deleteComment(
-                                                          com.commentId!);
-                                                    },
-                                                    icon: Icon(Icons.delete),
-                                                  ),
-                                                ),
+                                                    title: Text(
+                                                      'Dr ${com.doc!.familyname!} ${com.doc!.name!}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    subtitle:
+                                                        Text(com.comment!),
+                                                    isThreeLine: true,
+                                                    trailing: com.doc!
+                                                                .doctorId! ==
+                                                            PreferenceUtils
+                                                                .getuserid()
+                                                        ? IconButton(
+                                                            onPressed:
+                                                                () async {
+                                                              await _deleteComment(
+                                                                  com.commentId!);
+                                                            },
+                                                            icon: Icon(
+                                                                Icons.delete),
+                                                          )
+                                                        : SizedBox.shrink()),
                                               );
                                             },
                                           ),

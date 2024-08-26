@@ -1,3 +1,4 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -22,39 +23,23 @@ class _BottomNavState extends State<BottomNav> {
     final controller = Get.put(NavigationController());
     return Scaffold(
       bottomNavigationBar: Obx(
-        () => Container(
+        () => CurvedNavigationBar(
+          index: controller.selectedIndex.value,
+          height: 70.0,
+          items: <Widget>[
+            Icon(Icons.medical_services_outlined, size: 40, color: Colors.red),
+            Icon(Icons.home_outlined, size: 40, color: Colors.red),
+            Icon(Icons.date_range_outlined, size: 40, color: Colors.red),
+          ],
           color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10),
-            child: GNav(
-              hoverColor: Colors.red.shade100,
-              selectedIndex: controller.selectedIndex.value,
-              onTabChange: (value) => controller.selectedIndex.value = value,
-              tabActiveBorder: Border.all(
-                color: Colors.red,
-                width: 1,
-              ), // tab button border
-              gap: 5,
-              iconSize: 30,
-              color: Colors.red,
-              activeColor: Colors.red,
-
-              tabs: const [
-                GButton(
-                  icon: Icons.home_outlined,
-                  text: 'Accueil',
-                ),
-                GButton(
-                  icon: Icons.medical_services_outlined,
-                  text: 'Santé',
-                ),
-                GButton(
-                  icon: Icons.date_range_rounded,
-                  text: 'Agenda',
-                ),
-              ],
-            ),
-          ),
+          buttonBackgroundColor: Colors.red.shade100,
+          backgroundColor: Colors.transparent,
+          animationCurve: Curves.easeInOut,
+          animationDuration: const Duration(milliseconds: 600),
+          onTap: (index) {
+            controller.selectedIndex.value = index;
+          },
+          letIndexChange: (index) => true,
         ),
       ),
       body: Obx(() => controller.screens[controller.selectedIndex.value]),
@@ -63,10 +48,10 @@ class _BottomNavState extends State<BottomNav> {
 }
 
 class NavigationController extends GetxController {
-  final Rx<int> selectedIndex = 0.obs;
+  final Rx<int> selectedIndex = 1.obs;
   final screens = [
-    HomeScreenApp(),
     HomeScreen(),
+    HomeScreenApp(),
     AgendaScreen(),
   ];
 }

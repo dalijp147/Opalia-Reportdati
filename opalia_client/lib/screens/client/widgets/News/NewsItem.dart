@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:opalia_client/models/news.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../bloc/news/bloc/news_bloc.dart';
+import '../../pages/news/DetailScreenNews.dart';
 
 class NewsItem extends StatefulWidget {
   final News model;
@@ -25,61 +27,90 @@ class _NewsItemState extends State<NewsItem> {
         width: 100,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(20),
-            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(30),
+            topRight: Radius.circular(30),
+            bottomLeft: Radius.circular(20),
+            topLeft: Radius.circular(20),
           ),
           color: Colors.white,
-          border: Border.all(
-            width: 1,
-            color: Colors.grey,
-          ),
         ),
         child: Row(
           children: [
-            Image.network(
-              widget.model.newsImage!,
-              fit: BoxFit.fill,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 200,
-                  width: 150,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
+            ClipRRect(
+              borderRadius:
+                  BorderRadius.circular(20.0), // Adjust the radius as needed
+              child: Image.network(
+                widget.model.newsImage!,
+                fit: BoxFit.fill,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    height: 200,
+                    width: 150,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
                     ),
-                  ),
-                );
-              },
-              height: 200,
-              width: 150,
+                  );
+                },
+                height: 200,
+                width: 150,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(
                 top: 30,
                 left: 10,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 150,
-                    child: Text(
-                      widget.model.newsTitle!,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 150,
+                      child: Text(
+                        widget.model.newsTitle!,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    'poster le : ${formatter.format(widget.model.newsPublication!)}',
-                  )
-                ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${formatter.format(widget.model.newsPublication!)}',
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: Size(95, 30),
+                          ),
+                          onPressed: () {
+                            Get.to(DetailNews(
+                              news: widget.model,
+                            ));
+                          },
+                          child: Text(
+                            'lire plus',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ],

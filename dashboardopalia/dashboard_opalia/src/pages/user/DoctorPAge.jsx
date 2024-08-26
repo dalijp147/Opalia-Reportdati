@@ -96,9 +96,9 @@ const DoctorPage = () => {
 
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Typography.Title>Docteur</Typography.Title>
+      <Typography.Title>Médecin</Typography.Title>
       <Search
-        placeholder="Rechercher un docteur"
+        placeholder="Rechercher un médecin"
         onSearch={handleSearch}
         onChange={(e) => handleSearch(e.target.value)}
         style={{ width: 300, marginBottom: 20 }}

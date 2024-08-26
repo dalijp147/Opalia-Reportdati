@@ -8,11 +8,11 @@ import {
 } from "@ant-design/icons";
 import { FaUserDoctor, FaUserGroup } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { IoNewspaperOutline } from "react-icons/io5";
+import { IoNewspaperOutline, IoHomeOutline } from "react-icons/io5";
 import { MdOutlineGamepad } from "react-icons/md";
 import { TfiAgenda } from "react-icons/tfi";
 import { LuLayoutDashboard } from "react-icons/lu";
-import Diamond from "../../src/assets/opalia.png";
+import Diamond from "../../src/assets/opaopa.png";
 import { useLogout } from "../hooks/useLogout";
 import { CiMedicalCase } from "react-icons/ci";
 
@@ -27,7 +27,13 @@ const SideBar = () => {
     <>
       <Flex align="center" justify="center">
         <div>
-          <img src={Diamond} style={{ width: "100px", height: "100px" }} />
+          <img
+            src={Diamond}
+            style={{
+              width: "120px",
+              height: "100px",
+            }}
+          />
         </div>
       </Flex>
       <Menu
@@ -42,18 +48,17 @@ const SideBar = () => {
         items={[
           {
             key: "/",
-            icon: <LuLayoutDashboard />,
-            label: "DashBoard",
+            icon: <IoHomeOutline />,
+            label: "Accueil",
           },
           {
             key: "/user",
             icon: <UserOutlined />,
-            label: "Patient",
-          },
-          {
-            key: "/doc",
-            icon: <FaUserDoctor />,
-            label: "Docteur",
+            label: "Utlisateur",
+            children: [
+              { key: "/user", label: "Patient" },
+              { key: "/doc", label: "Médecin" },
+            ],
           },
 
           {
@@ -87,14 +92,22 @@ const SideBar = () => {
             ],
           },
           {
-            key: "/quiz",
+            key: "/q",
             icon: <MdOutlineGamepad />,
             label: "Quiz",
+            children: [
+              { key: "/quiz", label: "Liste des question" },
+              { key: "/parti", label: "Liste des participant au quiz" },
+            ],
           },
           {
             key: "/medicament",
             icon: <CiMedicalCase />,
-            label: "Medicament",
+            label: "Produits",
+            children: [
+              { key: "/pro", label: "Liste des Medicament" },
+              { key: "/categorie", label: "Liste des Sante Familiale" },
+            ],
           },
           {
             key: "/logout",

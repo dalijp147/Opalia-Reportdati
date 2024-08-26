@@ -7,6 +7,7 @@ exports.create = (req, res) => {
     speaker: req.body.speaker,
     participon: req.body.participon,
     description: req.body.description,
+    isApproved: false, // Initially set to false
   });
   particpant
     .save()
@@ -262,6 +263,60 @@ exports.update = (req, res) => {
       res.status(500).send({
         success: false,
         message: err.message || "Some error occurred while updating the event.",
+      });
+    });
+};
+exports.approveParticipant = async (req, res) => {
+  try {
+    const participant = await Partipant.findById(req.params.id);
+    if (!participant) {
+      return res.status(404).json({ message: "Participant not found" });
+    }
+    participant.isApproved = true;
+    await participant.save();
+    // const io = getIo();
+    // io.emit("participantApproved", participant);
+    res.status(200).json({ message: "Participant approved", participant });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Disapprove Participant
+exports.disapproveParticipant = async (req, res) => {
+  try {
+    const participant = await Partipant.findById(req.params.id);
+    if (!participant) {
+      return res.status(404).json({ message: "Participant not found" });
+    }
+    participant.isApproved = false;
+    await participant.save();
+    // const io = getIo();
+    // io.emit("participantDisapproved", participant);
+    res.status(200).json({ message: "Participant disapproved", participant });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+exports.getEventsWhereParticipantIsSpeaker = (req, res) => {
+  const doctorId = req.params.doctorId;
+
+  Partipant.find({ doctorId, speaker: true }) // Find participants where the speaker is true
+    .populate("eventId")
+    .populate("doctorId") // Populate the event details
+    .then((data) => {
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          message: "No events found where the participant is a speaker.",
+        });
+      }
+
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: err.message || "Some error occurred while retrieving events.",
       });
     });
 };

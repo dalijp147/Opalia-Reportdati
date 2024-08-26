@@ -1,6 +1,6 @@
 const Quiz = require("../models/quiz.model");
 
-const Result = require("../models/Patient/result.model");
+const Result = require("../models/Patient/participantquiz.model");
 exports.create = (req, res) => {
   var quiz = new Quiz({
     questions: req.body.questions,

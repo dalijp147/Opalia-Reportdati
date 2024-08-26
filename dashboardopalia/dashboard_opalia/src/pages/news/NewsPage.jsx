@@ -246,7 +246,7 @@ const NewsPage = () => {
           </Form.Item>
           <Form.Item
             name="categorienews"
-            label="Docteur"
+            label="Nom de Catégorie"
             rules={[{ required: true, message: "Please select a doctor" }]}
           >
             <Select placeholder="Select a doctor">

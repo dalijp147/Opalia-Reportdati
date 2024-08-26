@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:opalia_client/screens/pro/pages/Events/DetailEventScreen.dart';
+import 'package:opalia_client/screens/pro/pages/Events/DetailPageEvent.dart';
 import 'package:opalia_client/screens/pro/pages/Events/feedback/FeedbackPopup.dart';
-import 'package:opalia_client/screens/pro/widgets/Reusiblewidgets/Drawerwidgets.dart';
+import 'package:opalia_client/screens/pro/widgets/Allappwidgets/Drawerwidgets.dart';
 import 'package:opalia_client/services/local/sharedprefutils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../models/events.dart';
 import '../../../../models/particpant.dart';
 import '../../../../services/remote/apiServicePro.dart';
-import '../../widgets/Reusiblewidgets/AppBarWidgetPro.dart';
+import '../../widgets/Allappwidgets/AppBarWidgetPro.dart';
+import 'FilterbyDateScreen.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -25,7 +28,8 @@ class _EventsScreenState extends State<EventsScreen> {
   List<Events>? allEvents = [];
   late Future<List<Events>> futureEvents;
   var formatter = DateFormat('yyyy-MM-dd');
-
+  final TextEditingController _controller = TextEditingController();
+  DateTime? selectedDate;
   Future<void> _fetchEvents() async {
     try {
       final events = await ApiServicePro.getAllEvents();
@@ -35,6 +39,31 @@ class _EventsScreenState extends State<EventsScreen> {
     } catch (e) {
       print('Failed to fetch events: $e');
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      _filterEventsByDate();
+    }
+  }
+
+  void _filterEventsByDate() {
+    setState(() {
+      allEvents = allEvents!.where((event) {
+        return event.dateEvent!.year == selectedDate!.year &&
+            event.dateEvent!.month == selectedDate!.month &&
+            event.dateEvent!.day == selectedDate!.day;
+      }).toList();
+    });
   }
 
   Future<void> _deletePastEventsOnStart() async {
@@ -52,54 +81,168 @@ class _EventsScreenState extends State<EventsScreen> {
     super.initState();
   }
 
+  void _showNearestEvents() {
+    setState(() {
+      allEvents!.sort((a, b) {
+        return a.dateEvent!
+            .difference(DateTime.now())
+            .inDays
+            .compareTo(b.dateEvent!.difference(DateTime.now()).inDays);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(),
       drawer: DrawerWidgetPro(),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.event_note,
-                  color: Colors.red,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  'Evenement',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                    fontSize: 25,
-                  ),
-                ),
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Grouhome.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust the image to cover the entire screen
           ),
-          Expanded(
-            child: allEvents == null || allEvents!.isEmpty
-                ? Center(
-                    child: Text('evenement en atente'),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _fetchEvents,
-                    child: ListView.builder(
-                      itemCount: allEvents!.length,
-                      itemBuilder: (context, index) {
-                        final event = allEvents![index];
-                        return EventCard(
-                          event: event,
-                          formatter: formatter,
-                          onRefresh: _refreshEvents,
-                        );
-                      },
+        ),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.event_note,
+                    color: Colors.red,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Événement',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      fontSize: 25,
                     ),
                   ),
-          ),
-        ],
+                ],
+              ),
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TypeAheadField(
+                        textFieldConfiguration: TextFieldConfiguration(
+                          autofocus: false,
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hoverColor: Colors.red,
+                            constraints: BoxConstraints(maxWidth: 300),
+                            labelText: 'Recherche',
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                        ),
+                        suggestionsCallback: (pattern) {
+                          return allEvents!
+                              .where((user) => user.eventname!
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(suggestion.eventname!),
+                            leading: Image.network(
+                              (suggestion.eventimage == null ||
+                                      suggestion.eventimage!.isEmpty)
+                                  ? "https://fastly.picsum.photos/id/9/250/250.jpg?hmac=tqDH5wEWHDN76mBIWEPzg1in6egMl49qZeguSaH9_VI"
+                                  : suggestion.eventimage!,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                // You can add logging here to see what the error is
+                                print('Error loading image: $error');
+                                return Image.network(
+                                  "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        onSuggestionSelected: (suggestion) {
+                          // Handle when a suggestion is selected.
+                          _controller.text = suggestion.eventname!;
+                          Get.to(
+                            Get.to(DetailEventScreen(event: suggestion)),
+                          );
+                          print(suggestion.eventname!);
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.filter_list, color: Colors.red),
+                      onPressed: () {
+                        // _showNearestEvents();
+                        Get.to(FilterEventScreen());
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: allEvents == null || allEvents!.isEmpty
+                  ? Center(
+                      child: Text('événement en atente..'),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _fetchEvents,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                                'assets/images/Grouhome.png'), // Replace with your image path
+                            fit: BoxFit
+                                .cover, // Adjust the image to cover the entire screen
+                          ),
+                        ),
+                        child: ListView.builder(
+                          itemCount: allEvents!.length,
+                          itemBuilder: (context, index) {
+                            final event = allEvents![index];
+                            return EventCard(
+                              event: event,
+                              formatter: formatter,
+                              onRefresh: _refreshEvents,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -242,82 +385,105 @@ class _EventCardState extends State<EventCard> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 390,
+        height: (showFeedbackButton && !hasFeedback) ? 450 : 400,
         padding: EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(width: 2, color: Colors.red),
           color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5), // Shadow color with opacity
+              spreadRadius: 3, // How far the shadow extends
+              blurRadius: 1, // Softness of the shadow
+              offset: Offset(0, 3), // Offset for x and y axes
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Image.network(
-              widget.event.eventimage == null ||
-                      widget.event.eventimage!.isEmpty
-                  ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
-                  : widget.event.eventimage!,
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 100,
-                  width: double.infinity,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
+            Stack(
+              children: [
+                // Image widget
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(
+                      widget.event.eventimage == null ||
+                              widget.event.eventimage!.isEmpty
+                          ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                          : widget.event.eventimage!,
+                      height: (showFeedbackButton && !hasFeedback) ? 150 : 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 150,
+                          width: double.infinity,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        print('Error loading image: $error');
+                        return Image.network(
+                          "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                          height: 150,
+                          width: 100,
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                print('Error loading image: $error');
-                return Image.network(
-                  "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
-                  height: 100,
-                  width: 100,
-                );
-              },
+                ),
+                // Date text widget
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    height: 50,
+                    width: 60,
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    color: Color.fromARGB(255, 255, 246, 246).withOpacity(0.5),
+                    child: Text(
+                      '${widget.formatter.format(widget.event.dateEvent!)}',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 10),
-            Text(
-              widget.event.eventname!,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'nombre maximal de participant : ${widget.event.nombreparticipant}',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Text(
+                  widget.event.eventname!.capitalizeFirst!,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              ),
             ),
             SizedBox(height: 10),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.location_on, color: Colors.red),
-                    SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () {
-                        _openMap(
-                            context, widget.event.eventLocation ?? 'unknown');
-                      },
-                      child: Text(
-                        widget.event.eventLocation!,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 20),
-                Row(
-                  children: [
                     Icon(Icons.person, color: Colors.red),
+                    SizedBox(width: 5),
+                    Text("Nombre de participant inscrit"),
                     SizedBox(width: 5),
                     Text(
                       isLoading
@@ -327,36 +493,43 @@ class _EventCardState extends State<EventCard> {
                     ),
                   ],
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.date_range, color: Colors.red),
-                    SizedBox(width: 5),
-                    Text(
-                      '${widget.formatter.format(widget.event.dateEvent!)}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(width: 5),
-                  ],
-                ),
                 ElevatedButton(
                   onPressed: isEventFull && !isParticipant
                       ? null
                       : () {
-                          Get.to(DetailEventScreen(event: widget.event));
+                          // Get.to(DetailEventScreen(event: widget.event));
+                          Get.to(DetailPageEvent(
+                            event: widget.event,
+                          ));
                         },
-                  // onPressed: () {
-                  //   Get.to(DetailEventScreen(event: widget.event));
-                  // },
                   child: Text('Découvrir'),
                 )
               ],
             ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.location_on, color: Colors.grey),
+                    SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        _openMap(
+                            context, widget.event.eventLocation ?? 'unknown');
+                      },
+                      child: Text(
+                        widget.event.eventLocation!,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 20),
+              ],
+            ),
+            SizedBox(height: 10),
             isFeedbackLoading
                 ? CircularProgressIndicator()
                 : hasFeedback
@@ -364,10 +537,11 @@ class _EventCardState extends State<EventCard> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ))
-                    : Text('vous recevrez un  formulaire prochainement',
+                    : Text('vous recevrez un formulaire prochainement',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         )),
+            SizedBox(height: 10),
             if (showFeedbackButton && !hasFeedback)
               ElevatedButton(
                 onPressed: () {

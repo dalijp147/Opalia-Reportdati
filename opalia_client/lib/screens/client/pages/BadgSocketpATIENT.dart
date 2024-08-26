@@ -122,7 +122,9 @@ class _BadgesSocketPatientState extends State<BadgesSocketPatient> {
           _notificationCount.toString(),
           style: TextStyle(color: Colors.white),
         ),
-        child: Icon(Icons.notifications),
+        child: Icon(
+          Icons.notifications_active_outlined,
+        ),
         showBadge: _notificationCount > 0,
       ),
       onPressed: _notificationCount > 0
@@ -165,32 +167,45 @@ class AnswerListScreen extends StatelessWidget {
         title: Text('Notification'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: answers.length,
-        itemBuilder: (context, index) {
-          final answer = answers[index];
-          return ListTile(
-            title: Text(
-              "Reponse: ${answer['answer'] ?? 'N/A'}",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              "Par: ${answer['doctorId' 'username'] ?? 'N/A'}",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ViewAnswersScreen(
-                    questionId: answer['questionId'],
+      body: answers == null || answers!.isEmpty
+          ? Center(
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/notif.png', scale: 0.5),
+                Text(
+                  'Aucune notification',
+                  style: TextStyle(fontSize: 25),
+                )
+              ],
+            ))
+          : ListView.builder(
+              itemCount: answers.length,
+              itemBuilder: (context, index) {
+                final answer = answers[index];
+                return ListTile(
+                  title: Text(
+                    "Reponse: ${answer['answer'] ?? 'N/A'}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+                  subtitle: Text(
+                    "Par: ${answer['doctorId' 'username'] ?? 'N/A'}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewAnswersScreen(
+                          questionId: answer['questionId'],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

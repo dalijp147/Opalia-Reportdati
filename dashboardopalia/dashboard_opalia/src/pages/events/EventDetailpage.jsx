@@ -10,14 +10,45 @@ import {
   Row,
   Col,
   message,
+  TimePicker,
+  Input,
   List,
   Table,
   Badge,
+  Modal,
+  Form,
+  Select,
+  Checkbox,
 } from "antd";
 import moment from "moment";
+import { PlusOutlined } from "@ant-design/icons";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+const fetchSpeakersByEvent = async (eventId) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3001/participant/speaker/true/${eventId}`
+    );
+    setSpeakers(response.data);
+  } catch (error) {
+    console.error("Failed to fetch speakers:", error);
+  }
+};
 const EventDetailsPage = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleee, setIsModalVisibleee] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  const [events, setEvents] = useState([]);
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
@@ -25,11 +56,33 @@ const EventDetailsPage = () => {
   const [error, setError] = useState(null);
   const baseUrl = "http://localhost:3001";
   const [participants, setParticipants] = useState([]);
-
+  const [programmes, setProgrames] = useState([]);
+  const [form] = Form.useForm();
+  const [speakers, setSpeakers] = useState([]);
   useEffect(() => {
     fetchEventDetails();
+    fetchProgramme();
     fetchParticipants();
-  }, []);
+    fetchDoctors();
+    fetchEvents();
+    fetchSpeakersByEvent(eventId); // Ensure this is used after declaration
+  }, [eventId]);
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/medecin/");
+      setDoctors(response.data);
+    } catch (error) {
+      setError(error);
+    }
+  };
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/event/");
+      setEvents(response.data.data);
+    } catch (error) {
+      setError(error);
+    }
+  };
   const fetchParticipants = async () => {
     setLoading(true);
     try {
@@ -37,6 +90,20 @@ const EventDetailsPage = () => {
         `${baseUrl}/participant/participon/${eventId}`
       );
       setParticipants(response.data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProgramme = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/programme/byevent/${eventId}`
+      );
+      setProgrames(response.data);
     } catch (error) {
       setError(error);
     } finally {
@@ -63,10 +130,12 @@ const EventDetailsPage = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
   const isEventFull = () => {
     if (!event || !participants) return false;
     return participants.length >= event.nombreparticipant;
   };
+
   const getPathFromUrl = (url) => {
     try {
       const urlObject = new URL(url);
@@ -80,6 +149,97 @@ const EventDetailsPage = () => {
   const handleBack = () => {
     navigate.goBack();
   };
+
+  const handleEventChange = (eventId) => {
+    fetchSpeakersByEvent(eventId); // Ensure this is used after declaration
+  };
+
+  const handleAddParticipant = () => {
+    form.resetFields();
+    setIsUpdate(false);
+    setIsModalVisible(true);
+  };
+  const handleFormSubmitt = async (values) => {
+    const data = {
+      ...values,
+      prog: values.prog.map((item) => ({
+        ...item,
+        time: item.time.toISOString(),
+      })),
+      event: event._id,
+    };
+
+    try {
+      if (isUpdate && currentProgramme) {
+        await axios.put(
+          `http://localhost:3001/programme/update/${currentProgramme._id}`,
+          data
+        );
+        message.success("Programme successfully updated!");
+      } else {
+        await axios.post("http://localhost:3001/programme/create", data);
+        message.success("Programme successfully created!");
+      }
+      setIsModalVisible(false);
+      fetchProgramme();
+    } catch (error) {
+      message.error("Failed to save programme!");
+    }
+  };
+  const handleAddProgramme = () => {
+    form.resetFields();
+    setIsUpdate(false);
+    setIsModalVisibleee(true);
+  };
+  const handleDeleteProgramme = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/programme/delete/${id}`);
+      message.success("Programme successfully deleted!");
+      fetchProgrammes();
+    } catch (error) {
+      message.error("Failed to delete programme!");
+    }
+  };
+  const handleDeleteParticipant = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/participant/delete/${id}`);
+      message.success("Participant successfully deleted!");
+      setParticipants((prevUsers) =>
+        prevUsers.filter((user) => user._id !== id)
+      );
+    } catch (error) {
+      message.error("Failed to delete participant!");
+    }
+  };
+  const handleFormSubmit = async (values) => {
+    try {
+      const participantData = {
+        ...values,
+        eventId, // Automatically set the event ID from the current event
+      };
+      if (isUpdate && currentParticipant) {
+        await axios.put(
+          `http://localhost:3001/participant/update/${currentParticipant._id}`,
+          participantData
+        );
+        message.success("Participant successfully updated!");
+      } else {
+        await axios.post(
+          "http://localhost:3001/participant/create",
+          participantData
+        );
+        message.success("Participant successfully created!");
+      }
+      setIsModalVisible(false);
+      fetchParticipants();
+    } catch (error) {
+      message.error("Failed to save participant!");
+    }
+  };
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
   const columns = [
     {
       title: "Prénom",
@@ -112,19 +272,79 @@ const EventDetailsPage = () => {
       key: "role",
       render: (text, record) => (record.speaker ? "Speaker" : "Participant"),
     },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Button onClick={() => handleDeleteParticipant(record._id)} danger>
+            Supprimer
+          </Button>
+          {/* <Button
+            onClick={() => handleApproveParticipant(record._id)}
+            type="primary"
+          >
+            Approuver
+          </Button>
+          <Button
+            onClick={() => handleDisapproveParticipant(record._id)}
+            type="default"
+          >
+            Désapprouver
+          </Button> */}
+        </Space>
+      ),
+    },
+  ];
+
+  const columnsprog = [
+    {
+      title: "Événement",
+      dataIndex: ["event", "eventname"], // Ensure this matches your event's schema
+      key: "event",
+    },
+    {
+      title: "Détail du Programme",
+      key: "prog",
+      render: (text, record) =>
+        record.prog.map((prog) => (
+          <div key={prog._id}>
+            <p>Heure: {moment(prog.time).format("HH:mm")}</p>
+            <p>Titre: {prog.title}</p>
+            {/* <p>Speakers: {renderSpeakers(prog.speaker)}</p> */}
+          </div>
+        )),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Button onClick={() => handleDeleteProgramme(record._id)} danger>
+            Supprimer
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  // Prepare data for the chart
+  const chartData = [
+    {
+      name: event.eventname,
+      Participants: participants.length,
+      "Max Participants": event.nombreparticipant,
+    },
   ];
 
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
-      <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-        Retour
-      </Button>{" "}
       <Badge
         count={isEventFull() ? "Événement Plein" : "Disponible"}
         style={{
           backgroundColor: isEventFull() ? "#f5222d" : "#52c41a",
           color: "#fff",
-          width: 150,
+          width: 200,
           height: 50,
           lineHeight: "50px",
           textAlign: "center",
@@ -172,16 +392,210 @@ const EventDetailsPage = () => {
             <Typography.Paragraph>
               {event.eventdescription}
             </Typography.Paragraph>
-          </Col>{" "}
+          </Col>
           <Col span={24}>
-            <Typography.Title level={4}>Participants</Typography.Title>
+            <Row justify="space-between" align="middle">
+              <Col>
+                <Typography.Title level={4}>Participants</Typography.Title>
+              </Col>
+              <Col>
+                <Button
+                  onClick={handleAddParticipant}
+                  type="primary"
+                  danger
+                  disabled={isEventFull()}
+                >
+                  Ajouter Particpant
+                </Button>
+              </Col>
+            </Row>
 
             <Table
               bordered
               dataSource={participants}
               columns={columns}
-              rowKey="id" // Replace with a unique identifier for each participant
+              rowKey="id"
+              locale={{
+                emptyText: "Aucun Participant",
+              }}
             />
+            <Modal
+              title={isUpdate ? "Modifier Participant" : "Ajouter Participant"}
+              visible={isModalVisible}
+              onCancel={() => setIsModalVisible(false)}
+              footer={null}
+            >
+              <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
+                <Form.Item
+                  name="doctorId"
+                  label="Docteur"
+                  rules={[
+                    { required: true, message: "Please select a doctor" },
+                  ]}
+                >
+                  <Select placeholder="Select a doctor">
+                    {doctors.map((doctor) => (
+                      <Option key={doctor._id} value={doctor._id}>
+                        {doctor.username} {/* Ensure your schema matches */}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item name="speaker" valuePropName="checked">
+                  <Checkbox>Speaker à l'évenement</Checkbox>
+                </Form.Item>
+                <Form.Item name="participon" valuePropName="checked">
+                  <Checkbox>Participe à l'évenemnet</Checkbox>
+                </Form.Item>
+                <Form.Item
+                  name="description"
+                  label="Déscription"
+                  rules={[
+                    { required: true, message: "Please enter description" },
+                  ]}
+                >
+                  <Input.TextArea />
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" danger>
+                    {isUpdate ? "Modifier" : "Ajouter"}
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+          </Col>
+          <Col span={24}>
+            <Row justify="space-between" align="middle">
+              <Col>
+                <Typography.Title level={4}>Programme</Typography.Title>
+              </Col>
+              <Col>
+                <Button
+                  // onClick={() => handleViewProgramme()}
+                  type="primary"
+                  danger
+                  onClick={handleAddProgramme}
+                >
+                  Ajouter Programme
+                </Button>
+              </Col>
+            </Row>
+
+            <Table
+              bordered
+              dataSource={programmes}
+              columns={columnsprog}
+              rowKey="id"
+              locale={{
+                emptyText:
+                  "Aucun programme disponible, veuillez ajouter programme",
+              }}
+            />
+            <Modal
+              title={isUpdate ? "Modifier Programme" : "Ajouter Programme"}
+              visible={isModalVisibleee}
+              onCancel={() => setIsModalVisibleee(false)}
+              footer={null}
+            >
+              <Form form={form} layout="vertical" onFinish={handleFormSubmitt}>
+                <Form.List name="prog">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map((field) => (
+                        <Space
+                          key={field.key}
+                          style={{ display: "flex", marginBottom: 8 }}
+                          align="baseline"
+                        >
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "time"]}
+                            fieldKey={[field.fieldKey, "time"]}
+                            rules={[
+                              { required: true, message: "Please select time" },
+                            ]}
+                          >
+                            <TimePicker format="HH:mm" />
+                          </Form.Item>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "title"]}
+                            fieldKey={[field.fieldKey, "title"]}
+                            rules={[
+                              { required: true, message: "Please enter title" },
+                            ]}
+                          >
+                            <Input placeholder="Title" />
+                          </Form.Item>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "speaker"]}
+                            fieldKey={[field.fieldKey, "speaker"]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please select speakers",
+                              },
+                            ]}
+                            style={{ width: 150 }}
+                          >
+                            <Select mode="multiple">
+                              {speakers.map((speaker) => (
+                                <Option key={speaker._id} value={speaker._id}>
+                                  {speaker.doctorId.username}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                          <Button
+                            type="danger"
+                            onClick={() => remove(field.name)}
+                            style={{ width: 60 }}
+                          >
+                            supprimer
+                          </Button>
+                        </Space>
+                      ))}
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        icon={<PlusOutlined />}
+                      >
+                        Ajouter un Programme
+                      </Button>
+                    </>
+                  )}
+                </Form.List>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" danger>
+                    {isUpdate ? "Modifier" : "Ajouter"}
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+          </Col>
+          <Col span={24}>
+            <Typography.Title level={4}>
+              Participants vs Max Participants
+            </Typography.Title>
+            <ResponsiveContainer width="100%" height={450}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis
+                  allowDecimals={false} // This ensures the Y-axis shows only integer values
+                  tickFormatter={(value) =>
+                    Number.isInteger(value) ? value : ""
+                  } // Further ensures no floating numbers
+                />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Participants" fill="#82ca9d" />
+                <Bar dataKey="Max Participants" fill="red" />
+              </BarChart>
+            </ResponsiveContainer>
           </Col>
         </Row>
       </Card>

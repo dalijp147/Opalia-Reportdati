@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:opalia_client/models/categoriePro.dart';
@@ -9,10 +10,12 @@ import 'package:opalia_client/models/mediacment.dart';
 import '../../config/config.dart';
 import '../../models/AnswerToQuestion.dart';
 import '../../models/answer.dart';
+import '../../models/cadeauPro.dart';
 import '../../models/categorieNews.dart';
 import '../../models/discussion.dart';
 import '../../models/events.dart';
 import '../../models/farma.dart';
+import '../../models/feedback.dart';
 import '../../models/particpant.dart';
 import '../../models/posequestion.dart';
 import '../../models/programme.dart';
@@ -286,6 +289,22 @@ class ApiServicePro {
     } else {
       print('Error: HTTP ${response.statusCode}');
       return false;
+    }
+  }
+
+  static Future<List<Particpant>> fetchparticipantbyeventSPEAKERS(docId) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(
+        Config.apiUrl, Config.ParticpantApi + '/' + docId + '/speaker');
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      print('sucess load fetchParticipantbyevent');
+      return ParticpantFromJson(data);
+    } else {
+      throw Exception('Failed to load fetchParticipantbyevent');
     }
   }
 
@@ -577,6 +596,22 @@ class ApiServicePro {
     }
   }
 
+  // ignore: non_constant_identifier_names
+  static Future<List<Feeddback>?> getFeeds(EventId) async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.FeedbackApi + '/' + EventId);
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print(data);
+      print('Success load Feeddback');
+      return FeedbackFromJson(data);
+    } else {
+      throw Exception('Failed to load Feeddback');
+    }
+  }
+
   ///CategorieNews
 
   static Future<List<CategorieNews>?> getAllCategoryNews() async {
@@ -785,6 +820,94 @@ class ApiServicePro {
       print('eroor failed deleting AnswerToQuestionApi');
 
       return false;
+    }
+  }
+
+  //medecin
+  static Future<bool> updateMedecin(
+    String id, {
+    required String username,
+    required String familyname,
+    int? numeroTel,
+    String? description,
+    required String email,
+    String? specialite,
+    String? password,
+    String? licenseNumber,
+    bool? isApproved,
+    bool? isVerified,
+    String? imagePath, // Optional image path
+  }) async {
+    var url = Uri.http(Config.apiUrl, Config.medecinApi + '/update/' + id);
+
+    // Create a map of the updated data
+    Map<String, dynamic> updateData = {
+      "username": username,
+      "familyname": familyname,
+      "numeroTel": numeroTel,
+      "description": description,
+      "email": email,
+      "specialite": specialite,
+      "password": password,
+      "licenseNumber": licenseNumber,
+      "isApproved": isApproved,
+      "isVerified": isVerified,
+    };
+
+    // Add image path if provided
+    if (imagePath != null) {
+      updateData["image"] = imagePath;
+    }
+
+    // Make the PUT request
+    var response = await http.put(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(updateData),
+    );
+
+    if (response.statusCode == 200) {
+      // Handle successful response
+      print("Medecin updated successfully: ${response.body}");
+      return true; // Return true indicating success
+    } else {
+      // Handle error response
+      print("Failed to update Medecin: ${response.body}");
+      return false; // Return false indicating failure
+    }
+  }
+
+  //cadeau
+  static Future<List<CadeauPro>?> getAllCadeauPro() async {
+    Map<String, String> requestHandler = {'Content-Type': 'application/json'};
+    var url = Uri.http(Config.apiUrl, Config.CAdeauProApi + '/');
+    print(url);
+    var response = await client.get(url, headers: requestHandler);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      print('Success load CAdeauProApi');
+      return CadeauProromJson(data);
+    } else {
+      throw Exception('Failed to load CAdeauProApi');
+    }
+  }
+
+  static Future<String> getMedilinkAssistantResponse(String userInput) async {
+    final url = Uri.parse('http://127.0.0.1:5000/chat');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'message': userInput}),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      return jsonResponse['response'];
+    } else {
+      throw Exception('Failed to connect to the Medilink Assistant');
     }
   }
 }

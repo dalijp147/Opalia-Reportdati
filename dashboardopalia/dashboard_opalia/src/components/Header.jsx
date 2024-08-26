@@ -14,11 +14,22 @@ const CustomHeader = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user } = useAuthContext();
   const { logout } = useLogout();
-
+  const [eventNames, setEventNames] = useState({});
   const handleClick = () => {
     logout();
   };
-
+  const fetchEventName = async (eventId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/event/${eventId}`);
+      const data = await response.json();
+      setEventNames((prevEventNames) => ({
+        ...prevEventNames,
+        [eventId]: data.eventname,
+      }));
+    } catch (error) {
+      console.error("Error fetching event details:", error);
+    }
+  };
   useEffect(() => {
     // Listen for new doctor notifications from the server
     socket.on("new doctor", (notification) => {
@@ -31,19 +42,24 @@ const CustomHeader = () => {
     });
 
     // Listen for new participant notifications from the server
-    socket.on("newParticipant", (notification) => {
-      console.log("New participant notification received:", notification);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        { ...notification, type: "participant" },
-      ]);
-      setNotificationsOpen(true);
-    });
+    // socket.on("newParticipant", (notification) => {
+    //   console.log("New participant notification received:", notification);
+    //   const eventId = notification.eventId;
 
+    //   if (!eventNames[eventId]) {
+    //     fetchEventName(eventId); // Fetch event name if not already cached
+    //   }
+
+    //   setNotifications((prevNotifications) => [
+    //     ...prevNotifications,
+    //     { ...notification, type: "participant" },
+    //   ]);
+    //   setNotificationsOpen(true);
+    // });
     // Cleanup on component unmount
     return () => {
       socket.off("new doctor");
-      socket.off("newParticipant");
+      // socket.off("newParticipant");
     };
   }, []);
 
@@ -51,14 +67,6 @@ const CustomHeader = () => {
     <div className="AppHeader">
       <Typography.Title></Typography.Title>
       <Space>
-        <Badge count={comments.length} dot>
-          <MailOutlined
-            style={{ fontSize: 24 }}
-            onClick={() => {
-              setCommentsOpen(true);
-            }}
-          />
-        </Badge>
         <Badge count={notifications.length}>
           <BellFilled
             style={{ fontSize: 24 }}
@@ -94,12 +102,12 @@ const CustomHeader = () => {
                 {item.type === "doctor" ? (
                   <>
                     Nouveau docteur ajouté en attente d'approbation:{" "}
-                    {item.username}
+                    {item.username} {item.familyname}
                   </>
                 ) : (
                   <>
-                    Nouveau participant: {item.doctorId.username} à l'évenement{" "}
-                    {item.event.eventname}
+                    Nouveau participant ajouté en attente d'approbation à
+                    l'évenement {eventNames[item.eventId] || "inconnu"}{" "}
                   </>
                 )}
               </Typography.Text>

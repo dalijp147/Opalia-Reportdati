@@ -80,14 +80,12 @@ class _DetailTabState extends State<DetailTab> {
           ),
           SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                widget.event.eventname!,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
+            padding: const EdgeInsets.all(9.0),
+            child: Text(
+              widget.event.eventname!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
               ),
             ),
           ),
@@ -96,35 +94,42 @@ class _DetailTabState extends State<DetailTab> {
             onTap: () {
               _openMap(context, widget.event.eventLocation ?? 'unknown');
             },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Icon(Icons.location_on, color: Colors.red),
+                  SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      widget.event.eventLocation!,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Icon(Icons.location_on, color: Colors.red),
+                Icon(Icons.date_range, color: Colors.red),
                 SizedBox(width: 5),
-                Expanded(
-                  child: Text(
-                    widget.event.eventLocation!,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                Text(
+                  '${formatter.format(widget.event.dateEvent!)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
           SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(Icons.date_range, color: Colors.red),
-              SizedBox(width: 5),
-              Text(
-                '${formatter.format(widget.event.dateEvent!)}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Description :",
+              "À propos de l'événement ",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
@@ -143,6 +148,10 @@ class _DetailTabState extends State<DetailTab> {
               ? Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 197, 193),
+                        fixedSize: Size(250, 60)),
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -180,7 +189,7 @@ class _DetailTabState extends State<DetailTab> {
                     },
                     child: Text(
                       'Déjà inscrit',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 23),
                     ),
                   ),
                 )
@@ -197,11 +206,11 @@ class _DetailTabState extends State<DetailTab> {
                         verif = true;
                       });
                     },
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red, fixedSize: Size(250, 60)),
                     child: Text(
                       'Inscription',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 23),
                     ),
                   ),
                 ),
