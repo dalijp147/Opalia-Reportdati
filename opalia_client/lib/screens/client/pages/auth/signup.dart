@@ -159,12 +159,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   _image == null
-                      ? Text('No image selected.')
+                      ? Text("Pas d'image ")
                       : Image.file(_image!, height: 100),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    child: Text('Pick Image from Gallery'),
+                    child: Text('Choisie une photo'),
                   ),
                   const SizedBox(
                     height: 10,
@@ -195,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       fillColor: Colors.white,
                       // ignore: dead_code
 
-                      hintText: "email",
+                      hintText: "Nom",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -234,7 +234,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       fillColor: Colors.white,
                       // ignore: dead_code
 
-                      hintText: "email",
+                      hintText: "Prenom",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -275,7 +275,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       fillColor: Colors.white,
                       // ignore: dead_code
 
-                      hintText: "email",
+                      hintText: "Email",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -336,48 +336,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Checkbox(
-                            value: false,
-                            onChanged: (value) {
-                              value = true;
-                            }),
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "je suis d'accord avec ",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                            ),
-                            TextSpan(
-                              text: "politique de confidentialité",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 11),
-                            ),
-                            TextSpan(
-                              text: "et",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                            ),
-                            TextSpan(
-                              text: "termes et conditions",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
                   ),
                   const SizedBox(
                     height: 20,

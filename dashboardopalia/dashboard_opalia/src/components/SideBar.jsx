@@ -66,14 +66,14 @@ const SideBar = () => {
             icon: <ContactsOutlined />,
             label: "Événement",
             children: [
-              { key: "/events", label: "Liste des Événement" },
-              { key: "/feedback", label: "Les retours sur l'évenement" },
+              { key: "/events", label: "Liste des événements" },
+              { key: "/feedback", label: "Les retours sur les évenements" },
             ],
           },
           {
             key: "/Participant",
             icon: <FaUserGroup />,
-            label: "Participant",
+            label: "Participant et orateur",
           },
           {
             key: "/Programme",
@@ -87,7 +87,7 @@ const SideBar = () => {
             label: "Actualité",
 
             children: [
-              { key: "/news", label: "Liste des Actualités" },
+              { key: "/news", label: "Liste des actualités" },
               { key: "/categorie", label: "Liste des categories d'actualités" },
             ],
           },
@@ -96,8 +96,8 @@ const SideBar = () => {
             icon: <MdOutlineGamepad />,
             label: "Quiz",
             children: [
-              { key: "/quiz", label: "Liste des question" },
-              { key: "/parti", label: "Liste des participant au quiz" },
+              { key: "/quiz", label: "Liste des questions" },
+              { key: "/parti", label: "Liste des participants au quiz" },
             ],
           },
           {
@@ -105,8 +105,8 @@ const SideBar = () => {
             icon: <CiMedicalCase />,
             label: "Produits",
             children: [
-              { key: "/pro", label: "Liste des Medicament" },
-              { key: "/categorie", label: "Liste des Sante Familiale" },
+              { key: "/pro", label: "Liste des médicaments" },
+              { key: "/santesByCategory", label: "Liste de sante-familiale" },
             ],
           },
           {

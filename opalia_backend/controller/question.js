@@ -21,10 +21,13 @@ exports.postQuestion = async (req, res) => {
 
 exports.getQuestions = async (req, res) => {
   try {
-    const questions = await Question.find().populate("patientId");
-    res.json(questions);
+    const questions = await Question.find().populate("patientId"); // Récupère les questions avec les détails des patients
+    // Supprime les questions avec patientId null après avoir récupéré les questions
+
+    res.json(questions); // Renvoie les questions en réponse
+    cleanUpParticipants();
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Erreur du serveur" });
   }
 };
 exports.delete = (req, res) => {
@@ -52,5 +55,16 @@ exports.delete = (req, res) => {
         success: false,
         message: "Could not delete Question with id " + req.params.id,
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Question.deleteMany({
+    $or: [{ patientId: null }],
+  })
+    .then(() => {
+      console.log("Deleted Answer with null ");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting Answer:", err);
     });
 };

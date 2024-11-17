@@ -96,7 +96,7 @@ class _DicusssionDocProState extends State<DicusssionDocPro> {
                       ),
                     ),
                     title: Text(
-                      '${question.patientId!.name}',
+                      '${question.patientId?.name}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(question.question!, maxLines: 2),
@@ -155,9 +155,9 @@ class _NumberasnwserState extends State<Numberasnwser> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data == 0) {
-          return Text('No answers yet');
+          return Text('Pas de réponse');
         } else {
-          return Text('${snapshot.data!.length} answers');
+          return Text('${snapshot.data!.length} réponses');
         }
       },
     );

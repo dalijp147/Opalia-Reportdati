@@ -49,39 +49,44 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           Row(
             children: [
-              Image.network(
-                PreferenceUtils.getUserImage() == null ||
-                        PreferenceUtils.getUserImage().isEmpty
-                    ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
-                    : PreferenceUtils.getUserImage(),
-                width: 70,
-                height: 70,
-                fit: BoxFit.scaleDown,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 100,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (BuildContext context, Object error,
-                    StackTrace? stackTrace) {
-                  print('Error loading image: $error');
-                  return Image.network(
-                    "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
-                    width: 70,
-                    height: 70,
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipOval(
+                  child: Image.network(
+                    PreferenceUtils.getUserImage() == null ||
+                            PreferenceUtils.getUserImage().isEmpty
+                        ? "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg"
+                        : PreferenceUtils.getUserImage(),
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        height: 100,
+                        width: double.infinity,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      print('Error loading image: $error');
+                      return Image.network(
+                        "https://static.vecteezy.com/system/resources/previews/005/337/799/non_2x/icon-image-not-found-free-vector.jpg",
+                        width: 70,
+                        height: 70,
+                      );
+                    },
+                  ),
+                ),
               ),
               // Image.asset(
               //   "assets/images/daly.png",

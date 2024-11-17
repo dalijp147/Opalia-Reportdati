@@ -55,14 +55,6 @@ const ParticipantQuizPage = () => {
     setSearchQuery(query);
   };
 
-  const filteredParticipants = participants.filter(
-    (user) =>
-      user.doctorId.username
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      user.cadeau.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -70,32 +62,49 @@ const ParticipantQuizPage = () => {
   return (
     <Space size={20} direction="vertical" style={{ width: "100%" }}>
       <Typography.Title>Participant au Quiz</Typography.Title>
-      <Search
-        placeholder="Rechercher un participant"
-        onSearch={handleSearch}
-        onChange={(e) => handleSearch(e.target.value)}
-        style={{ width: 300, marginBottom: 20 }}
-      />
+
       <Table
         loading={loading}
         columns={[
           {
             title: "Image",
-            dataIndex: ["doctorId", "image"],
-            render: (image) => {
-              const imagePath = getPathFromUrl(image);
-              const fullImageUrl = `${baseUrl}${imagePath}`;
+            dataIndex: ["doctorId", "userid"], // Using render to handle both doctorId and userid
+            render: (text, record) => {
+              // Fallback URL for cases when no image is available
+              const defaultImageUrl = `${baseUrl}/path-to-default-avatar.png`;
+
+              // Get image from doctorId if it exists, otherwise from userid
+              const image = record.doctorId?.image || record.userid?.image;
+
+              // Check if the image exists and generate the full image URL
+              const imagePath = image ? getPathFromUrl(image) : null;
+              const fullImageUrl = imagePath
+                ? `${baseUrl}${imagePath}`
+                : defaultImageUrl;
+
+              // Return an Avatar component with the constructed URL
               return <Avatar src={fullImageUrl} />;
             },
           },
           {
             title: "Nom du participant",
-            dataIndex: ["doctorId", "userid"], // this won't work as intended, so we use render
+            dataIndex: ["doctorId", "userid"], // this still won't work as intended, so we use render
             render: (text, record) => {
-              // Check if `doctorId` or `userid` exists and display the corresponding `username`
-              const username =
-                record.doctorId?.username + " " + record.doctorId?.familyname ||
-                record.userid?.username + " " + record.userid?.familyname;
+              let username = "Unknown";
+
+              if (record.doctorId) {
+                // If doctorId exists, use its username and familyname
+                username = `${record.doctorId.username || ""} ${
+                  record.doctorId.familyname || ""
+                }`.trim();
+              } else if (record.userid) {
+                // If userid exists and doctorId is not available, use its username and familyname
+                username = `${record.userid.username || ""} ${
+                  record.userid.familyname || ""
+                }`.trim();
+              }
+
+              // If both username and familyname are empty, return "Unknown"
               return username || "Unknown";
             },
           },
@@ -118,7 +127,7 @@ const ParticipantQuizPage = () => {
             ),
           },
         ]}
-        dataSource={filteredParticipants}
+        dataSource={participants}
         rowKey="_id"
         pagination={{
           pageSize: 5,

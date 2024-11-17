@@ -58,51 +58,9 @@ class _ResultScreenProState extends State<ResultScreenPro> {
           SizedBox(
             height: 50,
           ),
-
           SizedBox(
             height: 100,
           ),
-          // Stack(
-          //   alignment: Alignment.center,
-          //   children: [
-          //     SizedBox(
-          //       height: 300,
-          //       width: 300,
-          //       child: CircularProgressIndicator(
-          //         strokeWidth: 3.0,
-          //         value: widget.score / 3.0,
-          //         color: Colors.green,
-          //         backgroundColor: Colors.white,
-          //       ),
-          //     ),
-          //     widget.score == 5
-          //         ? Column(
-          //             children: [
-          //               Text(
-          //                 widget.score.toString(),
-          //                 style: const TextStyle(fontSize: 80),
-          //               ),
-          //               Text(
-          //                 "tu as gagné",
-          //                 style: const TextStyle(fontSize: 20),
-          //               ),
-          //             ],
-          //           )
-          //         : Column(
-          //             children: [
-          //               Text(
-          //                 widget.score.toString(),
-          //                 style: const TextStyle(fontSize: 80),
-          //               ),
-          //               Text(
-          //                 'desole tu na pas ganer',
-          //                 style: const TextStyle(fontSize: 20),
-          //               ),
-          //             ],
-          //           )
-          //   ],
-          // ),
-
           widget.score == 5
               ? Column(
                   children: [

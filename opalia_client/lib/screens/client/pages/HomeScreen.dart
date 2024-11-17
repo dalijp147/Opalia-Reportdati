@@ -93,124 +93,95 @@ class _HomeScreenAppState extends State<HomeScreenApp> {
           ),
           child: ListView(
             children: [
-              const SizedBox(
-                height: 10,
+              SizedBox(
+                height: 20,
               ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      Iconsax.game,
-                      color: Colors.red,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'Quiz',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                        fontSize: 25,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 40,
-                    ),
-                  ],
-                ),
+              Center(
+                  child: Text(
+                "Quiz du jour ",
+                style: TextStyle(fontSize: 26),
+              )),
+              SizedBox(
+                height: 15,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              Align(
+                alignment: Alignment
+                    .centerRight, // Aligns the container to the left side
                 child: Container(
-                  width: 250,
-                  height: 250,
+                  height: 130,
+                  width: 350, // Set the desired width of the container
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                      20,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey
+                            .withOpacity(0.6), // Shadow color with opacity
+                        spreadRadius: 3, // How far the shadow extends
+                        blurRadius: 2.0, // Softness of the shadow
+                        offset: Offset(1, 5), // Offset for x and y axes
+                      ),
+                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50.0),
+                      topLeft: Radius.circular(50.0),
                     ),
-                    color: Colors.white70,
                   ),
-                  child: Center(
-                    child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       children: [
-                        Lottie.asset(
-                          'assets/animation/trophy.json',
-                          width: 120,
-                          height: 120,
-                          filterQuality: FilterQuality.high,
+                        SizedBox(width: 35),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .center, // Aligns content to the center
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Text(
+                              "Jouez et gagnez",
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: verif
+                                  ? null
+                                  : () async {
+                                      await Get.to(ListQuizScreen());
+                                      verify();
+                                    },
+                              child: Text(
+                                verif
+                                    ? 'Revenez dans \n une semaine'
+                                    : 'Jouez au quiz',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
-                          height: 10,
-                        ),
-                        verif
-                            ? Text(
-                                'Pardon',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 20),
-                              )
-                            : Text(
-                                'Participer au quiz',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 20),
-                              ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        verif
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Tu a deja partcipé au quiz , passer nous voire une prochaine fois.',
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            : ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    fixedSize: Size(250, 20)),
-                                onPressed: () {
-                                  verify();
-                                  Get.to(ListQuizScreen());
-                                },
-                                child: Text('Jouez',
-                                    style: TextStyle(fontSize: 25)),
-                              ),
+                            width: 60), // Adds space between text and image
+                        Image.asset(
+                            "assets/images/image.png"), // Image moved to the right
                       ],
                     ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Iconsax.activity,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      'Actualité',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                          fontSize: 25),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                  ],
-                ),
+          
+              SizedBox(
+                height: 20,
               ),
-              const SizedBox(
-                height: 10,
+              Center(
+                  child: Text(
+                "Actualités ",
+                style: TextStyle(fontSize: 26),
+              )),
+              SizedBox(
+                height: 15,
               ),
               SizedBox(
                 height: 100,

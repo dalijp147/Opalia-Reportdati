@@ -11,7 +11,7 @@ exports.postAnswer = async (req, res) => {
       doctorId,
       questionId,
     });
-
+    cleanUpParticipants();
     await newAnswer.save();
     const io = getIo();
     io.emit("new_answer", newAnswer);
@@ -25,6 +25,7 @@ exports.getAnswers = async (req, res) => {
   try {
     const { questionId } = req.params;
     const answers = await Answer.find({ questionId }).populate("doctorId");
+    cleanUpParticipants();
     res.json(answers);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -73,5 +74,16 @@ exports.delete = (req, res) => {
         success: false,
         message: "Could not delete Answer with id " + req.params.id,
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Answer.deleteMany({
+    $or: [{ questionId: null }, { doctorId: null }],
+  })
+    .then(() => {
+      console.log("Deleted Answer with null ");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting Answer:", err);
     });
 };

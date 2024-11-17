@@ -34,11 +34,11 @@ class Medicament {
       mediname: json['mediname'],
       medidesc: json['medidesc'],
       mediImage: json['mediImage'],
-      sousclassemedi: json['sousclassemedi'] ?? "unkonwn",
-      classeparamedicalemedi: json['classeparamedicalemedi'] ?? "unkonwn",
-      dci: json['dci'] ?? "unkonwn",
-      forme: json['forme'] ?? "unkonwn",
-      presentationmedi: json['presentationmedi'] ?? "unkonwn",
+      sousclassemedi: json['sousclassemedi'] ?? "pas spécifier",
+      classeparamedicalemedi: json['classeparamedicalemedi'] ?? "pas spécifier",
+      dci: json['dci'] ?? "pas spécifier",
+      forme: json['forme'] ?? "pas spécifier",
+      presentationmedi: json['presentationmedi'] ?? "pas spécifier",
     );
   }
   Map<String, dynamic> toMap() {

@@ -33,20 +33,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-const fetchSpeakersByEvent = async (eventId) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:3001/participant/speaker/true/${eventId}`
-    );
-    setSpeakers(response.data);
-  } catch (error) {
-    console.error("Failed to fetch speakers:", error);
-  }
-};
+
 const EventDetailsPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleee, setIsModalVisibleee] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [isUpdateProg, setIsUpdateProg] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [events, setEvents] = useState([]);
   const { eventId } = useParams();
@@ -57,6 +49,7 @@ const EventDetailsPage = () => {
   const baseUrl = "http://localhost:3001";
   const [participants, setParticipants] = useState([]);
   const [programmes, setProgrames] = useState([]);
+  const [currentProgramme, setCurrentProgramme] = useState(null);
   const [form] = Form.useForm();
   const [speakers, setSpeakers] = useState([]);
   useEffect(() => {
@@ -67,6 +60,16 @@ const EventDetailsPage = () => {
     fetchEvents();
     fetchSpeakersByEvent(eventId); // Ensure this is used after declaration
   }, [eventId]);
+  const fetchSpeakersByEvent = async (eventId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/participant/speaker/true/${eventId}`
+      );
+      setSpeakers(response.data);
+    } catch (error) {
+      console.error("Failed to fetch speakers:", error);
+    }
+  };
   const fetchDoctors = async () => {
     try {
       const response = await axios.get("http://localhost:3001/medecin/");
@@ -159,14 +162,60 @@ const EventDetailsPage = () => {
     setIsUpdate(false);
     setIsModalVisible(true);
   };
+
+  const handleAddProgramme = () => {
+    form.resetFields();
+    setIsUpdate(false);
+    setCurrentProgramme(null); // Reset current programme for a new entry
+    setIsModalVisibleee(true);
+  };
+  const handleDeleteProgramme = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/programme/delete/${id}`);
+      message.success("Programme successfully deleted!");
+      fetchProgrammes();
+    } catch (error) {
+      message.error("Failed to delete programme!");
+    }
+  };
+  const handleEditProgramme = (record) => {
+    setIsUpdate(true);
+    setCurrentProgramme(record);
+
+    // Map the speakers to their IDs and convert time to moment object
+    const mappedProg = record.prog.map((item) => ({
+      ...item,
+      time: moment(item.time), // Ensure time is converted to moment object
+      speaker: item.speaker.map((sp) => sp._id), // Map speakers to their _id
+    }));
+
+    form.setFieldsValue({
+      ...record,
+      prog: mappedProg,
+    });
+
+    fetchSpeakersByEvent(record.event._id); // Fetch speakers for the selected event
+    setIsModalVisibleee(true);
+  };
+  const handleDeleteParticipant = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/participant/delete/${id}`);
+      message.success("Participant successfully deleted!");
+      setParticipants((prevUsers) =>
+        prevUsers.filter((user) => user._id !== id)
+      );
+    } catch (error) {
+      message.error("Failed to delete participant!");
+    }
+  };
   const handleFormSubmitt = async (values) => {
     const data = {
       ...values,
       prog: values.prog.map((item) => ({
         ...item,
-        time: item.time.toISOString(),
+        time: item.time.toISOString(), // Convert time back to ISO string for the database
       })),
-      event: event._id,
+      event: eventId,
     };
 
     try {
@@ -180,35 +229,10 @@ const EventDetailsPage = () => {
         await axios.post("http://localhost:3001/programme/create", data);
         message.success("Programme successfully created!");
       }
-      setIsModalVisible(false);
-      fetchProgramme();
+      setIsModalVisibleee(false);
+      fetchProgramme(); // Refresh the list of programs after adding/updating
     } catch (error) {
       message.error("Failed to save programme!");
-    }
-  };
-  const handleAddProgramme = () => {
-    form.resetFields();
-    setIsUpdate(false);
-    setIsModalVisibleee(true);
-  };
-  const handleDeleteProgramme = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/programme/delete/${id}`);
-      message.success("Programme successfully deleted!");
-      fetchProgrammes();
-    } catch (error) {
-      message.error("Failed to delete programme!");
-    }
-  };
-  const handleDeleteParticipant = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/participant/delete/${id}`);
-      message.success("Participant successfully deleted!");
-      setParticipants((prevUsers) =>
-        prevUsers.filter((user) => user._id !== id)
-      );
-    } catch (error) {
-      message.error("Failed to delete participant!");
     }
   };
   const handleFormSubmit = async (values) => {
@@ -236,7 +260,15 @@ const EventDetailsPage = () => {
       message.error("Failed to save participant!");
     }
   };
+  const renderSpeakers = (speakers) => {
+    if (!Array.isArray(speakers) || speakers.length === 0) {
+      return "No speakers";
+    }
 
+    return speakers
+      .map((speaker) => speaker.doctorId?.username || "Unknown") // Safely access the username
+      .join(", ");
+  };
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -311,7 +343,7 @@ const EventDetailsPage = () => {
           <div key={prog._id}>
             <p>Heure: {moment(prog.time).format("HH:mm")}</p>
             <p>Titre: {prog.title}</p>
-            {/* <p>Speakers: {renderSpeakers(prog.speaker)}</p> */}
+            <p>Speakers: {renderSpeakers(prog.speaker)}</p>
           </div>
         )),
     },
@@ -323,6 +355,7 @@ const EventDetailsPage = () => {
           <Button onClick={() => handleDeleteProgramme(record._id)} danger>
             Supprimer
           </Button>
+          <Button onClick={() => handleEditProgramme(record)}>Modifier</Button>
         </Space>
       ),
     },
@@ -396,7 +429,9 @@ const EventDetailsPage = () => {
           <Col span={24}>
             <Row justify="space-between" align="middle">
               <Col>
-                <Typography.Title level={4}>Participants</Typography.Title>
+                <Typography.Title level={4}>
+                  Participants et orateurs
+                </Typography.Title>
               </Col>
               <Col>
                 <Button
@@ -405,7 +440,7 @@ const EventDetailsPage = () => {
                   danger
                   disabled={isEventFull()}
                 >
-                  Ajouter Particpant
+                  Ajouter Orateur
                 </Button>
               </Col>
             </Row>
@@ -445,9 +480,7 @@ const EventDetailsPage = () => {
                 <Form.Item name="speaker" valuePropName="checked">
                   <Checkbox>Speaker à l'évenement</Checkbox>
                 </Form.Item>
-                <Form.Item name="participon" valuePropName="checked">
-                  <Checkbox>Participe à l'évenemnet</Checkbox>
-                </Form.Item>
+
                 <Form.Item
                   name="description"
                   label="Déscription"
@@ -493,7 +526,7 @@ const EventDetailsPage = () => {
               }}
             />
             <Modal
-              title={isUpdate ? "Modifier Programme" : "Ajouter Programme"}
+              title={isUpdateProg ? "Modifier Programme" : "Ajouter Programme"}
               visible={isModalVisibleee}
               onCancel={() => setIsModalVisibleee(false)}
               footer={null}
@@ -570,7 +603,7 @@ const EventDetailsPage = () => {
                 </Form.List>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" danger>
-                    {isUpdate ? "Modifier" : "Ajouter"}
+                    {isUpdateProg ? "Modifier" : "Ajouter"}
                   </Button>
                 </Form.Item>
               </Form>

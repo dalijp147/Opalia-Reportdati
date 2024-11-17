@@ -88,7 +88,7 @@ exports.getwinner = (req, res) => {
       var message = "";
       if (data === undefined || data.length == 0) message = "No winner found!";
       else message = "winner successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -96,5 +96,16 @@ exports.getwinner = (req, res) => {
         success: false,
         message: err.message || "Some error occurred while retrieving winnner.",
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Result.deleteMany({
+    $or: [{ userid: null }, { doctorId: null }],
+  })
+    .then(() => {
+      console.log("Deleted Result with null doctorId or userid");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting participants:", err);
     });
 };

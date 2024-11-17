@@ -34,7 +34,7 @@ exports.get = (req, res) => {
       if (data === undefined || data.length == 0)
         message = "No Partipant found!";
       else message = "Partipant successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -318,5 +318,16 @@ exports.getEventsWhereParticipantIsSpeaker = (req, res) => {
         success: false,
         message: err.message || "Some error occurred while retrieving events.",
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Partipant.deleteMany({
+    $or: [{ eventId: null }, { doctorId: null }],
+  })
+    .then(() => {
+      console.log("Deleted participants with null eventId or doctorId");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting participants:", err);
     });
 };

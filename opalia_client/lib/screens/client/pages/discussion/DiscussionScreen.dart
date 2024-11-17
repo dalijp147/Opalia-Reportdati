@@ -107,7 +107,7 @@ class _DicusssionDocState extends State<DicusssionDoc> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No questions found'));
+                    return Center(child: Text('Pas de question'));
                   } else {
                     return ListView.builder(
                       itemCount: snapshot.data!.length,
@@ -149,7 +149,7 @@ class _DicusssionDocState extends State<DicusssionDoc> {
                             ),
                             title: Text(question.question!),
                             subtitle: Text(
-                              'Asked by Patient: ${question.patientId?.name ?? 'Unknown'}',
+                              'Demander par: ${question.patientId?.name ?? 'Unknown'}',
                             ),
                             trailing: Numberasnwserss(questionId: question.id!),
                             onTap: () {
@@ -181,7 +181,7 @@ class _DicusssionDocState extends State<DicusssionDoc> {
                   SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _submitQuestion,
-                    child: Text('Submit'),
+                    child: Text('Poster'),
                   ),
                 ],
               ),
@@ -227,9 +227,9 @@ class _NumberasnwserssState extends State<Numberasnwserss> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('No answers yet');
+          return Text('Pas de réponse');
         } else {
-          return Text('${snapshot.data!.length} answers');
+          return Text('${snapshot.data!.length} réponse');
         }
       },
     );

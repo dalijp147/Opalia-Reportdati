@@ -147,9 +147,7 @@ class _ProgramTabState extends State<ProgramTab> {
                                                         'Error: ${snapshot.error}'));
                                               } else if (!snapshot.hasData ||
                                                   snapshot.data!.isEmpty) {
-                                                return Center(
-                                                    child: Text(
-                                                        'No participants found'));
+                                                return Center(child: Text(''));
                                               } else {
                                                 return Expanded(
                                                   child: Container(

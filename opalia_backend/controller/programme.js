@@ -38,7 +38,7 @@ exports.get = (req, res) => {
       if (data === undefined || data.length == 0)
         message = "No Programme found!";
       else message = "Programme successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -52,13 +52,19 @@ exports.get = (req, res) => {
 exports.getweb = (req, res) => {
   Programme.find()
     .populate("event")
-    .populate("prog.speaker")
+    .populate({
+      path: "prog.speaker",
+      populate: {
+        path: "doctorId", // Assuming doctorId is referencing another collection
+        select: "username", // Fetch only the username field
+      },
+    })
     .then((data) => {
       var message = "";
       if (data === undefined || data.length == 0)
         message = "No Programme found!";
       else message = "Programme successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -133,7 +139,7 @@ exports.sortbydate = (req, res) => {
           return timeA instanceof Date ? -1 : 1;
         });
       });
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -148,13 +154,19 @@ exports.getprogrammebyevent = (req, res) => {
   const event = req.params.event;
 
   Programme.find({ event })
-    .populate("prog.speaker")
+    .populate({
+      path: "prog.speaker",
+      populate: {
+        path: "doctorId", // Assuming doctorId is referencing another collection
+        select: "username", // Fetch only the username field
+      },
+    })
     .populate("event")
     .then((data) => {
       var message = "";
       if (data === undefined || data.length == 0) message = "No event found!";
       else message = "event successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -204,5 +216,16 @@ exports.updateProgramme = (req, res) => {
         message:
           err.message || "Some error occurred while updating the programme.",
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Programme.deleteMany({
+    $or: [{ event: null }, { prog: null }],
+  })
+    .then(() => {
+      console.log("Deleted Programme with null event");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting Programmes:", err);
     });
 };

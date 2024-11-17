@@ -236,27 +236,6 @@ class _DetailProductState extends State<DetailProduct> {
                         ),
                       ],
                     )),
-                    Container(
-                        child: Column(
-                      children: [
-                        Icon(Icons.medication_liquid_sharp,
-                            color: Colors.red, size: 30),
-                        Text(
-                          'Dosage',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 254, 17, 0),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'unkown',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    )),
                   ],
                 ),
                 SizedBox(
@@ -266,47 +245,51 @@ class _DetailProductState extends State<DetailProduct> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
+                        width: 100,
+                        height: 100,
                         child: Column(
-                      children: [
-                        Icon(Icons.medical_services_outlined,
-                            color: Colors.red, size: 30),
-                        Text(
-                          'Forme',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 254, 17, 0),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          widget.forme,
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    )),
+                          children: [
+                            Icon(Icons.medical_services_outlined,
+                                color: Colors.red, size: 30),
+                            Text(
+                              'Forme',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 254, 17, 0),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              widget.forme,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )),
                     Container(
+                        width: 100,
+                        height: 100,
                         child: Column(
-                      children: [
-                        Icon(Icons.health_and_safety_outlined,
-                            color: Colors.red, size: 30),
-                        Text(
-                          'Classe thérapeutique',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 254, 17, 0),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          widget.classeparamedicalemedi,
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    )),
+                          children: [
+                            Icon(Icons.health_and_safety_outlined,
+                                color: Colors.red, size: 30),
+                            Text(
+                              'Classe thérapeutique',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 254, 17, 0),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              widget.classeparamedicalemedi,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )),
                     Container(
                         width: 100,
                         height: 100,

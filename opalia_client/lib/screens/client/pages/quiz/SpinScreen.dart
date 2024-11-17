@@ -24,9 +24,9 @@ class SpinWheel extends StatefulWidget {
 class _SpinWheelState extends State<SpinWheel> {
   StreamController<int> controller = StreamController<int>();
   List<String> items = [
-    'Won',
-    'Lost',
-    'Won',
+    'Perdu',
+    'Perdu',
+    'Tu as gagnée un produit HOSPER',
   ];
 
   @override
@@ -44,7 +44,7 @@ class _SpinWheelState extends State<SpinWheel> {
 
     Future.delayed(Duration(seconds: 4), () {
       String selectedItem = items[selected];
-      if (selectedItem == 'Won') {
+      if (selectedItem == 'Tu as gagnée un produit HOSPER') {
         showDialog(
           context: context,
           builder: (BuildContext context) {

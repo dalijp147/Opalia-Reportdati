@@ -42,7 +42,7 @@ class _SigninScreenState extends State<SigninScreen> {
   late FocusNode passwordFocus;
   bool _obscured = true;
   late FocusNode emailFocus;
-
+  String errorMessage = '';
   @override
   void initState() {
     passwordFocus = FocusNode();
@@ -90,58 +90,93 @@ class _SigninScreenState extends State<SigninScreen> {
           token: mytoken,
         ));
       } else {
-        print('something went wrong in login');
-        Get.snackbar(
-          "Login Failed",
-          "Incorrect email or password. Please try again.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        setState(() {
+          errorMessage =
+              jsonResponse['message'] ?? 'Something went wrong in login';
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Erreur'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
       }
+    } else {
+      setState(() {
+        errorMessage = 'Please fill in all fields';
+      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erreur'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
-//  void forgotPassword() async {
-//     if (ForgotemailController.text.isNotEmpty) {
-//       var rgBody = {
-//         "email": ForgotemailController.text,
-//       };
-//       var url = Uri.http(Config.apiUrl, Config.medecinApi + "/forgot-password");
-//       var response = await http.post(url, body: rgBody);
-//       var jsonResponse = jsonDecode(response.body);
-//       if (response.statusCode == 200) {
-//         setState(() {
-//           errorMessage = 'Password reset link sent to your email';
-//         });
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(
-//             content: Text(errorMessage),
-//             backgroundColor: Colors.green,
-//           ),
-//         );
-//       } else {
-//         setState(() {
-//           errorMessage = jsonResponse['message'] ?? 'Something went wrong';
-//         });
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(
-//             content: Text(errorMessage),
-//             backgroundColor: Colors.red,
-//           ),
-//         );
-//       }
-//     } else {
-//       setState(() {
-//         errorMessage = 'Please enter your email';
-//       });
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text(errorMessage),
-//           backgroundColor: Colors.red,
-//         ),
-//       );
-//     }
-//   }
+
+  void forgotPassword() async {
+    if (ForgotemailController.text.isNotEmpty) {
+      var rgBody = {
+        "email": ForgotemailController.text,
+      };
+      var url = Uri.http(Config.apiUrl, Config.userApi + "/forgot-password");
+      var response = await http.post(url, body: rgBody);
+      var jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          errorMessage = 'Password reset link sent to your email';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        setState(() {
+          errorMessage = jsonResponse['message'] ?? 'Something went wrong';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      setState(() {
+        errorMessage = 'Please enter your email';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -327,7 +362,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               TextButton(
                                 child: Text('Send'),
                                 onPressed: () {
-                                  //forgotPassword();
+                                  forgotPassword();
                                   Navigator.of(context).pop();
                                 },
                               ),
@@ -354,9 +389,6 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 15),
-                Text('ou se connectez avec:'),
-                SizedBox(height: 15),
               ],
             ),
           ),

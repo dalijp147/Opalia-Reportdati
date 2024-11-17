@@ -53,24 +53,25 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 241, 159, 159),
-            ),
-            accountName: Text(
-              PreferenceUtils.getuserName().capitalizeFirst!,
+            accountEmail: Text(
+              PreferenceUtils.getuserName().capitalizeFirst! +
+                  ' ' +
+                  PreferenceUtils.getuserFamilyname().capitalizeFirst!,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
-            accountEmail: Text(
-              PreferenceUtils.getuserFamilyname().capitalizeFirst!,
-              style: TextStyle(fontSize: 20),
-            ),
+            accountName: Text(""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(
                   PreferenceUtils.getUserImage(),
+                  height: 100,
+                  width: 100,
                   fit: BoxFit.cover,
                 ),
               ),
+            ),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 241, 159, 159),
             ),
           ), //UserAccountDrawerHeader
 
@@ -105,9 +106,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             height: 10,
           ),
           ListTile(
-            leading: const Icon(Icons.book),
+            leading: const Icon(Icons.favorite),
             title: const Text(
-              'Actualités favorites',
+              'Vos Actualités favorites',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
               ),

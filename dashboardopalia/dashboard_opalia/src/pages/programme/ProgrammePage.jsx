@@ -59,7 +59,9 @@ const ProgrammesPage = () => {
   const fetchProgrammes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/programme/");
+      const response = await axios.get(
+        "http://localhost:3001/programme/getweb"
+      );
       setProgrammes(response.data);
       setLoading(false);
     } catch (error) {
@@ -81,14 +83,21 @@ const ProgrammesPage = () => {
   const handleEditProgramme = (record) => {
     setIsUpdate(true);
     setCurrentProgramme(record);
+
+    // Map the speakers to just their IDs
+    const mappedProg = record.prog.map((item) => ({
+      ...item,
+      time: moment(item.time),
+      speaker: item.speaker.map((sp) => sp._id), // Map speakers to an array of their _id
+    }));
+
+    // Set the form values, including the speakers as their IDs
     form.setFieldsValue({
       ...record,
       event: record.event._id,
-      prog: record.prog.map((item) => ({
-        ...item,
-        time: moment(item.time),
-      })),
+      prog: mappedProg,
     });
+
     fetchSpeakersByEvent(record.event._id); // Fetch speakers for the selected event
     setIsModalVisible(true);
   };
@@ -146,30 +155,13 @@ const ProgrammesPage = () => {
       return null;
     }
   };
-
-  const renderSpeakers = (speakerIds) => {
-    const [speakerDetails, setSpeakerDetails] = useState({});
-
-    useEffect(() => {
-      const fetchAllSpeakers = async () => {
-        const details = {};
-        for (const id of speakerIds) {
-          const participant = await fetchParticipantById(id);
-          details[id] = participant ? participant.username : "Unknown";
-        }
-        setSpeakerDetails(details);
-      };
-      fetchAllSpeakers();
-    }, [speakerIds]);
-    if (!Array.isArray(speakerIds)) {
+  const renderSpeakers = (speakers) => {
+    if (!Array.isArray(speakers) || speakers.length === 0) {
       return "No speakers";
     }
 
-    return speakerIds
-      .map((id) => {
-        const participant = speakerDetails[id];
-        return participant ? participant.username : "Loading...";
-      })
+    return speakers
+      .map((speaker) => speaker.doctorId?.username || "Unknown") // Safely access the username
       .join(", ");
   };
 
@@ -200,9 +192,9 @@ const ProgrammesPage = () => {
             render: (text, record) =>
               record.prog.map((prog) => (
                 <div key={prog._id}>
-                  <p>heur: {moment(prog.time).format("HH:mm")}</p>
-                  <p>titre: {prog.title}</p>
-                  {/* //  <p>Speakers: {renderSpeakers(prog.speaker)}</p> */}
+                  <p>Heur: {moment(prog.time).format("HH:mm")}</p>
+                  <p>Titre: {prog.title}</p>
+                  <p>Orateur: {renderSpeakers(prog.speaker)}</p>{" "}
                 </div>
               )),
           },
@@ -238,7 +230,7 @@ const ProgrammesPage = () => {
           <Form.Item
             name="event"
             label="Événement"
-            rules={[{ required: true, message: "Please select an event" }]}
+            rules={[{ required: true, message: "Choisire événement" }]}
           >
             <Select onChange={handleEventChange}>
               {events.map((event) => (

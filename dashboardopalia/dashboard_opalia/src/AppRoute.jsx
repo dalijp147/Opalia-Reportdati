@@ -55,7 +55,7 @@ const AppRoute = () => {
         element={user ? <MedicamentsByCategory /> : <Navigate to="/login" />}
       ></Route>{" "}
       <Route
-        path="/categorie"
+        path="/santesByCategory"
         element={user ? <SantesByCategory /> : <Navigate to="/login" />}
       ></Route>
       <Route

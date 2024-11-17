@@ -270,11 +270,12 @@ class _EventCardState extends State<EventCard> {
     try {
       final userId = await PreferenceUtils.getuserid();
       print('User ID: $userId'); // Debug print
-      final participantStatus =
-          await ApiServicePro.isParticipant(userId, widget.event.EventId!);
+      final participantStatus = await ApiServicePro.isParticipant(
+          PreferenceUtils.getuserid(), widget.event.EventId!);
       print('Participant Status: $participantStatus'); // Debug print
       setState(() {
         isParticipant = participantStatus;
+
         isLoading = false;
       });
     } catch (e) {
@@ -331,8 +332,8 @@ class _EventCardState extends State<EventCard> {
   Future<void> _checkFeedback() async {
     final userId = PreferenceUtils.getuserid();
     if (userId != null) {
-      final x =
-          await ApiServicePro.doesFeedbackExist(userId, widget.event.EventId!);
+      final x = await ApiServicePro.isParticipant(
+          PreferenceUtils.getuserid(), widget.event.EventId!);
       setState(() {
         hasFeedback = x;
         isFeedbackLoading = false;
@@ -385,7 +386,7 @@ class _EventCardState extends State<EventCard> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: (showFeedbackButton && !hasFeedback) ? 450 : 400,
+        height: (showFeedbackButton && !hasFeedback) ? 400 : 400,
         padding: EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -482,7 +483,7 @@ class _EventCardState extends State<EventCard> {
                 Row(
                   children: [
                     Icon(Icons.person, color: Colors.red),
-                    SizedBox(width: 5),
+                    SizedBox(width: 3),
                     Text("Nombre de participant inscrit"),
                     SizedBox(width: 5),
                     Text(
@@ -493,8 +494,8 @@ class _EventCardState extends State<EventCard> {
                     ),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: isEventFull && !isParticipant
+                GestureDetector(
+                  onTap: isEventFull && !isParticipant
                       ? null
                       : () {
                           // Get.to(DetailEventScreen(event: widget.event));
@@ -502,8 +503,14 @@ class _EventCardState extends State<EventCard> {
                             event: widget.event,
                           ));
                         },
-                  child: Text('Découvrir'),
-                )
+                  child: Text(
+                    'Découvrir',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color:
+                            isEventFull && !isParticipant ? null : Colors.red),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 10),
@@ -533,16 +540,16 @@ class _EventCardState extends State<EventCard> {
             isFeedbackLoading
                 ? CircularProgressIndicator()
                 : hasFeedback
-                    ? Text('Tu a deja donner un feedback',
+                    ? Text('donner votre feedback',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ))
-                    : Text('vous recevrez un formulaire prochainement',
+                    : Text('',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         )),
             SizedBox(height: 10),
-            if (showFeedbackButton && !hasFeedback)
+            if (showFeedbackButton && hasFeedback)
               ElevatedButton(
                 onPressed: () {
                   showFeedbackPopup(

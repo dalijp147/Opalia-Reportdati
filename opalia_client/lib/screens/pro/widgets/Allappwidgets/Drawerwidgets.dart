@@ -40,17 +40,22 @@ class DrawerWidgetPro extends StatelessWidget {
               color: Color.fromARGB(255, 241, 159, 159),
             ),
             accountName: Text(
-              PreferenceUtils.getuserName().capitalizeFirst!,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              " ",
             ),
             accountEmail: Text(
-              PreferenceUtils.getuserFamilyname().capitalizeFirst!,
-              style: TextStyle(fontSize: 20),
+              'Dr' +
+                  ' ' +
+                  PreferenceUtils.getuserName().capitalizeFirst! +
+                  ' ' +
+                  PreferenceUtils.getuserFamilyname().capitalizeFirst!,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(
                   PreferenceUtils.getUserImage(),
+                  height: 100,
+                  width: 100,
                   fit: BoxFit.cover,
                 ),
               ),

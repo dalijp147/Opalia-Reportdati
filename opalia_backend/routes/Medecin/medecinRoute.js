@@ -7,7 +7,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const socketIo = require("socket.io");
 const { getIo } = require("../../middleware/Socket");
-
+const sendmail = require("../../middleware/sendMail");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -76,6 +76,10 @@ app.post("/registration", upload.single("image"), async (req, res) => {
     const newmedecin = await medecin.save();
     const io = getIo();
     io.emit("new doctor", newmedecin);
+    const subject = "Votre inscription a été reçue";
+    const text = `Bonjour Dr. ${newmedecin.familyname},\n\nVotre inscription a bien été reçue. Veuillez attendre que votre compte soit approuvé par nos administrateurs. Nous vous informerons dès que cela sera fait.\n\nMerci pour votre patience.\n\nCordialement,\nL'équipe médicale`;
+
+    await sendmail(newmedecin.email, subject, text);
     res.status(200).json(newmedecin);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -137,10 +141,14 @@ app.patch("/approve/:id", async (req, res) => {
   try {
     const medecin = await Medecin.findById(req.params.id);
     if (!medecin) {
-      return res.status(404).json({ message: "Medecin not found" });
+      return res.status(404).json({ message: "Medecin pas trouvé" });
     }
     medecin.isApproved = true;
     await medecin.save();
+    const subject = "Votre inscription a été approuvé";
+    const text = `Bonjour Dr. ${medecin.familyname},\n\nVotre inscription a bien été approuvé. \n\nMerci pour votre patience.\n\nCordialement,\nL'équipe médicale`;
+
+    await sendmail(medecin.email, subject, text);
     res.status(200).json({ message: "Médecin approuvé" });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -168,10 +176,10 @@ app.post("/login", async (req, res) => {
     }
     const user = await USerService.checkuserMedecin(email);
     if (!user) {
-      throw new Error("Medecin dont exist");
+      throw new Error("Medecin introuvable , veuillez créer un compte");
     }
     if (!user.isApproved) {
-      throw new Error("Medecin is not approved");
+      throw new Error("Medecin pas approuver");
     }
     const isMatch = await user.comparePassword(password);
     if (isMatch === false) {
@@ -193,6 +201,7 @@ app.post("/login", async (req, res) => {
       "secretkey",
       "9999 years"
     );
+
     res.status(200).json({ status: true, token: token });
   } catch (err) {
     res.status(400).json({ message: err.message });

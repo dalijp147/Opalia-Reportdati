@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../calcul/CreatinineCockcroftGault.dart';
+import '../calcul/CardioGloboriskCalculator.dart';
 
 class CArdioScreen extends StatefulWidget {
   const CArdioScreen({super.key});
@@ -13,8 +13,8 @@ class CArdioScreen extends StatefulWidget {
 class _CArdioScreenState extends State<CArdioScreen> {
   final List<Map<String, dynamic>> calculators = [
     {
-      'title': 'Clairance de la créatinine Formule de Cockcroft et Gault',
-      'widget': CockcroftGaultCalculator(),
+      'title': 'Cardiovasculaire GLOBORISK',
+      'widget': RiskCalculatorScreen(),
     },
     // {
     //   'title': 'Nephro',

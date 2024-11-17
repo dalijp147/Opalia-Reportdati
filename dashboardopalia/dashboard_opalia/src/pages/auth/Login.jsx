@@ -47,14 +47,14 @@ const Login = () => {
           {isLoading ? "Loading..." : "Se connecter"}
         </button>
         {error && <div className="error">{error}</div>}
-        <div className="signup-link">
-          <p>tu as un compte?</p>
+        {/* <div className="signup-link">
+          <p>tu n'as pas de compte?</p>
           <Link to="/signup">
             <button type="button" className="signup-button">
               Sign Up
             </button>
           </Link>
-        </div>
+        </div> */}
       </form>
     </div>
   );

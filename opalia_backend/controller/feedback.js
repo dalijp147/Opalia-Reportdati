@@ -43,7 +43,7 @@ exports.get = (req, res) => {
       if (data === undefined || data.length == 0)
         message = "No Feedback found!";
       else message = "Feedback successfully retrieved";
-
+      cleanUpParticipants();
       res.status(200).json(data);
     })
     .catch((err) => {
@@ -176,5 +176,16 @@ exports.getfeedbyevent = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving Feedback.",
       });
+    });
+};
+const cleanUpParticipants = () => {
+  Feedback.deleteMany({
+    $or: [{ eventId: null }, { participantId: null }],
+  })
+    .then(() => {
+      console.log("Deleted Feedback with null eventId or participantId");
+    })
+    .catch((err) => {
+      console.error("Error occurred while deleting Feedbacks:", err);
     });
 };

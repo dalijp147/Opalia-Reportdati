@@ -203,7 +203,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                         Get.to(FormReminderScreen());
                       },
                       child: const Text(
-                        'Rappel',
+                        'Planifier',
                         style: TextStyle(color: Colors.red),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -230,7 +230,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Votre liste de rappel est vide veuillez ajouter un rappel',
+                              'Votre liste de rappel est vide veuillez planifier un rappel',
                               style: TextStyle(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 20,

@@ -53,12 +53,12 @@ const DashboardPage = () => {
       <Space direction="horizontal">
         <DashBoardCard
           icon={<FaUserGroup style={iconStyle} />}
-          title={"User"}
+          title={"Nombre de patient"}
           value={userCount}
         />
         <DashBoardCard
           icon={<FaUserDoctor style={iconStyle} />}
-          title={"Doctor"}
+          title={"Nombre de médecin"}
           value={doctorCount}
         />
         <DashBoardCard
@@ -68,7 +68,7 @@ const DashboardPage = () => {
         />
         <DashBoardCard
           icon={<MdEvent style={iconStyle} />}
-          title={"Événement"}
+          title={"Nombre d'événement"}
           value={eventCount}
         />
         <DashBoardCard
@@ -142,7 +142,7 @@ function Users() {
 
   return (
     <>
-      <Typography.Title>Liste d'utilisateur</Typography.Title>
+      <Typography.Title>Liste des patients</Typography.Title>
       <Table
         columns={[
           { title: "Nom", dataIndex: "familyname" },

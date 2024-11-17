@@ -145,7 +145,15 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
     }
   }
 
-  List colors = [0xffFF0000, 0xffb74094, 0xff006bce, 0xff32F935];
+  List colors = [
+    0xffFF0000,
+    0xff006bce,
+    0xff32F935,
+    0xff8728E2,
+    0xffffc827,
+    0xffff0999
+  ];
+
   int selceted = 0;
   bool _validate = false;
   bool select = false;
@@ -171,17 +179,18 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   List<int> nombrederappel = [0, 1, 2, 3, 4, 5, 6];
 
   List list = [
-    'Choisire une categorie de medicament',
+    'Choisire une categorie de médicament',
     'Choisire un rappel',
   ];
   // List of reminder types
   List<String> reminderTypes = [
-    'rappel boire aux',
-    'medicament',
-    'rendez vous',
-    'ecrire un rappel'
+    "rappel pour boire de l'eau",
+    'médicament',
+    'rendez-vous',
+    'écrire un rappel'
   ];
-  String selectedReminderType = 'rappel boire aux'; // Default selection
+  String selectedReminderType =
+      "rappel pour boire de l'eau"; // Default selection
   bool selctedcategorie = false;
   String selString = '';
   String? selectedMedicament;
@@ -190,7 +199,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(' Ajouter un rappel'),
+        title: Text('Planifier un rappel'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -274,7 +283,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                   },
                 ),
               ),
-              if (selectedReminderType == 'medicament')
+              if (selectedReminderType == 'médicament')
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButtonFormField<String>(
@@ -300,7 +309,10 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                       return DropdownMenuItem<String>(
                         value: medicament
                             .mediname, // Assuming Medicament has a `name` property
-                        child: Text(medicament.mediname!),
+                        child: Text(
+                          medicament.mediname!,
+                          style: TextStyle(fontSize: 13),
+                        ),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -311,13 +323,13 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                     },
                   ),
                 ),
-              if (selectedReminderType == 'ecrire un rappel')
+              if (selectedReminderType == 'écrire un rappel')
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "veullez saisire un rappel";
+                        return "veullez saisire votre rappel";
                       } else {
                         return null;
                       }
@@ -339,7 +351,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                         color: Colors.grey,
                       ),
                       filled: true,
-                      hintText: "ecrire rappel",
+                      hintText: "écrire un rappel",
                       fillColor: Colors.transparent,
                     ),
                   ),
@@ -381,7 +393,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                       color: Colors.grey,
                     ),
                     filled: true,
-                    hintText: "ecrire description",
+                    hintText: "écrire la description de votre rappel",
                     fillColor: Colors.transparent,
                   ),
                 ),
@@ -440,11 +452,11 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Pour selectioner une date de debut et de fin appuyer ici:',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                   ),
                   Switch(
@@ -477,7 +489,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "veullez une date de debut";
+                                return "veullez une Date de debut";
                               } else {
                                 return null;
                               }
@@ -502,7 +514,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                               ),
                               filled: true,
                               fillColor: Colors.transparent,
-                              hintText: "date de debut",
+                              hintText: "Date de debut",
                               prefixIcon: const Icon(
                                   Icons.calendar_month_rounded,
                                   color: Colors.red),
@@ -521,7 +533,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "veullez selectionner une date de fin";
+                                return "veullez selectionner une Date de fin";
                               } else {
                                 return null;
                               }
@@ -544,7 +556,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                               ),
                               filled: true,
                               fillColor: Colors.transparent,
-                              hintText: "date de fin",
+                              hintText: "Date de fin",
                               prefixIcon: const Icon(
                                   Icons.calendar_month_rounded,
                                   color: Colors.red),
@@ -562,7 +574,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                       child: TextFormField(
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return "veullez choisire une date";
+                            return "veullez choisire une Date";
                           } else {
                             return null;
                           }
@@ -587,7 +599,7 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                           ),
                           filled: true,
                           fillColor: Colors.transparent,
-                          hintText: "choisire une date",
+                          hintText: "choisire une Date",
                           prefixIcon: const Icon(Icons.calendar_month_rounded,
                               color: Colors.red),
                         ),
@@ -666,43 +678,6 @@ class _FormReminderScreenState extends State<FormReminderScreen> {
                 ),
               ),
 
-              ////
-
-              // TextFormField(
-              //   validator: (value) {
-              //     if (value!.isEmpty) {
-              //       return "veullez selectionner une heure";
-              //     } else {
-              //       return null;
-              //     }
-              //   },
-              //   focusNode: timeFocus,
-              //   controller: timeController,
-              //   decoration: InputDecoration(
-              //     enabledBorder: OutlineInputBorder(
-              //         borderSide: const BorderSide(
-              //           color: Colors.red,
-              //         ),
-              //         borderRadius: kBorderRadius),
-              //     focusedBorder: OutlineInputBorder(
-              //         borderSide: const BorderSide(
-              //           color: Colors.red,
-              //         ),
-              //         borderRadius: kBorderRadius),
-              //     hintStyle: const TextStyle(
-              //       color: Colors.grey,
-              //     ),
-              //     filled: true,
-              //     fillColor: Colors.transparent,
-              //     hintText: "choisire une heure",
-              //     prefixIcon: const Icon(
-              //       Icons.watch_later_outlined,
-              //       color: Colors.red,
-              //     ),
-              //   ),
-              //   readOnly: true,
-              //   onTap: _showTimePicker,
-              // ),
               SizedBox(
                 height: 5,
               ),
